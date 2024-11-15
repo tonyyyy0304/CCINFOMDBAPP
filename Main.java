@@ -6,7 +6,7 @@ import mvc_folder.*;
 public class Main {
     public static void main(String[] args) {
         Model model = new Model();
-        MainView view = new MainView();
+        View view = new View();
         new Controller(model, view);
 
         view.setVisible(true);
