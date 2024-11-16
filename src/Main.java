@@ -18,5 +18,5 @@ public class Main {
 
 /*
  mvn clean install
- mvn exec:java -Dexec.mainClass="src.Main"
+ mvn exec:java -Dexec.mainClass="Main"
  */
