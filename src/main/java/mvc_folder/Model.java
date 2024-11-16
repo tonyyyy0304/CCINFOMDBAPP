@@ -21,7 +21,9 @@ public class Model
     }
 
 
-    public boolean addProduct(String product_name, String description, int store_id, int stock_count, String category, String r18_flag, double price) throws SQLException {
+    public boolean addProduct(String product_name, String description, int store_id, int stock_count, String category, 
+                                String r18_flag, double price) throws SQLException 
+    {
         String sql = "INSERT INTO products (product_name, description, store_id, stock_count, category, R18, price) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -37,7 +39,8 @@ public class Model
         }
     }
 
-    public boolean productExists(int productId) throws SQLException {
+    public boolean productExists(int productId) throws SQLException 
+    {
         String sql = "SELECT product_id FROM products WHERE product_id = ?";
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -48,7 +51,8 @@ public class Model
         }
     }
 
-    public void addLocationId(int lot_num, String street, String city, String country, int zipcode) {
+    public void addLocationId(int lot_num, String street, String city, String country, int zipcode) 
+    {
         try {
             if (!locationExists(lot_num, street, city, country, zipcode)) {
                 String sql = "INSERT INTO locations (lot_number, street_name, city_name, country_name, zip_code) VALUES (?, ?, ?, ?, ?)";
@@ -77,7 +81,8 @@ public class Model
         }
     }
 
-    public boolean locationExists(int lot_num, String street, String city, String country, int zip_code) throws SQLException {
+    public boolean locationExists(int lot_num, String street, String city, String country, int zip_code) throws SQLException
+    {
         String sql = "SELECT location_id FROM locations WHERE lot_number = ? AND street_name = ? AND city_name = ? AND country_name = ? AND zip_code = ?";
         
         try (Connection conn = getConnection();
@@ -94,7 +99,8 @@ public class Model
         }
     }
 
-    public int getLocationId(int lot_num, String street, String city, String country, int zip_code) throws SQLException {
+    public int getLocationId(int lot_num, String street, String city, String country, int zip_code) throws SQLException 
+    {
         String sql = "SELECT location_id FROM locations WHERE lot_number = ? AND street_name = ? AND city_name = ? AND country_name = ? AND zip_code = ?";
     
         try (Connection conn = getConnection();

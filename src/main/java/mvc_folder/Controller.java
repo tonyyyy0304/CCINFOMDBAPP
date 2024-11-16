@@ -33,15 +33,19 @@ public class Controller
                 String product_category = view.getSelectedProductCategory();
                 boolean product_r18 = view.isProductR18();
             
-            if (product_price.isEmpty() || product_name.isEmpty() || product_store_id.isEmpty() || product_stock_count <= 0 || product_category.isEmpty()) {
+            if (product_price.isEmpty() || product_name.isEmpty() || product_store_id.isEmpty() || 
+                product_stock_count <= 0 || product_category.isEmpty()) 
+            {
                 view.showMessage("Please fill in all required fields.");
                 return;
             }
 
             double price = 0;
-            try{
+            try 
+            {
                 price = Double.parseDouble(product_price);
-                if (price < 0) {
+                if (price < 0) 
+                {
                     view.showMessage("Price cannot be negative.");
                     return;
                 }
@@ -50,9 +54,11 @@ public class Controller
                 return;
             }
 
-            try {
+            try 
+            {
                 int storeId = Integer.parseInt(product_store_id);
-                if (storeId < 0) {
+                if (storeId < 0) 
+                {
                     view.showMessage("Store ID cannot be negative.");
                     return;
                 }
@@ -60,14 +66,19 @@ public class Controller
                 String r18 = product_r18 ? "T" : "F";
                 
                 // Check if store exists
-                if (!model.storeExists(storeId)) {
+                if (!model.storeExists(storeId)) 
+                {
                     view.showError("Store ID does not exist.");
                     return;
                 }
     
                 // Add new product
-                boolean success = model.addProduct(product_name, product_desc, storeId, product_stock_count, product_category, r18, price);
-                if (success) {
+                boolean success = model.addProduct(product_name, product_desc, 
+                                                    storeId, product_stock_count, 
+                                                    product_category, r18, price);
+                
+                if (success) 
+                {
                     view.showSuccess("Product added successfully!");
                 } else {
                     view.showError("Failed to add the product.");
@@ -101,7 +112,11 @@ public class Controller
                 String store_country_name = view.getStoreCountry()  ;
                 String store_zipcode = view.getStoreZipCode();
 
-                if (store_name.isEmpty() || store_contact_num.isEmpty() || store_email_add.isEmpty() || store_lot_num.isEmpty() || store_street_name.isEmpty() || store_city_name.isEmpty() || store_country_name.isEmpty()) {
+                if (store_name.isEmpty() || store_contact_num.isEmpty() || 
+                    store_email_add.isEmpty() || store_lot_num.isEmpty() || 
+                    store_street_name.isEmpty() || store_city_name.isEmpty() || 
+                    store_country_name.isEmpty()) 
+                {    
                     view.showMessage("Please fill in all required fields.");
                     return;
                 }
@@ -138,10 +153,15 @@ public class Controller
                     return;
                 }
 
-                try{
+                try {
                     // Add new location
-                    if(!model.locationExists(Integer.parseInt(store_lot_num), store_street_name, store_city_name, store_country_name, Integer.parseInt(store_zipcode))){
-                        model.addLocationId(Integer.parseInt(store_lot_num), store_street_name, store_city_name, store_country_name, Integer.parseInt(store_zipcode));
+                    if(!model.locationExists(Integer.parseInt(store_lot_num), 
+                                            store_street_name, store_city_name, 
+                                            store_country_name, Integer.parseInt(store_zipcode)))
+                    {
+                        model.addLocationId(Integer.parseInt(store_lot_num), 
+                                            store_street_name, store_city_name, 
+                                            store_country_name, Integer.parseInt(store_zipcode));
                     }
                 } catch (SQLException ex) {
                     view.showError("Database error: " + ex.getMessage());
@@ -150,10 +170,15 @@ public class Controller
                 }
 
                 int store_locationId = 0;
-                try{
-                    store_locationId = model.getLocationId(Integer.parseInt(store_lot_num), store_street_name, store_city_name, store_country_name, Integer.parseInt(store_zipcode));
+                try {
+                    store_locationId = model.getLocationId(Integer.parseInt(store_lot_num), 
+                                                                            store_street_name, 
+                                                                            store_city_name, 
+                                                                            store_country_name, 
+                                                                            Integer.parseInt(store_zipcode));
+                    
                     System.out.println("Retrieved Location   ID: " + store_locationId);
-                } catch(SQLException ex){
+                } catch(SQLException ex) {
                     view.showError("Database error: " + ex.getMessage());
                 } catch (Exception ex) {
                     view.showError("An unexpected error occurred: " + ex.getMessage());
