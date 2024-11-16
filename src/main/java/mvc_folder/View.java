@@ -337,8 +337,7 @@ public class View extends JFrame {
         storeCountry = new JTextField(COLUMN_WIDTH);
 
         storeAddBtn = new JButton("Add Store");
-        storeAddBtn.setActionCommand("Add Store");
-
+        
         GridBagConstraints gbc = setGBC();
 
         // Store Name
@@ -445,24 +444,76 @@ public class View extends JFrame {
         customerRemoveBtn.addActionListener(listener);
     }
 
-    public String getProductId() {
-        return productId.getText();
+    public void setStoreAddBtn(ActionListener listener) {
+        storeAddBtn.addActionListener(listener);
+    }
+
+    public void setStoreRemoveBtn(ActionListener listener) {
+        storeRemoveBtn.addActionListener(listener);
+    }
+
+    public Integer getProductId() {
+        return Integer.parseInt(productId.getText());
     }
 
     public String getProductName() {
         return productName.getText();
     }
 
+    public String getProductPrice() {
+        return productPrice.getText();
+    }
+
     public String getProductStoreId() {
         return productStoreId.getText();
     }
 
-    public String getStockCount() {
-        return stockCount.getText();
+    public Integer getStockCount() {
+        return Integer.parseInt(stockCount.getText());
     }
 
     public String getDescription() {
         return description.getText();
+    }
+
+    public String getSelectedProductCategory() {
+        return (String) productCategories.getSelectedItem();
+    }
+
+    public boolean isProductR18() {
+        return productR18.isSelected();
+    }
+    
+    public String getStoreName() {
+        return storeName.getText();
+    }
+    
+    public String getStorePhoneNumber() {
+        return storePhoneNumber.getText();
+    }
+    
+    public String getStoreEmailAddress() {
+        return storeEmailAddress.getText();
+    }
+    
+    public String getStoreLotNum() {
+        return storeLotNum.getText();
+    }
+    
+    public String getStoreStreetName() {
+        return storeStreetName.getText();
+    }
+    
+    public String getStoreCityName() {
+        return storeCityName.getText();
+    }
+    
+    public String getStoreZipCode() {
+        return storeZipCode.getText();
+    }
+    
+    public String getStoreCountry() {
+        return storeCountry.getText();
     }
 
     public void clearFields() {
