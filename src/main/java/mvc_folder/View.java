@@ -1,4 +1,4 @@
-package src.main.java.mvc_folder;
+package main.java.mvc_folder;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package src.main.java.mvc_folder;
+package main.java.mvc_folder;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

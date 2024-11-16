@@ -1,5 +1,4 @@
-package src.main.java.mvc_folder;
-
+package main.java.mvc_folder;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -7,19 +6,37 @@ import java.sql.SQLException;
 
 public class Model 
 {   
-    private static final String dbUrl = "jdbc:mysql://localhost/test";
-    private static final String userName = "minty";
-    private static final String password = "greatsqldb";
+    private static final String dbUrl = "jdbc:mysql://localhost/dbhr";
+    private static final String userName = "root";
+    private static final String password = "123456";
 
-    private Connection conn = null;
+    private Connection connection = null;
 
     public Model() {
-        try {
-            conn = DriverManager.getConnection(dbUrl, userName, password);
-        } catch (SQLException ex) {
-            System.out.println("SQLException: " + ex.getMessage());
-            System.out.println("SQLState: " + ex.getSQLState());
-            System.out.println("VendorError: " + ex.getErrorCode());
+        try 
+        {
+            connection = DriverManager.getConnection(dbUrl, userName, password);
+            System.out.println("Connection successful!");
+        } 
+        catch (SQLException e) 
+        {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+        } 
+        finally 
+        {
+            if (connection != null) 
+            {
+                try 
+                {
+                    connection.close();
+                } 
+                catch (SQLException e) 
+                {
+                    System.out.println("SQLException on close: " + e.getMessage());
+                }
+            }
         }
     }
 }
