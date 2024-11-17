@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.sql.ResultSet;
@@ -266,6 +267,9 @@ public class Model
         }
     }
 
+
+    // ----------------- Queries -----------------
+
     public static Object[][] getCustomerRecords() throws SQLException {
         String sql =
             "SELECT c.customer_id, c.first_name, c.last_name, " +
@@ -320,4 +324,35 @@ public class Model
             return records.toArray(new Object[0][]);
         }
     }
+
+    public static Object[][] getProductRecords() throws SQLException {
+        String sql =
+            "SELECT p.product_id, p.product_name, p.price, s.store_name, p.stock_count, p.description, p.category, p.r18 " +
+            "FROM products p " +
+            "JOIN store s ON p.store_id = s.store_id";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery()) {
+
+            List<Object[]> records = new ArrayList<>();
+            DecimalFormat priceFormat = new DecimalFormat("Php #,###.##");
+
+            while (rs.next()) {
+                String formattedPrice = priceFormat.format(rs.getDouble("price"));
+                records.add(new Object[]{
+                    rs.getInt("product_id"),
+                    rs.getString("product_name"),
+                    formattedPrice,
+                    rs.getString("store_name"),
+                    rs.getInt("stock_count"),
+                    rs.getString("description"),
+                    rs.getString("category"),
+                    rs.getBoolean("r18")
+                });
+            }
+            return records.toArray(new Object[0][]);
+        }
+    }
+
+
 }

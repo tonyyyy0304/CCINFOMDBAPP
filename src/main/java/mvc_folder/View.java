@@ -2,6 +2,7 @@ package main.java.mvc_folder;
 
 import javax.swing.*;
 import javax.swing.JFormattedTextField.AbstractFormatter;
+import javax.swing.table.TableColumn;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -264,6 +265,30 @@ public class View extends JFrame {
 
     public JPanel productRecordsPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = setGBC();
+
+        String[] columnNames = {"Product ID", "Product Name", "Price", "Store Name", "Stock Count", "Description", "Category", "R18"};
+        Object[][] data = {};
+
+        try {
+            data = Model.getProductRecords();
+        } catch (SQLException e) {
+            showError("Failed to retrieve product records: " + e.getMessage());
+        }
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        panel.add(scrollPane, gbc);
 
         return panel;
     }
@@ -411,6 +436,8 @@ public class View extends JFrame {
         JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
 
+        adjustColumnWidths(table);
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -439,10 +466,13 @@ public class View extends JFrame {
         JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
 
+        adjustColumnWidths(table);
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.VERTICAL;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.NORTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         panel.add(scrollPane, gbc);
@@ -594,6 +624,18 @@ public class View extends JFrame {
         JPanel panel = new JPanel(new GridBagLayout());
 
         return panel;
+    }
+
+    private void adjustColumnWidths(JTable table) {
+        for (int column = 0; column < table.getColumnCount(); column++) {
+            TableColumn tableColumn = table.getColumnModel().getColumn(column);
+            int preferredWidth = 50; // Minimum width
+            for (int row = 0; row < table.getRowCount(); row++) {
+                Component comp = table.prepareRenderer(table.getCellRenderer(row, column), row, column);
+                preferredWidth = Math.max(comp.getPreferredSize().width + 1, preferredWidth);
+            }
+            tableColumn.setPreferredWidth(preferredWidth);
+        }
     }
     
     public void setProductRemoveBtn(ActionListener listener) {
