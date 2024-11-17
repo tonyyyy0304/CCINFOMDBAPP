@@ -530,6 +530,10 @@ public class View extends JFrame {
         return storeCountry.getText();
     }
 
+    public String getCustomerId() {
+        return customerId.getText();
+    }
+
     public String getCustomerFirstName() {
         return customerFirstName.getText();
     }
@@ -568,7 +572,7 @@ public class View extends JFrame {
 
     public Date getCustomerBirthdate() {
         return (Date) customerBirthdate.getModel().getValue();
-    }    
+    }
 
     public void clearFields() {
         productId.setText("");

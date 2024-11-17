@@ -244,6 +244,15 @@ public class Model
         }
     }
 
+    public boolean removeCustomer(int customerId) throws SQLException {
+        String sql = "DELETE FROM customers WHERE customer_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, customerId);
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
     public boolean customerExists(int customerId) throws SQLException {
         String sql = "SELECT customer_id FROM customer WHERE customer_id = ?";
         try (Connection conn = getConnection();

@@ -360,5 +360,26 @@ public class Controller
                 }
             }
         });
+        
+        this.view.setCustomerRemoveBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int customerId = Integer.parseInt(view.getCustomerId());
+                    boolean success = model.removeCustomer(customerId);
+                    if (success) {
+                        view.showSuccess("Customer removed successfully!");
+                    } else {
+                        view.showError("Failed to remove the customer. Customer ID may not exist.");
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Customer ID must be a valid number.");
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
     }
 }
