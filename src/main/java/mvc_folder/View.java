@@ -75,12 +75,39 @@ public class View extends JFrame {
         // Records Management Panel
         JPanel recordsManagementPanel = new JPanel(new BorderLayout());
         JTabbedPane recordsManagementTabbedPane = new JTabbedPane();
-        recordsManagementTabbedPane.addTab("Add Product", productAddPnl());
-        recordsManagementTabbedPane.addTab("Remove Product", productRemovePnl());
-        recordsManagementTabbedPane.addTab("Add Customer", customerAddPnl());
-        recordsManagementTabbedPane.addTab("Remove Customer", customerRemovePnl());
-        recordsManagementTabbedPane.addTab("Add Store", storeAddPnl());
-        recordsManagementTabbedPane.addTab("Remove Store", storeRemovePnl());
+
+        // Products Panel
+        JPanel productsPanel = new JPanel(new BorderLayout());
+        JTabbedPane productsTabbedPane = new JTabbedPane();
+        productsTabbedPane.addTab("Product Records", productRecordsPnl());
+        productsTabbedPane.addTab("Add Product", productAddPnl());
+        productsTabbedPane.addTab("Remove Product", productRemovePnl());
+        productsPanel.add(productsTabbedPane, BorderLayout.CENTER);
+
+        // Customers Panel
+        JPanel customersPanel = new JPanel(new BorderLayout());
+        JTabbedPane customersTabbedPane = new JTabbedPane();
+        customersTabbedPane.addTab("Customer Records", customerRecordsPnl());
+        customersTabbedPane.addTab("Add Customer", customerAddPnl());
+        customersTabbedPane.addTab("Remove Customer", customerRemovePnl());
+        customersPanel.add(customersTabbedPane, BorderLayout.CENTER);
+
+        // Stores Panel
+        JPanel storesPanel = new JPanel(new BorderLayout());
+        JTabbedPane storesTabbedPane = new JTabbedPane();
+        storesTabbedPane.addTab("Store Records", storeRecordsPnl());
+        storesTabbedPane.addTab("Add Store", storeAddPnl());
+        storesTabbedPane.addTab("Remove Store", storeRemovePnl());
+        storesPanel.add(storesTabbedPane, BorderLayout.CENTER);
+
+        // Logistics Companies Panel
+        JPanel logisticsPanel = new JPanel(new BorderLayout());
+        logisticsPanel.add(logisticsPnl(), BorderLayout.CENTER);
+
+        recordsManagementTabbedPane.addTab("Products", productsPanel);
+        recordsManagementTabbedPane.addTab("Customers", customersPanel);
+        recordsManagementTabbedPane.addTab("Stores", storesPanel);
+        recordsManagementTabbedPane.addTab("Logistics Companies", logisticsPanel);
         recordsManagementPanel.add(recordsManagementTabbedPane, BorderLayout.CENTER);
 
         // Transactions Panel
@@ -234,6 +261,12 @@ public class View extends JFrame {
         return panel;
     }
 
+    public JPanel productRecordsPnl() {
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        return panel;
+    }
+
     public JPanel customerAddPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
@@ -360,6 +393,12 @@ public class View extends JFrame {
         return panel;
     }
 
+    public JPanel customerRecordsPnl() {
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        return panel;
+    }
+
     public JPanel storeAddPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
@@ -460,6 +499,18 @@ public class View extends JFrame {
         gbc.gridx = 0;
         gbc.gridy++;
         panel.add(storeRemoveBtn, gbc);
+
+        return panel;
+    }
+
+    public JPanel storeRecordsPnl() {
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        return panel;
+    }
+
+    public JPanel logisticsPnl() {
+        JPanel panel = new JPanel(new GridBagLayout());
 
         return panel;
     }
