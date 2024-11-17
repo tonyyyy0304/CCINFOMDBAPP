@@ -52,6 +52,10 @@ public class View extends JFrame {
     private JTextField orderCustomerId, orderProductId, orderQuantity;
     private JButton placeOrderBtn;
 
+    // Adjust Stock
+    private JTextField adjustStockProductId, adjustStockQuantity;
+    private JButton adjustStockBtn;
+
     public View() {
         // Set up the frame
         setTitle("Online Shoppping System");
@@ -662,6 +666,33 @@ public class View extends JFrame {
 
     private JPanel adjustStockPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = setGBC();
+
+        adjustStockProductId = new JTextField(COLUMN_WIDTH);
+        adjustStockQuantity = new JTextField(COLUMN_WIDTH);
+
+        adjustStockBtn = new JButton("Adjust Stock");
+        adjustStockBtn.setActionCommand("Adjust Stock");
+
+        // Product ID
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(new JLabel("Product ID:"), gbc);
+        gbc.gridx++;
+        panel.add(adjustStockProductId, gbc);
+
+        // Quantity
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Quantity:"), gbc);
+        gbc.gridx++;
+        panel.add(adjustStockQuantity, gbc);
+
+        // Adjust Stock Button
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        panel.add(adjustStockBtn, gbc);
 
         return panel;
     }
@@ -740,6 +771,10 @@ public class View extends JFrame {
 
     public void setPlaceOrderBtn(ActionListener listener) {
         placeOrderBtn.addActionListener(listener);
+    }
+
+    public void setAdjustStockBtn(ActionListener listener) {
+        adjustStockBtn.addActionListener(listener);
     }
 
     public Integer getProductId() {
@@ -862,6 +897,14 @@ public class View extends JFrame {
         return orderQuantity.getText();
     }
 
+    public String getAdjustStockProductId() {
+        return adjustStockProductId.getText();
+    }
+
+    public String getAdjustStockQuantity() {
+        return adjustStockQuantity.getText();
+    }
+
     public void clearFields() {
         productId.setText("");
         productName.setText("");
@@ -897,6 +940,9 @@ public class View extends JFrame {
         orderCustomerId.setText("");
         orderProductId.setText("");
         orderQuantity.setText("");
+
+        adjustStockProductId.setText("");
+        adjustStockQuantity.setText("");
     }
 
     public void showMessage(String message) {
