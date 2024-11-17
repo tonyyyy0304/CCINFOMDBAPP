@@ -56,6 +56,10 @@ public class View extends JFrame {
     private JTextField adjustStockProductId, adjustStockQuantity;
     private JButton adjustStockBtn;
 
+    // Pay for Order
+    private JTextField paymentCustomerId, paymentOrderId, paymentAmount;
+    private JButton paymentBtn;
+
     public View() {
         // Set up the frame
         setTitle("Online Shoppping System");
@@ -80,6 +84,8 @@ public class View extends JFrame {
         storeAddBtn = new JButton("Add Store");
         storeRemoveBtn = new JButton("Remove Store");
         placeOrderBtn = new JButton("Place Order");
+        adjustStockBtn = new JButton("Adjust Stock");
+        paymentBtn = new JButton("Pay for Order");
 
         JTabbedPane mainTabbedPane = new JTabbedPane();
 
@@ -127,7 +133,7 @@ public class View extends JFrame {
         JTabbedPane transactionsTabbedPane = new JTabbedPane();
         transactionsTabbedPane.addTab("Place Order", placeOrderPnl());
         transactionsTabbedPane.addTab("Adjust Stock", adjustStockPnl());
-        transactionsTabbedPane.addTab("Pay for Order", paymentsPnl());
+        transactionsTabbedPane.addTab("Pay for Order", payForOrderPnl());
         transactionsTabbedPane.addTab("Ship Order", shipOrderPnl());
         transactionsPanel.add(transactionsTabbedPane, BorderLayout.CENTER);
 
@@ -697,8 +703,43 @@ public class View extends JFrame {
         return panel;
     }
 
-    private JPanel paymentsPnl() {
+    private JPanel payForOrderPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = setGBC();
+
+        paymentCustomerId = new JTextField(COLUMN_WIDTH);
+        paymentOrderId = new JTextField(COLUMN_WIDTH);
+        paymentAmount = new JTextField(COLUMN_WIDTH);
+
+        paymentBtn = new JButton("Pay for Order");
+        paymentBtn.setActionCommand("Pay for Order");
+
+        // Customer ID
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(new JLabel("Customer ID:"), gbc);
+        gbc.gridx++;
+        panel.add(paymentCustomerId, gbc);
+
+        // Order ID
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Order ID:"), gbc);
+        gbc.gridx++;
+        panel.add(paymentOrderId, gbc);
+
+        // Amount
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Amount:"), gbc);
+        gbc.gridx++;
+        panel.add(paymentAmount, gbc);
+
+        // Pay for Order Button
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        panel.add(paymentBtn, gbc);
 
         return panel;
     }
@@ -775,6 +816,10 @@ public class View extends JFrame {
 
     public void setAdjustStockBtn(ActionListener listener) {
         adjustStockBtn.addActionListener(listener);
+    }
+
+    public void setPaymentBtn(ActionListener listener) {
+        paymentBtn.addActionListener(listener);
     }
 
     public Integer getProductId() {
@@ -905,6 +950,18 @@ public class View extends JFrame {
         return adjustStockQuantity.getText();
     }
 
+    public String getPaymentCustomerId() {
+        return paymentCustomerId.getText();
+    }
+
+    public String getPaymentOrderId() {
+        return paymentOrderId.getText();
+    }
+
+    public String getPaymentAmount() {
+        return paymentAmount.getText();
+    }
+
     public void clearFields() {
         productId.setText("");
         productName.setText("");
@@ -943,6 +1000,10 @@ public class View extends JFrame {
 
         adjustStockProductId.setText("");
         adjustStockQuantity.setText("");
+
+        paymentCustomerId.setText("");
+        paymentOrderId.setText("");
+        paymentAmount.setText("");
     }
 
     public void showMessage(String message) {
