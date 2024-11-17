@@ -48,6 +48,10 @@ public class View extends JFrame {
                 customerAddBtn, customerRemoveBtn, 
                 storeAddBtn, storeRemoveBtn;
 
+    // Place Order
+    private JTextField orderCustomerId, orderProductId, orderQuantity;
+    private JButton placeOrderBtn;
+
     public View() {
         // Set up the frame
         setTitle("Online Shoppping System");
@@ -71,6 +75,7 @@ public class View extends JFrame {
         customerRemoveBtn = new JButton("Remove Customer");
         storeAddBtn = new JButton("Add Store");
         storeRemoveBtn = new JButton("Remove Store");
+        placeOrderBtn = new JButton("Place Order");
 
         JTabbedPane mainTabbedPane = new JTabbedPane();
 
@@ -616,6 +621,41 @@ public class View extends JFrame {
 
     private JPanel placeOrderPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = setGBC();
+
+        orderCustomerId = new JTextField(COLUMN_WIDTH);
+        orderProductId = new JTextField(COLUMN_WIDTH);
+        orderQuantity = new JTextField(COLUMN_WIDTH);
+
+        placeOrderBtn = new JButton("Place Order");
+        placeOrderBtn.setActionCommand("Place Order");
+
+        // Customer ID
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(new JLabel("Customer ID:"), gbc);
+        gbc.gridx++;
+        panel.add(orderCustomerId, gbc);
+
+        // Product ID
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Product ID:"), gbc);
+        gbc.gridx++;
+        panel.add(orderProductId, gbc);
+
+        // Quantity
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Quantity:"), gbc);
+        gbc.gridx++;
+        panel.add(orderQuantity, gbc);
+
+        // Place Order Button
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        panel.add(placeOrderBtn, gbc);
 
         return panel;
     }
