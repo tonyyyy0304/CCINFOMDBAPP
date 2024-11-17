@@ -1,8 +1,19 @@
 package main.java.mvc_folder;
 
 import javax.swing.*;
+import javax.swing.JFormattedTextField.AbstractFormatter;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+import org.jdatepicker.impl.JDatePanelImpl;
+import org.jdatepicker.impl.JDatePickerImpl;
+import org.jdatepicker.impl.SqlDateModel;
+
+import java.util.Calendar;
+import java.util.Properties;
 
 public class View extends JFrame {
     private final int COLUMN_WIDTH = 10;
@@ -19,8 +30,7 @@ public class View extends JFrame {
     private JTextField customerId, customerFirstName, customerLastName, 
                 customerPhoneNumber, customerEmailAddress, 
                 customerLotNum, customerStreetName, customerCityName, 
-                customerZipCode, customerCountry, 
-                customerBirthdateYear, customerBirthdateMonth, customerBirthdateDay;
+                customerZipCode, customerCountry;
 
     // Stores Table
     private JTextField storeId, storeName, 
@@ -50,6 +60,13 @@ public class View extends JFrame {
 
     public void init() {
         mainPanel = new JPanel(new BorderLayout());
+        productAddBtn = new JButton("Add Product");
+        productRemoveBtn = new JButton("Remove Product");
+        customerAddBtn = new JButton("Add Customer");
+        customerRemoveBtn = new JButton("Remove Customer");
+        storeAddBtn = new JButton("Add Store");
+        storeRemoveBtn = new JButton("Remove Store");
+
         JTabbedPane tabbedPane = new JTabbedPane();
 
         // Add tabs
@@ -204,12 +221,17 @@ public class View extends JFrame {
         customerCityName = new JTextField(COLUMN_WIDTH);
         customerZipCode = new JTextField(COLUMN_WIDTH);
         customerCountry = new JTextField(COLUMN_WIDTH);
-        customerBirthdateYear = new JTextField(COLUMN_WIDTH);
-        customerBirthdateMonth = new JTextField(COLUMN_WIDTH);
-        customerBirthdateDay = new JTextField(COLUMN_WIDTH);
 
         customerAddBtn = new JButton("Add Customer");
         customerAddBtn.setActionCommand("Add Customer");
+
+        SqlDateModel model = new SqlDateModel();
+        Properties p = new Properties();
+        p.put("text.today", "Today");
+        p.put("text.month", "Month");
+        p.put("text.year", "Year");
+        JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
+        JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
 
         GridBagConstraints gbc = setGBC();
 
@@ -274,20 +296,8 @@ public class View extends JFrame {
         gbc.gridx = 0;
         gbc.gridy++;
         panel.add(new JLabel("Birthdate:"), gbc);
-        gbc.gridy++;
-        panel.add(new JLabel("Year:"), gbc);
         gbc.gridx++;
-        panel.add(customerBirthdateYear, gbc);
-        gbc.gridx = 0;
-        gbc.gridy++;
-        panel.add(new JLabel("Month:"), gbc);
-        gbc.gridx++;
-        panel.add(customerBirthdateMonth, gbc);
-        gbc.gridx = 0;
-        gbc.gridy++;
-        panel.add(new JLabel("Day:"), gbc);
-        gbc.gridx++;
-        panel.add(customerBirthdateDay, gbc);
+        panel.add(datePicker, gbc);
 
         // Add Customer Button
         gbc.gridwidth = 4;
@@ -538,5 +548,25 @@ public class View extends JFrame {
 
     public void showWarning(String message) {
         JOptionPane.showMessageDialog(this, message, "Warning", JOptionPane.WARNING_MESSAGE);
+    }
+
+    private static class DateLabelFormatter extends AbstractFormatter {
+        private String datePattern = "yyyy-MM-dd";
+        private SimpleDateFormat dateFormatter = new SimpleDateFormat(datePattern);
+
+        @Override
+        public Object stringToValue(String text) throws ParseException {
+            return dateFormatter.parseObject(text);
+        }
+
+        @Override
+        public String valueToString(Object value) throws ParseException {
+            if (value != null) {
+                Calendar cal = (Calendar) value;
+                return dateFormatter.format(cal.getTime());
+            }
+
+            return "";
+        }
     }
 }
