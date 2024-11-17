@@ -81,6 +81,7 @@ public class Controller
                 if (success) 
                 {
                     view.showSuccess("Product added successfully!");
+                    view.clearFields();
                 } else {
                     view.showError("Failed to add the product.");
                 }
@@ -215,6 +216,7 @@ public class Controller
                     boolean success = model.addStore(store_name, store_contactId, store_locationId);
                     if (success) {
                         view.showSuccess("Store added successfully!");
+                        view.clearFields();
                     } else {
                         view.showError("Failed to add the store.");
                     }
@@ -352,6 +354,7 @@ public class Controller
                                                         customer_birthdate);
                     if (success) {
                         view.showSuccess("Customer added successfully!");
+                        view.clearFields();
                     } else {
                         view.showError("Failed to add the customer.");
                     }
@@ -369,6 +372,7 @@ public class Controller
                     boolean success = model.removeCustomer(customerId);
                     if (success) {
                         view.showSuccess("Customer removed successfully!");
+                        view.clearFields();
                     } else {
                         view.showError("Failed to remove the customer. Customer ID may not exist.");
                     }

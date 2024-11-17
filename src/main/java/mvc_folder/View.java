@@ -632,6 +632,31 @@ public class View extends JFrame {
         productStoreId.setText("");
         stockCount.setText("");
         description.setText("");
+        productPrice.setText("");
+        productCategories.setSelectedIndex(0);
+        productR18.setSelected(false);
+
+        customerId.setText("");
+        customerFirstName.setText("");
+        customerLastName.setText("");
+        customerPhoneNumber.setText("");
+        customerEmailAddress.setText("");
+        customerLotNum.setText("");
+        customerStreetName.setText("");
+        customerCityName.setText("");
+        customerZipCode.setText("");
+        customerCountry.setText("");
+        customerBirthdate.getModel().setValue(null);
+
+        storeId.setText("");
+        storeName.setText("");
+        storePhoneNumber.setText("");
+        storeEmailAddress.setText("");
+        storeLotNum.setText("");
+        storeStreetName.setText("");
+        storeCityName.setText("");
+        storeZipCode.setText("");
+        storeCountry.setText("");
     }
 
     public void showMessage(String message) {
