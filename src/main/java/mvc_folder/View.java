@@ -21,32 +21,36 @@ import java.util.Properties;
 public class View extends JFrame {
     private final int COLUMN_WIDTH = 10;
 
-    private JPanel mainPanel, customerRecordsPanel, storesCustomersBoughtFromPnl, 
-    productRecordsPanel, storeRecordsPanel, logisticsPanel;
-    
+    private JPanel mainPanel, customerRecordsPanel, storesCustomersBoughtFromPnl,
+            productRecordsPanel, storeRecordsPanel;
+
     //Products Table
     private JTextField productId, productName, productPrice,
-                productStoreId, stockCount, description;
+            productStoreId, stockCount, description;
     private JComboBox<String> productCategories;
     private JCheckBox productR18;
 
     // Customers Table
-    private JTextField customerId, customerFirstName, customerLastName, 
-                customerPhoneNumber, customerEmailAddress, 
-                customerLotNum, customerStreetName, customerCityName, 
-                customerZipCode, customerCountry;
+    private JTextField customerId, customerFirstName, customerLastName,
+            customerPhoneNumber, customerEmailAddress,
+            customerLotNum, customerStreetName, customerCityName,
+            customerZipCode, customerCountry;
     private JDatePickerImpl customerBirthdate;
 
     // Stores Table
-    private JTextField storeId, storeName, 
-                storePhoneNumber, storeEmailAddress,
-                storeLotNum, storeStreetName, storeCityName,
-                storeZipCode, storeCountry;
+    private JTextField storeId, storeName,
+            storePhoneNumber, storeEmailAddress,
+            storeLotNum, storeStreetName, storeCityName,
+            storeZipCode, storeCountry;
+
+    //logistics table
+    private JTextField logisticsCompanyID, logisticsCompanyName,
+            logisticsCompanyLocationID, shipmentScope;
 
     // Buttons
     private JButton productAddBtn, productRemoveBtn,
-                customerAddBtn, customerRemoveBtn, 
-                storeAddBtn, storeRemoveBtn;
+            customerAddBtn, customerRemoveBtn,
+            storeAddBtn, storeRemoveBtn, logisticsAddBtn, logisticsRemoveBtn;
 
     // Place Order
     private JTextField orderCustomerId, orderProductId, orderQuantity;
@@ -66,7 +70,7 @@ public class View extends JFrame {
 
     public View() {
         // Set up the frame
-        setTitle("Online Shoppping System");
+        setTitle("Online Shopping System");
         setResizable(false);
         setSize(1500,800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -125,7 +129,11 @@ public class View extends JFrame {
 
         // Logistics Companies Panel
         JPanel logisticsPanel = new JPanel(new BorderLayout());
-        logisticsPanel.add(logisticsPnl(), BorderLayout.CENTER);
+        JTabbedPane logisticsTabbedPane = new JTabbedPane();
+        logisticsTabbedPane.addTab("Logistics Company Records", logisticsRecordPnl());
+        logisticsTabbedPane.addTab("Add Logistics Company", logisticsAddPnl());
+        logisticsTabbedPane.addTab("Remove Logistics Company", logisticsRemovePnl());
+        logisticsPanel.add(logisticsTabbedPane, BorderLayout.CENTER);
 
         recordsManagementTabbedPane.addTab("Products", productsPanel);
         recordsManagementTabbedPane.addTab("Customers", customersPanel);
@@ -169,7 +177,7 @@ public class View extends JFrame {
 
     private JPanel productAddPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
-        
+
         productName = new JTextField(COLUMN_WIDTH);
         productPrice = new JTextField(COLUMN_WIDTH);
         productStoreId = new JTextField(COLUMN_WIDTH);
@@ -188,7 +196,7 @@ public class View extends JFrame {
 
         productR18 = new JCheckBox("R18");
         productR18.setActionCommand("R18");
-        
+
         productAddBtn = new JButton("Add Product");
         productAddBtn.setActionCommand("Add Product");
 
@@ -265,7 +273,7 @@ public class View extends JFrame {
 
         productRemoveBtn = new JButton("Remove Product");
         productRemoveBtn.setActionCommand("Remove Product");
-        
+
         GridBagConstraints gbc = setGBC();
 
         // Product ID
@@ -428,7 +436,7 @@ public class View extends JFrame {
 
         customerRemoveBtn = new JButton("Remove Customer");
         customerRemoveBtn.setActionCommand("Remove Customer");
-        
+
         GridBagConstraints gbc = setGBC();
 
         // Customer ID
@@ -531,7 +539,7 @@ public class View extends JFrame {
         storeCountry = new JTextField(COLUMN_WIDTH);
 
         storeAddBtn = new JButton("Add Store");
-        
+
         GridBagConstraints gbc = setGBC();
 
         // Store Name
@@ -603,7 +611,7 @@ public class View extends JFrame {
 
         storeRemoveBtn = new JButton("Remove Store");
         storeRemoveBtn.setActionCommand("Remove Store");
-        
+
         GridBagConstraints gbc = setGBC();
 
         // Store ID
@@ -628,7 +636,64 @@ public class View extends JFrame {
         return panel;
     }
 
-    private JPanel logisticsPnl() {
+    private JPanel logisticsAddPnl() {
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        logisticsCompanyName = new JTextField(COLUMN_WIDTH);
+        logisticsCompanyLocationID = new JTextField(COLUMN_WIDTH);
+        shipmentScope = new JTextField(COLUMN_WIDTH);
+
+        GridBagConstraints gbc = setGBC();
+
+        logisticsAddBtn = new JButton("Add Company");
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(new JLabel("Logistics Company Name:"), gbc);
+        gbc.gridx++;
+        panel.add(logisticsCompanyName, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Logistics Company Location:"), gbc);
+        gbc.gridx++;
+        panel.add(logisticsCompanyLocationID, gbc);
+
+        gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(logisticsAddBtn, gbc);
+
+        return panel;
+    }
+
+    private JPanel logisticsRemovePnl() {
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        logisticsCompanyID = new JTextField(COLUMN_WIDTH);
+
+        logisticsRemoveBtn = new JButton("Remove Company");
+        logisticsRemoveBtn.setActionCommand("Remove Company");
+
+        GridBagConstraints gbc = setGBC();
+
+        // Logistics Company ID
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(new JLabel("Logistics Company ID:"), gbc);
+        gbc.gridx++;
+        panel.add(logisticsCompanyID, gbc);
+
+        // Remove Store Button
+        gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(logisticsRemoveBtn, gbc);
+
+        return panel;
+    }
+
+    private JPanel logisticsRecordPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
         return panel;
@@ -817,7 +882,7 @@ public class View extends JFrame {
             tableColumn.setPreferredWidth(preferredWidth);
         }
     }
-    
+
     public void setProductRemoveBtn(ActionListener listener) {
         productRemoveBtn.addActionListener(listener);
     }
@@ -858,6 +923,10 @@ public class View extends JFrame {
         shipOrderBtn.addActionListener(listener);
     }
 
+    public void setLogisticsAddBtn(ActionListener listener) {
+        logisticsAddBtn.addActionListener(listener);
+    }
+
     public Integer getProductId() {
         return Integer.parseInt(productId.getText());
     }
@@ -889,35 +958,35 @@ public class View extends JFrame {
     public boolean isProductR18() {
         return productR18.isSelected();
     }
-    
+
     public String getStoreName() {
         return storeName.getText();
     }
-    
+
     public String getStorePhoneNumber() {
         return storePhoneNumber.getText();
     }
-    
+
     public String getStoreEmailAddress() {
         return storeEmailAddress.getText();
     }
-    
+
     public String getStoreLotNum() {
         return storeLotNum.getText();
     }
-    
+
     public String getStoreStreetName() {
         return storeStreetName.getText();
     }
-    
+
     public String getStoreCityName() {
         return storeCityName.getText();
     }
-    
+
     public String getStoreZipCode() {
         return storeZipCode.getText();
     }
-    
+
     public String getStoreCountry() {
         return storeCountry.getText();
     }
@@ -1005,6 +1074,19 @@ public class View extends JFrame {
     public String getShipLogisticsId() {
         return shipLogisticsId.getText();
     }
+
+    public String getLogisticsCompanyID() {
+        return logisticsCompanyID.getText();
+    }
+
+    public String getLogisticsCompanyLocation() {
+        return logisticsCompanyLocationID.getText();
+    }
+
+    public String getLogisticsCompanyName() {
+        return logisticsCompanyName.getText();
+    }
+
 
     public void clearFields() {
         productId.setText("");
