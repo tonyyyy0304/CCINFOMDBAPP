@@ -738,6 +738,10 @@ public class View extends JFrame {
         storeRemoveBtn.addActionListener(listener);
     }
 
+    public void setPlaceOrderBtn(ActionListener listener) {
+        placeOrderBtn.addActionListener(listener);
+    }
+
     public Integer getProductId() {
         return Integer.parseInt(productId.getText());
     }
@@ -846,6 +850,18 @@ public class View extends JFrame {
         return (Date) customerBirthdate.getModel().getValue();
     }
 
+    public String getOrderCustomerId() {
+        return orderCustomerId.getText();
+    }
+
+    public String getOrderProductId() {
+        return orderProductId.getText();
+    }
+
+    public String getOrderQuantity() {
+        return orderQuantity.getText();
+    }
+
     public void clearFields() {
         productId.setText("");
         productName.setText("");
@@ -877,6 +893,10 @@ public class View extends JFrame {
         storeCityName.setText("");
         storeZipCode.setText("");
         storeCountry.setText("");
+
+        orderCustomerId.setText("");
+        orderProductId.setText("");
+        orderQuantity.setText("");
     }
 
     public void showMessage(String message) {
