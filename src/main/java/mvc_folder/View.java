@@ -60,6 +60,10 @@ public class View extends JFrame {
     private JTextField paymentCustomerId, paymentOrderId, paymentAmount;
     private JButton paymentBtn;
 
+    // Ship Order
+    private JTextField shipOrderId, shipLogisticsId;
+    private JButton shipOrderBtn;
+
     public View() {
         // Set up the frame
         setTitle("Online Shoppping System");
@@ -86,6 +90,7 @@ public class View extends JFrame {
         placeOrderBtn = new JButton("Place Order");
         adjustStockBtn = new JButton("Adjust Stock");
         paymentBtn = new JButton("Pay for Order");
+        shipOrderBtn = new JButton("Ship Order");
 
         JTabbedPane mainTabbedPane = new JTabbedPane();
 
@@ -746,6 +751,33 @@ public class View extends JFrame {
 
     private JPanel shipOrderPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = setGBC();
+
+        shipOrderId = new JTextField(COLUMN_WIDTH);
+        shipLogisticsId = new JTextField(COLUMN_WIDTH);
+
+        shipOrderBtn = new JButton("Ship Order");
+        shipOrderBtn.setActionCommand("Ship Order");
+
+        // Order ID
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        panel.add(new JLabel("Order ID:"), gbc);
+        gbc.gridx++;
+        panel.add(shipOrderId, gbc);
+
+        // Logistics Company ID
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Logistics Company ID:"), gbc);
+        gbc.gridx++;
+        panel.add(shipLogisticsId, gbc);
+
+        // Ship Order Button
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        panel.add(shipOrderBtn, gbc);
 
         return panel;
     }
@@ -820,6 +852,10 @@ public class View extends JFrame {
 
     public void setPaymentBtn(ActionListener listener) {
         paymentBtn.addActionListener(listener);
+    }
+
+    public void setShipOrderBtn(ActionListener listener) {
+        shipOrderBtn.addActionListener(listener);
     }
 
     public Integer getProductId() {
@@ -962,6 +998,14 @@ public class View extends JFrame {
         return paymentAmount.getText();
     }
 
+    public String getShipOrderId() {
+        return shipOrderId.getText();
+    }
+
+    public String getShipLogisticsId() {
+        return shipLogisticsId.getText();
+    }
+
     public void clearFields() {
         productId.setText("");
         productName.setText("");
@@ -1004,6 +1048,9 @@ public class View extends JFrame {
         paymentCustomerId.setText("");
         paymentOrderId.setText("");
         paymentAmount.setText("");
+
+        shipOrderId.setText("");
+        shipLogisticsId.setText("");
     }
 
     public void showMessage(String message) {
