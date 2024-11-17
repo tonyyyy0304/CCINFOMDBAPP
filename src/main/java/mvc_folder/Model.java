@@ -34,6 +34,7 @@ public class Model
             stmt.setInt(4, stock_count);
             stmt.setString(5, category);
             stmt.setString(6, r18_flag);
+            stmt.setDouble(7, price);
 
             return stmt.executeUpdate() > 0; //true if insertion was successful
         }
@@ -196,13 +197,27 @@ public class Model
         }
     }
 
-    public boolean storeExists(int storeId) throws SQLException {
+    public boolean storeExists(String store_name, int contact_id, int location_id) throws SQLException {
+        String sql = "SELECT store_id FROM store WHERE store_name = ? AND contact_id = ? AND location_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, store_name);
+            stmt.setInt(2, contact_id);
+            stmt.setInt(3, location_id);
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
+
+    public boolean storeExists(int store_id) throws SQLException {
         String sql = "SELECT store_id FROM store WHERE store_id = ?";
         try (Connection conn = getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, storeId);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, store_id);
             try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next(); 
+                return rs.next();
             }
         }
     }

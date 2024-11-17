@@ -207,6 +207,10 @@ public class Controller
 
                 try {
                     // Add new store
+                    if(model.storeExists(store_name, store_contactId, store_locationId)){
+                        view.showError("Store already exists.");
+                        return;
+                    }
                     boolean success = model.addStore(store_name, store_contactId, store_locationId);
                     if (success) {
                         view.showSuccess("Store added successfully!");
