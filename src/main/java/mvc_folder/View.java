@@ -88,6 +88,7 @@ public class View extends JFrame {
         JPanel customersPanel = new JPanel(new BorderLayout());
         JTabbedPane customersTabbedPane = new JTabbedPane();
         customersTabbedPane.addTab("Customer Records", customerRecordsPnl());
+        customersTabbedPane.addTab("Stores Customers Bought From", storesCustomersBoughtFromPnl());
         customersTabbedPane.addTab("Add Customer", customerAddPnl());
         customersTabbedPane.addTab("Remove Customer", customerRemovePnl());
         customersPanel.add(customersTabbedPane, BorderLayout.CENTER);
@@ -397,7 +398,6 @@ public class View extends JFrame {
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = setGBC();
 
-        // Example table data
         String[] columnNames = {"Customer ID", "First Name", "Last Name", "Phone Number", "Email Address", "Birthdate", "Address", "Status", "Registration Date"};
         Object[][] data = {};
 
@@ -415,6 +415,34 @@ public class View extends JFrame {
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        panel.add(scrollPane, gbc);
+
+        return panel;
+    }
+
+    public JPanel storesCustomersBoughtFromPnl() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = setGBC();
+
+        String[] columnNames = {"Customer Name", "Store Name"};
+        Object[][] data = {};
+
+        try {
+            data = Model.getStoresCustomersBoughtFrom();
+        } catch (SQLException e) {
+            showError("Failed to retrieve stores customer bought from: " + e.getMessage());
+        }
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.VERTICAL;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         panel.add(scrollPane, gbc);

@@ -267,13 +267,14 @@ public class Model
     }
 
     public static Object[][] getCustomerRecords() throws SQLException {
-        String sql = "SELECT c.customer_id, c.first_name, c.last_name, " +
-                 "ci.phone_number, ci.email_address, c.birthdate, " +
-                 "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
-                 "c.customer_status, c.registration_date " +
-                 "FROM customers c " +
-                 "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
-                 "JOIN locations l ON c.location_id = l.location_id";
+        String sql =
+            "SELECT c.customer_id, c.first_name, c.last_name, " +
+            "ci.phone_number, ci.email_address, c.birthdate, " +
+            "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
+            "c.customer_status, c.registration_date " +
+            "FROM customers c " +
+            "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
+            "JOIN locations l ON c.location_id = l.location_id";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -290,6 +291,30 @@ public class Model
                     rs.getString("address"),
                     rs.getString("customer_status"),
                     rs.getDate("registration_date")
+                });
+            }
+            return records.toArray(new Object[0][]);
+        }
+    }
+
+    public static Object[][] getStoresCustomersBoughtFrom() throws SQLException {
+        String sql = 
+            "SELECT CONCAT(c.first_name, ' ', c.last_name) AS customer_name, " +
+            "GROUP_CONCAT(DISTINCT s.store_name) AS stores_bought_from " +
+            "FROM customers c " +
+            "JOIN orders o ON o.customer_id = c.customer_id " +
+            "JOIN products p ON o.product_id = p.product_id " +
+            "JOIN store s ON p.store_id = s.store_id " +
+            "GROUP BY c.customer_id";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            List<Object[]> records = new ArrayList<>();
+            while (rs.next()) {
+                records.add(new Object[]{
+                    rs.getString("customer_name"),
+                    rs.getString("stores_bought_from")
                 });
             }
             return records.toArray(new Object[0][]);
