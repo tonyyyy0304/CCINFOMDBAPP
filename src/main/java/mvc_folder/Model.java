@@ -11,14 +11,14 @@ public class Model
 {   
     private static final String dbUrl = "jdbc:mysql://localhost:3306/ecommerce_db";
     private static final String userName = "root";
-    private static final String password = "T0r!passmysql";
+    private static final String password = "password";
 
 
     public Model() {
     }
 
     private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:mysql://localhost:3306/ecommerce_db", "root", "T0r!passmysql");
+        return DriverManager.getConnection("jdbc:mysql://localhost:3306/ecommerce_db", "root", "password");
     }
 
 
