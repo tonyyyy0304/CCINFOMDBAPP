@@ -13,7 +13,7 @@ import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.SqlDateModel;
 
 import java.sql.Date;
-
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Properties;
 
@@ -395,6 +395,29 @@ public class View extends JFrame {
 
     public JPanel customerRecordsPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = setGBC();
+
+        // Example table data
+        String[] columnNames = {"Customer ID", "First Name", "Last Name", "Phone Number", "Email Address", "Birthdate", "Address", "Status", "Registration Date"};
+        Object[][] data = {};
+
+        try {
+            data = Model.getCustomerRecords();
+        } catch (SQLException e) {
+            showError("Failed to retrieve customer records: " + e.getMessage());
+        }
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        panel.add(scrollPane, gbc);
 
         return panel;
     }

@@ -5,6 +5,8 @@ import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.sql.ResultSet;
 
 public class Model 
@@ -17,7 +19,7 @@ public class Model
     public Model() {
     }
 
-    private Connection getConnection() throws SQLException {
+    private static Connection getConnection() throws SQLException {
         return DriverManager.getConnection("jdbc:mysql://localhost:3306/ecommerce_db", "root", "password");
     }
 
@@ -261,6 +263,36 @@ public class Model
             try (ResultSet rs = stmt.executeQuery()) {
                 return rs.next();
             }
+        }
+    }
+
+    public static Object[][] getCustomerRecords() throws SQLException {
+        String sql = "SELECT c.customer_id, c.first_name, c.last_name, " +
+                 "ci.phone_number, ci.email_address, c.birthdate, " +
+                 "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
+                 "c.customer_status, c.registration_date " +
+                 "FROM customers c " +
+                 "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
+                 "JOIN locations l ON c.location_id = l.location_id";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            List<Object[]> records = new ArrayList<>();
+            while (rs.next()) {
+                records.add(new Object[]{
+                    rs.getInt("customer_id"),
+                    rs.getString("first_name"),
+                    rs.getString("last_name"),
+                    rs.getString("phone_number"),
+                    rs.getString("email_address"),
+                    rs.getDate("birthdate"),
+                    rs.getString("address"),
+                    rs.getString("customer_status"),
+                    rs.getDate("registration_date")
+                });
+            }
+            return records.toArray(new Object[0][]);
         }
     }
 }
