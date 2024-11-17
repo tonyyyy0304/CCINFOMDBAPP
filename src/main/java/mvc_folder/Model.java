@@ -1,6 +1,7 @@
 package main.java.mvc_folder;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -10,14 +11,14 @@ public class Model
 {   
     private static final String dbUrl = "jdbc:mysql://localhost:3306/ecommerce_db";
     private static final String userName = "root";
-    private static final String password = "password";
+    private static final String password = "T0r!passmysql";
 
 
     public Model() {
     }
 
     private Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:mysql://localhost:3306/ecommerce_db", "root", "password");
+        return DriverManager.getConnection("jdbc:mysql://localhost:3306/ecommerce_db", "root", "T0r!passmysql");
     }
 
 
@@ -122,14 +123,14 @@ public class Model
         }
     }
 
-    public void addContactId(int phone_num, String email) {
+    public void addContactId(long phone_num, String email) {
         try {
             if (!contactExists(phone_num, email)) {
                 String sql = "INSERT INTO contact_information (phone_number, email_address) VALUES (?, ?)";
                 
                 try (Connection conn = getConnection();
                      PreparedStatement stmt = conn.prepareStatement(sql)) {
-                    stmt.setInt(1, phone_num);
+                    stmt.setLong(1, phone_num);
                     stmt.setString(2, email);
     
                     stmt.executeUpdate();
@@ -148,11 +149,11 @@ public class Model
         }
     }
 
-    public boolean contactExists(int phone_num, String email) throws SQLException {
+    public boolean contactExists(long phone_num, String email) throws SQLException {
         String sql = "SELECT contact_id FROM contact_information WHERE phone_number = ? AND email_address = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, phone_num);
+            stmt.setLong(1, phone_num);
             stmt.setString(2, email);
             
             try (ResultSet rs = stmt.executeQuery()) {
@@ -161,11 +162,11 @@ public class Model
         } 
     }
 
-    public int getContactId(int phone_num, String email) throws SQLException {
+    public int getContactId(long phone_num, String email) throws SQLException {
         String sql = "SELECT contact_id FROM contact_information WHERE phone_number = ? AND email_address = ?";
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, phone_num);
+            stmt.setLong(1, phone_num);
             stmt.setString(2, email);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -222,5 +223,35 @@ public class Model
         }
     }
 
+    public boolean addCustomer(String firstName, String lastName, int contactId, int locationId, Date dateOfBirth) {
+        String sql = "INSERT INTO customers (first_name, last_name, contact_id, location_id, birthdate) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, firstName);
+            stmt.setString(2, lastName);
+            stmt.setInt(3, contactId);
+            stmt.setInt(4, locationId);
+            stmt.setDate(5, dateOfBirth);
 
+            stmt.executeUpdate();
+
+            return true;
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return false;
+        }
+    }
+
+    public boolean customerExists(int customerId) throws SQLException {
+        String sql = "SELECT customer_id FROM customer WHERE customer_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, customerId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next();
+            }
+        }
+    }
 }

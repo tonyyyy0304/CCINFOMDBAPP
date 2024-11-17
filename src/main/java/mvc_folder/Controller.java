@@ -3,6 +3,7 @@ package main.java.mvc_folder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -224,6 +225,140 @@ public class Controller
             }
         });
 
-        
+        this.view.setCustomerAddBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String customer_first_name = view.getCustomerFirstName();
+                String customer_last_name = view.getCustomerLastName();
+                String customer_contact_num = view.getCustomerPhoneNumber();
+                String customer_email_add = view.getCustomerEmailAddress();
+                String customer_lot_num = view.getCustomerLotNum();
+                String customer_street_name = view.getCustomerStreetName();
+                String customer_city_name = view.getCustomerCityName();
+                String customer_zipcode = view.getCustomerZipCode();
+                String customer_country_name = view.getCustomerCountry();
+                Date given_customer_birthdate = view.getCustomerBirthdate();
+    
+                if (customer_first_name.isEmpty() || customer_last_name.isEmpty() ||
+                    customer_contact_num.isEmpty() || customer_email_add.isEmpty() || 
+                    customer_lot_num.isEmpty() || customer_street_name.isEmpty() || 
+                    customer_city_name.isEmpty() || customer_country_name.isEmpty())
+                {
+                    view.showMessage("Please fill in all required fields.");
+                    return;
+                }
+    
+                try {
+                    int lot_num = Integer.parseInt(customer_lot_num);
+                    if (lot_num < 0) {
+                        view.showMessage("Lot number cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Lot number must be a valid number.");
+                    return;
+                }
+                long phone_num = 0;
+                try {
+                    phone_num = Long.parseLong(customer_contact_num);
+                    if (phone_num < 0) {
+                        view.showMessage("Phone number cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Phone number must be a valid number.");
+                    return;
+                }
+                try {
+                    int zipcode = Integer.parseInt(customer_zipcode);
+                    if (zipcode < 0) {
+                        view.showMessage("Zipcode cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Zipcode must be a valid number.");
+                    return;
+                }
+    
+                try {
+                    // Add new location
+                    if (!model.locationExists(Integer.parseInt(customer_lot_num), 
+                                            customer_street_name, customer_city_name, 
+                                            customer_country_name, Integer.parseInt(customer_zipcode))) 
+                    {
+                        model.addLocationId(Integer.parseInt(customer_lot_num), 
+                                            customer_street_name, customer_city_name, 
+                                            customer_country_name, Integer.parseInt(customer_zipcode));
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+    
+                int customer_locationId = 0;
+                try {
+                    customer_locationId = model.getLocationId(Integer.parseInt(customer_lot_num), 
+                                                                            customer_street_name, 
+                                                                            customer_city_name, 
+                                                                            customer_country_name, 
+                                                                            Integer.parseInt(customer_zipcode));
+                    
+                    System.out.println("Retrieved Location ID: " + customer_locationId);
+                } catch(SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+    
+                try {
+                    if (!model.contactExists(phone_num, customer_email_add)) {
+                        model.addContactId(phone_num, customer_email_add);
+                        System.out.println("added");
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+    
+                int customer_contactId = 0;
+                try {
+                    customer_contactId = model.getContactId(phone_num, customer_email_add);
+                    System.out.println("Retrieved Contact ID: " + customer_contactId);
+                } catch(SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+
+                if (given_customer_birthdate == null) {
+                    view.showMessage("Please enter a valid birthdate.");
+                    return;
+                }
+
+                Date currentDate = new Date(System.currentTimeMillis());
+                if (given_customer_birthdate.after(currentDate)) {
+                    view.showMessage("Birthdate cannot be in the future.");
+                    return;
+                }
+
+                Date customer_birthdate = given_customer_birthdate;
+    
+                try {
+                    // Add new customer
+                    boolean success = model.addCustomer(customer_first_name, customer_last_name, 
+                                                        customer_contactId, customer_locationId,
+                                                        customer_birthdate);
+                    if (success) {
+                        view.showSuccess("Customer added successfully!");
+                    } else {
+                        view.showError("Failed to add the customer.");
+                    }
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
     }
 }

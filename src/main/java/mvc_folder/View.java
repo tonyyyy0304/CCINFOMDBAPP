@@ -12,6 +12,8 @@ import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.SqlDateModel;
 
+import java.sql.Date;
+
 import java.util.Calendar;
 import java.util.Properties;
 
@@ -31,6 +33,7 @@ public class View extends JFrame {
                 customerPhoneNumber, customerEmailAddress, 
                 customerLotNum, customerStreetName, customerCityName, 
                 customerZipCode, customerCountry;
+    private JDatePickerImpl customerBirthdate;
 
     // Stores Table
     private JTextField storeId, storeName, 
@@ -231,7 +234,7 @@ public class View extends JFrame {
         p.put("text.month", "Month");
         p.put("text.year", "Year");
         JDatePanelImpl datePanel = new JDatePanelImpl(model, p);
-        JDatePickerImpl datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
+        customerBirthdate = new JDatePickerImpl(datePanel, new DateLabelFormatter());
 
         GridBagConstraints gbc = setGBC();
 
@@ -296,8 +299,9 @@ public class View extends JFrame {
         gbc.gridx = 0;
         gbc.gridy++;
         panel.add(new JLabel("Birthdate:"), gbc);
+        gbc.gridwidth = 2;
         gbc.gridx++;
-        panel.add(datePicker, gbc);
+        panel.add(customerBirthdate, gbc);
 
         // Add Customer Button
         gbc.gridwidth = 4;
@@ -525,6 +529,46 @@ public class View extends JFrame {
     public String getStoreCountry() {
         return storeCountry.getText();
     }
+
+    public String getCustomerFirstName() {
+        return customerFirstName.getText();
+    }
+
+    public String getCustomerLastName() {
+        return customerLastName.getText();
+    }
+
+    public String getCustomerPhoneNumber() {
+        return customerPhoneNumber.getText();
+    }
+
+    public String getCustomerEmailAddress() {
+        return customerEmailAddress.getText();
+    }
+
+    public String getCustomerLotNum() {
+        return customerLotNum.getText();
+    }
+
+    public String getCustomerStreetName() {
+        return customerStreetName.getText();
+    }
+
+    public String getCustomerCityName() {
+        return customerCityName.getText();
+    }
+
+    public String getCustomerZipCode() {
+        return customerZipCode.getText();
+    }
+
+    public String getCustomerCountry() {
+        return customerCountry.getText();
+    }
+
+    public Date getCustomerBirthdate() {
+        return (Date) customerBirthdate.getModel().getValue();
+    }    
 
     public void clearFields() {
         productId.setText("");
