@@ -21,7 +21,8 @@ import java.util.Properties;
 public class View extends JFrame {
     private final int COLUMN_WIDTH = 10;
 
-    private JPanel mainPanel;
+    private JPanel mainPanel, customerRecordsPanel, storesCustomersBoughtFromPnl, 
+    productRecordsPanel, storeRecordsPanel, logisticsPanel;
     
     //Products Table
     private JTextField productId, productName, productPrice,
@@ -115,8 +116,10 @@ public class View extends JFrame {
         // Transactions Panel
         JPanel transactionsPanel = new JPanel(new BorderLayout());
         JTabbedPane transactionsTabbedPane = new JTabbedPane();
-        // TODO: Add transactions panels
         transactionsTabbedPane.addTab("Place Order", placeOrderPnl());
+        transactionsTabbedPane.addTab("Adjust Stock", adjustStockPnl());
+        transactionsTabbedPane.addTab("Pay for Order", paymentsPnl());
+        transactionsTabbedPane.addTab("Ship Order", shipOrderPnl());
         transactionsPanel.add(transactionsTabbedPane, BorderLayout.CENTER);
 
         // Reports Panel
@@ -144,7 +147,7 @@ public class View extends JFrame {
         return gbc;
     }
 
-    public JPanel productAddPnl() {
+    private JPanel productAddPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
         
         productName = new JTextField(COLUMN_WIDTH);
@@ -235,7 +238,7 @@ public class View extends JFrame {
         return panel;
     }
 
-    public JPanel productRemovePnl() {
+    private JPanel productRemovePnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
         productId = new JTextField(COLUMN_WIDTH);
@@ -263,10 +266,13 @@ public class View extends JFrame {
         return panel;
     }
 
-    public JPanel productRecordsPnl() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = setGBC();
+    private JPanel productRecordsPnl() {
+        productRecordsPanel = new JPanel(new GridBagLayout());
+        refreshProductRecords();
+        return productRecordsPanel;
+    }
 
+    public void refreshProductRecords() {
         String[] columnNames = {"Product ID", "Product Name", "Price", "Store Name", "Stock Count", "Description", "Category", "R18"};
         Object[][] data = {};
 
@@ -282,18 +288,20 @@ public class View extends JFrame {
 
         adjustColumnWidths(table);
 
+        productRecordsPanel.removeAll();
+        GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
-        panel.add(scrollPane, gbc);
-
-        return panel;
+        productRecordsPanel.add(scrollPane, gbc);
+        productRecordsPanel.revalidate();
+        productRecordsPanel.repaint();
     }
 
-    public JPanel customerAddPnl() {
+    private JPanel customerAddPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
         customerFirstName = new JTextField(COLUMN_WIDTH);
@@ -393,7 +401,7 @@ public class View extends JFrame {
         return panel;
     }
 
-    public JPanel customerRemovePnl() {
+    private JPanel customerRemovePnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
         customerId = new JTextField();
@@ -419,10 +427,13 @@ public class View extends JFrame {
         return panel;
     }
 
-    public JPanel customerRecordsPnl() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = setGBC();
+    private JPanel customerRecordsPnl() {
+        customerRecordsPanel = new JPanel(new GridBagLayout());
+        refreshCustomerRecords();
+        return customerRecordsPanel;
+    }
 
+    public void refreshCustomerRecords() {
         String[] columnNames = {"Customer ID", "First Name", "Last Name", "Phone Number", "Email Address", "Birthdate", "Address", "Status", "Registration Date"};
         Object[][] data = {};
 
@@ -438,21 +449,26 @@ public class View extends JFrame {
 
         adjustColumnWidths(table);
 
+        customerRecordsPanel.removeAll();
+        GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
-        panel.add(scrollPane, gbc);
-
-        return panel;
+        customerRecordsPanel.add(scrollPane, gbc);
+        customerRecordsPanel.revalidate();
+        customerRecordsPanel.repaint();
     }
 
-    public JPanel storesCustomersBoughtFromPnl() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = setGBC();
+    private JPanel storesCustomersBoughtFromPnl() {
+        storesCustomersBoughtFromPnl = new JPanel(new GridBagLayout());
+        refreshStoresCustomerBoughtFrom();
+        return storesCustomersBoughtFromPnl;
+    }
 
+    public void refreshStoresCustomerBoughtFrom() {
         String[] columnNames = {"Customer Name", "Store Name"};
         Object[][] data = {};
 
@@ -468,6 +484,8 @@ public class View extends JFrame {
 
         adjustColumnWidths(table);
 
+        storesCustomersBoughtFromPnl.removeAll();
+        GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -475,12 +493,12 @@ public class View extends JFrame {
         gbc.anchor = GridBagConstraints.NORTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
-        panel.add(scrollPane, gbc);
-
-        return panel;
+        storesCustomersBoughtFromPnl.add(scrollPane, gbc);
+        storesCustomersBoughtFromPnl.revalidate();
+        storesCustomersBoughtFromPnl.repaint();
     }
 
-    public JPanel storeAddPnl() {
+    private JPanel storeAddPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
         storeName = new JTextField(COLUMN_WIDTH);
@@ -558,7 +576,7 @@ public class View extends JFrame {
         return panel;
     }
 
-    public JPanel storeRemovePnl() {
+    private JPanel storeRemovePnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
         storeId = new JTextField(COLUMN_WIDTH);
@@ -584,43 +602,61 @@ public class View extends JFrame {
         return panel;
     }
 
-    public JPanel storeRecordsPnl() {
+    private JPanel storeRecordsPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
         return panel;
     }
 
-    public JPanel logisticsPnl() {
+    private JPanel logisticsPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
         return panel;
     }
 
-    public JPanel placeOrderPnl() {
+    private JPanel placeOrderPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
         return panel;
     }
 
-    public JPanel customerStatsPnl() {
+    private JPanel adjustStockPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
         return panel;
     }
 
-    public JPanel productSalesPnl() {
+    private JPanel paymentsPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
         return panel;
     }
 
-    public JPanel securityReportsPnl() {
+    private JPanel shipOrderPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
         return panel;
     }
 
-    public JPanel affinityPnl() {
+    private JPanel customerStatsPnl() {
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        return panel;
+    }
+
+    private JPanel productSalesPnl() {
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        return panel;
+    }
+
+    private JPanel securityReportsPnl() {
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        return panel;
+    }
+
+    private JPanel affinityPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
         return panel;
@@ -687,7 +723,7 @@ public class View extends JFrame {
     }
 
     public String getSelectedProductCategory() {
-        return (String) productCategories.getSelectedItem();
+        return productCategories.getSelectedItem().toString();
     }
 
     public boolean isProductR18() {

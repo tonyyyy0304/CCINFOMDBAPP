@@ -82,6 +82,7 @@ public class Controller
                 {
                     view.showSuccess("Product added successfully!");
                     view.clearFields();
+                    view.refreshProductRecords();
                 } else {
                     view.showError("Failed to add the product.");
                 }
@@ -350,11 +351,11 @@ public class Controller
                 try {
                     // Add new customer
                     boolean success = model.addCustomer(customer_first_name, customer_last_name, 
-                                                        customer_contactId, customer_locationId,
-                                                        customer_birthdate);
+                                customer_contactId, customer_locationId, customer_birthdate);
                     if (success) {
                         view.showSuccess("Customer added successfully!");
                         view.clearFields();
+                        view.refreshCustomerRecords();
                     } else {
                         view.showError("Failed to add the customer.");
                     }
@@ -373,6 +374,7 @@ public class Controller
                     if (success) {
                         view.showSuccess("Customer removed successfully!");
                         view.clearFields();
+                        view.refreshCustomerRecords();
                     } else {
                         view.showError("Failed to remove the customer. Customer ID may not exist.");
                     }
