@@ -48,7 +48,7 @@ public class View extends JFrame {
 
     public View() {
         // Set up the frame
-        setTitle("Swing Application");
+        setTitle("Online Shoppping System");
         setResizable(false);
         setSize(1500,800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -70,17 +70,39 @@ public class View extends JFrame {
         storeAddBtn = new JButton("Add Store");
         storeRemoveBtn = new JButton("Remove Store");
 
-        JTabbedPane tabbedPane = new JTabbedPane();
+        JTabbedPane mainTabbedPane = new JTabbedPane();
 
-        // Add tabs
-        tabbedPane.addTab("Add Product", productAddPnl());
-        tabbedPane.addTab("Remove Product", productRemovePnl());
-        tabbedPane.addTab("Add Customer", customerAddPnl());
-        tabbedPane.addTab("Remove Customer", customerRemovePnl());
-        tabbedPane.addTab("Add Store", storeAddPnl());
-        tabbedPane.addTab("Remove Store", storeRemovePnl());
+        // Records Management Panel
+        JPanel recordsManagementPanel = new JPanel(new BorderLayout());
+        JTabbedPane recordsManagementTabbedPane = new JTabbedPane();
+        recordsManagementTabbedPane.addTab("Add Product", productAddPnl());
+        recordsManagementTabbedPane.addTab("Remove Product", productRemovePnl());
+        recordsManagementTabbedPane.addTab("Add Customer", customerAddPnl());
+        recordsManagementTabbedPane.addTab("Remove Customer", customerRemovePnl());
+        recordsManagementTabbedPane.addTab("Add Store", storeAddPnl());
+        recordsManagementTabbedPane.addTab("Remove Store", storeRemovePnl());
+        recordsManagementPanel.add(recordsManagementTabbedPane, BorderLayout.CENTER);
 
-        mainPanel.add(tabbedPane, BorderLayout.CENTER);
+        // Transactions Panel
+        JPanel transactionsPanel = new JPanel(new BorderLayout());
+        JTabbedPane transactionsTabbedPane = new JTabbedPane();
+        // TODO: Add transactions panels
+        transactionsTabbedPane.addTab("Place Order", placeOrderPnl());
+        transactionsPanel.add(transactionsTabbedPane, BorderLayout.CENTER);
+
+        // Reports Panel
+        JPanel reportsPanel = new JPanel(new BorderLayout());
+        JTabbedPane reportsTabbedPane = new JTabbedPane();
+        reportsTabbedPane.addTab("Customer Statistics", customerStatsPnl());
+        reportsTabbedPane.addTab("Product Sales", productSalesPnl());
+        reportsTabbedPane.addTab("Security Reports", securityReportsPnl());
+        reportsTabbedPane.addTab("Affinity of Customer to Store", affinityPnl());
+        reportsPanel.add(reportsTabbedPane, BorderLayout.CENTER);
+
+        mainTabbedPane.addTab("Records Management", recordsManagementPanel);
+        mainTabbedPane.addTab("Transactions", transactionsPanel);
+        mainTabbedPane.addTab("Reports", reportsPanel);
+        mainPanel.add(mainTabbedPane, BorderLayout.CENTER);
     }
 
     private GridBagConstraints setGBC() {
@@ -442,6 +464,36 @@ public class View extends JFrame {
         return panel;
     }
 
+    public JPanel placeOrderPnl() {
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        return panel;
+    }
+
+    public JPanel customerStatsPnl() {
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        return panel;
+    }
+
+    public JPanel productSalesPnl() {
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        return panel;
+    }
+
+    public JPanel securityReportsPnl() {
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        return panel;
+    }
+
+    public JPanel affinityPnl() {
+        JPanel panel = new JPanel(new GridBagLayout());
+
+        return panel;
+    }
+    
     public void setProductRemoveBtn(ActionListener listener) {
         productRemoveBtn.addActionListener(listener);
     }
