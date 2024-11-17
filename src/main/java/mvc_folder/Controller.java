@@ -9,19 +9,19 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 
-public class Controller 
+public class Controller
 {
     private Model model;
     private View view;
 
-    public Controller(Model model, View view) 
+    public Controller(Model model, View view)
     {
         this.model = model;
         this.view = view;
 
         listeners();
     }
-    
+
     public void listeners(){
         this.view.setProductAddBtn(new ActionListener(){
             @Override
@@ -33,67 +33,67 @@ public class Controller
                 Integer product_stock_count = view.getStockCount();
                 String product_category = view.getSelectedProductCategory();
                 boolean product_r18 = view.isProductR18();
-            
-            if (product_price.isEmpty() || product_name.isEmpty() || product_store_id.isEmpty() || 
-                product_stock_count <= 0 || product_category.isEmpty()) 
-            {
-                view.showMessage("Please fill in all required fields.");
-                return;
-            }
 
-            double price = 0;
-            try 
-            {
-                price = Double.parseDouble(product_price);
-                if (price < 0) 
+                if (product_price.isEmpty() || product_name.isEmpty() || product_store_id.isEmpty() ||
+                        product_stock_count <= 0 || product_category.isEmpty())
                 {
-                    view.showMessage("Price cannot be negative.");
+                    view.showMessage("Please fill in all required fields.");
                     return;
                 }
-            } catch (NumberFormatException ex) {
-                view.showError("Price must be a valid number.");
-                return;
-            }
 
-            try 
-            {
-                int storeId = Integer.parseInt(product_store_id);
-                if (storeId < 0) 
+                double price = 0;
+                try
                 {
-                    view.showMessage("Store ID cannot be negative.");
+                    price = Double.parseDouble(product_price);
+                    if (price < 0)
+                    {
+                        view.showMessage("Price cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Price must be a valid number.");
                     return;
                 }
-    
-                String r18 = product_r18 ? "T" : "F";
-                
-                // Check if store exists
-                if (!model.storeExists(storeId)) 
+
+                try
                 {
-                    view.showError("Store ID does not exist.");
-                    return;
+                    int storeId = Integer.parseInt(product_store_id);
+                    if (storeId < 0)
+                    {
+                        view.showMessage("Store ID cannot be negative.");
+                        return;
+                    }
+
+                    String r18 = product_r18 ? "T" : "F";
+
+                    // Check if store exists
+                    if (!model.storeExists(storeId))
+                    {
+                        view.showError("Store ID does not exist.");
+                        return;
+                    }
+
+                    // Add new product
+                    boolean success = model.addProduct(product_name, product_desc,
+                            storeId, product_stock_count,
+                            product_category, r18, price);
+
+                    if (success)
+                    {
+                        view.showSuccess("Product added successfully!");
+                        view.clearFields();
+                        view.refreshProductRecords();
+                    } else {
+                        view.showError("Failed to add the product.");
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Store ID must be a valid number.");
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
                 }
-    
-                // Add new product
-                boolean success = model.addProduct(product_name, product_desc, 
-                                                    storeId, product_stock_count, 
-                                                    product_category, r18, price);
-                
-                if (success) 
-                {
-                    view.showSuccess("Product added successfully!");
-                    view.clearFields();
-                    view.refreshProductRecords();
-                } else {
-                    view.showError("Failed to add the product.");
-                }
-            } catch (NumberFormatException ex) {
-                view.showError("Store ID must be a valid number.");
-            } catch (SQLException ex) {
-                view.showError("Database error: " + ex.getMessage());
-            } catch (Exception ex) {
-                view.showError("An unexpected error occurred: " + ex.getMessage());
             }
-        }
         });
 
         this.view.setProductRemoveBtn(new ActionListener(){
@@ -115,15 +115,15 @@ public class Controller
                 String store_country_name = view.getStoreCountry()  ;
                 String store_zipcode = view.getStoreZipCode();
 
-                if (store_name.isEmpty() || store_contact_num.isEmpty() || 
-                    store_email_add.isEmpty() || store_lot_num.isEmpty() || 
-                    store_street_name.isEmpty() || store_city_name.isEmpty() || 
-                    store_country_name.isEmpty()) 
-                {    
+                if (store_name.isEmpty() || store_contact_num.isEmpty() ||
+                        store_email_add.isEmpty() || store_lot_num.isEmpty() ||
+                        store_street_name.isEmpty() || store_city_name.isEmpty() ||
+                        store_country_name.isEmpty())
+                {
                     view.showMessage("Please fill in all required fields.");
                     return;
                 }
-                
+
                 try{
                     int lot_num = Integer.parseInt(store_lot_num);
                     if (lot_num < 0) {
@@ -158,13 +158,13 @@ public class Controller
 
                 try {
                     // Add new location
-                    if(!model.locationExists(Integer.parseInt(store_lot_num), 
-                                            store_street_name, store_city_name, 
-                                            store_country_name, Integer.parseInt(store_zipcode)))
+                    if(!model.locationExists(Integer.parseInt(store_lot_num),
+                            store_street_name, store_city_name,
+                            store_country_name, Integer.parseInt(store_zipcode)))
                     {
-                        model.addLocationId(Integer.parseInt(store_lot_num), 
-                                            store_street_name, store_city_name, 
-                                            store_country_name, Integer.parseInt(store_zipcode));
+                        model.addLocationId(Integer.parseInt(store_lot_num),
+                                store_street_name, store_city_name,
+                                store_country_name, Integer.parseInt(store_zipcode));
                     }
                 } catch (SQLException ex) {
                     view.showError("Database error: " + ex.getMessage());
@@ -174,12 +174,12 @@ public class Controller
 
                 int store_locationId = 0;
                 try {
-                    store_locationId = model.getLocationId(Integer.parseInt(store_lot_num), 
-                                                                            store_street_name, 
-                                                                            store_city_name, 
-                                                                            store_country_name, 
-                                                                            Integer.parseInt(store_zipcode));
-                    
+                    store_locationId = model.getLocationId(Integer.parseInt(store_lot_num),
+                            store_street_name,
+                            store_city_name,
+                            store_country_name,
+                            Integer.parseInt(store_zipcode));
+
                     System.out.println("Retrieved Location   ID: " + store_locationId);
                 } catch(SQLException ex) {
                     view.showError("Database error: " + ex.getMessage());
@@ -197,7 +197,7 @@ public class Controller
                 } catch (Exception ex) {
                     view.showError("An unexpected error occurred: " + ex.getMessage());
                 }
-                
+
                 int store_contactId = 0;
                 try{
                     store_contactId = model.getContactId(phone_num, store_email_add);
@@ -224,7 +224,7 @@ public class Controller
                 } catch (Exception ex) {
                     view.showError("An unexpected error occurred: " + ex.getMessage());
                 }
-        
+
             }
         });
 
@@ -241,16 +241,16 @@ public class Controller
                 String customer_zipcode = view.getCustomerZipCode();
                 String customer_country_name = view.getCustomerCountry();
                 Date given_customer_birthdate = view.getCustomerBirthdate();
-    
+
                 if (customer_first_name.isEmpty() || customer_last_name.isEmpty() ||
-                    customer_contact_num.isEmpty() || customer_email_add.isEmpty() || 
-                    customer_lot_num.isEmpty() || customer_street_name.isEmpty() || 
-                    customer_city_name.isEmpty() || customer_country_name.isEmpty())
+                        customer_contact_num.isEmpty() || customer_email_add.isEmpty() ||
+                        customer_lot_num.isEmpty() || customer_street_name.isEmpty() ||
+                        customer_city_name.isEmpty() || customer_country_name.isEmpty())
                 {
                     view.showMessage("Please fill in all required fields.");
                     return;
                 }
-    
+
                 try {
                     int lot_num = Integer.parseInt(customer_lot_num);
                     if (lot_num < 0) {
@@ -282,38 +282,38 @@ public class Controller
                     view.showError("Zipcode must be a valid number.");
                     return;
                 }
-    
+
                 try {
                     // Add new location
-                    if (!model.locationExists(Integer.parseInt(customer_lot_num), 
-                                            customer_street_name, customer_city_name, 
-                                            customer_country_name, Integer.parseInt(customer_zipcode))) 
+                    if (!model.locationExists(Integer.parseInt(customer_lot_num),
+                            customer_street_name, customer_city_name,
+                            customer_country_name, Integer.parseInt(customer_zipcode)))
                     {
-                        model.addLocationId(Integer.parseInt(customer_lot_num), 
-                                            customer_street_name, customer_city_name, 
-                                            customer_country_name, Integer.parseInt(customer_zipcode));
+                        model.addLocationId(Integer.parseInt(customer_lot_num),
+                                customer_street_name, customer_city_name,
+                                customer_country_name, Integer.parseInt(customer_zipcode));
                     }
                 } catch (SQLException ex) {
                     view.showError("Database error: " + ex.getMessage());
                 } catch (Exception ex) {
                     view.showError("An unexpected error occurred: " + ex.getMessage());
                 }
-    
+
                 int customer_locationId = 0;
                 try {
-                    customer_locationId = model.getLocationId(Integer.parseInt(customer_lot_num), 
-                                                                            customer_street_name, 
-                                                                            customer_city_name, 
-                                                                            customer_country_name, 
-                                                                            Integer.parseInt(customer_zipcode));
-                    
+                    customer_locationId = model.getLocationId(Integer.parseInt(customer_lot_num),
+                            customer_street_name,
+                            customer_city_name,
+                            customer_country_name,
+                            Integer.parseInt(customer_zipcode));
+
                     System.out.println("Retrieved Location ID: " + customer_locationId);
                 } catch(SQLException ex) {
                     view.showError("Database error: " + ex.getMessage());
                 } catch (Exception ex) {
                     view.showError("An unexpected error occurred: " + ex.getMessage());
                 }
-    
+
                 try {
                     if (!model.contactExists(phone_num, customer_email_add)) {
                         model.addContactId(phone_num, customer_email_add);
@@ -324,7 +324,7 @@ public class Controller
                 } catch (Exception ex) {
                     view.showError("An unexpected error occurred: " + ex.getMessage());
                 }
-    
+
                 int customer_contactId = 0;
                 try {
                     customer_contactId = model.getContactId(phone_num, customer_email_add);
@@ -347,11 +347,11 @@ public class Controller
                 }
 
                 Date customer_birthdate = given_customer_birthdate;
-    
+
                 try {
                     // Add new customer
-                    boolean success = model.addCustomer(customer_first_name, customer_last_name, 
-                                customer_contactId, customer_locationId, customer_birthdate);
+                    boolean success = model.addCustomer(customer_first_name, customer_last_name,
+                            customer_contactId, customer_locationId, customer_birthdate);
                     if (success) {
                         view.showSuccess("Customer added successfully!");
                         view.clearFields();
@@ -364,7 +364,7 @@ public class Controller
                 }
             }
         });
-        
+
         this.view.setCustomerRemoveBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -387,5 +387,189 @@ public class Controller
                 }
             }
         });
+
+        this.view.setAdjustStockBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    // Retrieve the inputs from the view
+                    String productIDInput = view.getAdjustStockProductId(); // Assuming this method exists
+                    String amountInput = view.getAdjustStockQuantity(); // Method to get the stock amount
+
+                    // Validate and parse the product ID
+                    int productID;
+                    try {
+                        productID = Integer.parseInt(productIDInput);
+                    } catch (NumberFormatException ex) {
+                        view.showError("Product ID must be a valid number.");
+                        return; // Exit early if product ID is invalid
+                    }
+
+                    // Check if the product exists
+                    if (!model.productExists(productID)) {
+                        view.showError("Product with ID " + productID + " does not exist.");
+                        return; // Exit early if product does not exist
+                    }
+
+                    // Validate and parse the amount
+                    int amount;
+                    try {
+                        amount = Integer.parseInt(amountInput);
+                    } catch (NumberFormatException ex) {
+                        view.showError("Amount must be a valid number.");
+                        return; // Exit early if amount is invalid
+                    }
+
+                    // Get the current stock for the product
+                    int currentStock = model.getCurrentStock(productID);
+
+                    // Check if the amount to remove is valid
+                    if (amount > currentStock) {
+                        view.showError("Cannot remove more stock than available. Current stock: " + currentStock);
+                        return; // Exit early if attempting to remove too much stock
+                    }
+
+                    // Adjust the stock in the model
+                    boolean success = model.adjustStock(productID, amount);
+                    if (success) {
+                        view.showSuccess("Amount changed successfully!");
+                        view.clearFields();
+                        view.refreshProductRecords();
+                    } else {
+                        view.showError("Failed to adjust stock.");
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+        this.view.setPlaceOrderBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    // Retrieve and validate inputs
+                    int customerId = Integer.parseInt(view.getOrderCustomerId());
+                    int productId = Integer.parseInt(view.getOrderProductId());
+                    int quantity = Integer.parseInt(view.getOrderQuantity());
+
+                    // Check if customer exists
+                    if (!model.customerExists(customerId)) {
+                        view.showError("Customer with ID " + customerId + " does not exist.");
+                        return; // Exit early if customer does not exist
+                    }
+
+                    // Check if product exists
+                    if (!model.productExists(productId)) {
+                        view.showError("Product with ID " + productId + " does not exist.");
+                        return; // Exit early if product does not exist
+                    }
+
+                    // Call the model to place the order
+                    boolean success = model.placeOrder(customerId, productId, quantity);
+                    if (success) {
+                        view.showSuccess("Order placed successfully!");
+                        view.clearFields(); // Clear fields after success
+                    } else {
+                        view.showError("Failed to place order. Please check the stock availability.");
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Please enter valid numbers for Customer ID, Product ID, and Quantity.");
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+        this.view.setPaymentBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    // Retrieve and validate inputs
+                    int customerId = Integer.parseInt(view.getPaymentCustomerId());
+                    int orderId = Integer.parseInt(view.getPaymentOrderId());
+                    double paymentAmount = Double.parseDouble(view.getPaymentAmount());
+
+                    // Call the model to process the payment
+                    boolean success = model.payForOrder(customerId, orderId, paymentAmount);
+                    if (success) {
+                        view.showSuccess("Payment processed successfully!");
+                        view.clearFields(); // Clear fields after success
+                    } else {
+                        view.showError("Payment failed. Please check if the Customer ID and Order ID are valid and if the payment amount is sufficient.");
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Please enter valid numbers for Customer ID, Order ID, and Payment Amount.");
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+        this.view.setShipOrderBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    // Retrieve and validate inputs
+                    int orderId = Integer.parseInt(view.getShipOrderId());
+                    int logisticsCompanyId = Integer.parseInt(view.getShipLogisticsId());
+
+                    // Call the model to process the shipping
+                    boolean success = model.shipOrder(orderId, logisticsCompanyId);
+                    if (success) {
+                        view.showSuccess("Order shipped successfully!");
+                        view.clearFields(); // Clear fields after success
+                    } else {
+                        view.showError("Shipping failed. Please check if the Order ID and Logistics Company ID are valid.");
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Please enter valid numbers for Order ID and Logistics Company ID.");
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+        this.view.setLogisticsAddBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Retrieve input fields from the view
+                String companyName = view.getLogisticsCompanyName();
+                String companyLocation = view.getLogisticsCompanyLocation();
+
+                // Validate input fields
+                if (companyName.isEmpty() || companyLocation.isEmpty()) {
+                    view.showMessage("Please fill in all required fields.");
+                    return;
+                }
+
+                // You can add more validation here if needed (e.g., check for specific formats)
+
+                try {
+                    // Call the model to add the logistics company
+                    boolean success = model.addLogisticsCompany(companyName, companyLocation);
+
+                    if (success) {
+                        view.showSuccess("Logistics company added successfully!");
+                        view.clearFields(); // Clear fields after success
+                    } else {
+                        view.showError("Failed to add the logistics company.");
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
     }
 }
