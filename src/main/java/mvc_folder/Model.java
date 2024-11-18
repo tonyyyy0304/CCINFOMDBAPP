@@ -355,6 +355,35 @@ public class Model
         }
     }
 
+    public static Object[][] getCustomerStats() throws SQLException {
+        // TODO: Implement this method
+
+
+        return new Object[0][]; // Placeholder
+    }
+
+    public static Object[][] getProductSales() throws SQLException {
+        // TODO: Implement this method
+
+
+        return new Object[0][]; // Placeholder
+    }
+
+    public static Object[][] getShippingReports() throws SQLException {
+        // TODO: Implement this method
+
+
+        return new Object[0][]; // Placeholder
+    }
+
+    public static Object[][] getAffinity() throws SQLException {
+        // TODO: Implement this method
+
+
+        return new Object[0][]; // Placeholder
+    }
+
+
     public boolean adjustStock(int productId, int newStockCount) {
         String sql = "UPDATE products SET stock_count = ? WHERE product_id = ?";
         try (Connection conn = getConnection();

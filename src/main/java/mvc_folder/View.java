@@ -22,7 +22,8 @@ public class View extends JFrame {
     private final int COLUMN_WIDTH = 10;
 
     private JPanel mainPanel, customerRecordsPanel, storesCustomersBoughtFromPnl,
-            productRecordsPanel, storeRecordsPanel;
+            productRecordsPanel, storeRecordsPanel, logisticsRecordsPanel,
+            customerStatsPanel, productSalesPanel, shippingReportsPanel, affinityPanel;
 
     //Products Table
     private JTextField productId, productName, productPrice,
@@ -157,7 +158,7 @@ public class View extends JFrame {
         JTabbedPane reportsTabbedPane = new JTabbedPane();
         reportsTabbedPane.addTab("Customer Statistics", customerStatsPnl());
         reportsTabbedPane.addTab("Product Sales", productSalesPnl());
-        reportsTabbedPane.addTab("Security Reports", securityReportsPnl());
+        reportsTabbedPane.addTab("Shipping Reports", shippingReportsPnl());
         reportsTabbedPane.addTab("Affinity of Customer to Store", affinityPnl());
         reportsPanel.add(reportsTabbedPane, BorderLayout.CENTER);
 
@@ -872,27 +873,146 @@ public class View extends JFrame {
     }
 
     private JPanel customerStatsPnl() {
-        JPanel panel = new JPanel(new GridBagLayout());
+        customerStatsPanel = new JPanel(new GridBagLayout());
+        refreshCustomerStatsPnl();
+        return customerStatsPanel;
+    }
 
-        return panel;
+    public void refreshCustomerStatsPnl() {
+        String[] columnNames = {"Customer ID", "Customer Name", "Number of Orders Per Month", "Amount Spent Per Month"};
+        Object[][] data = {};
+
+        try {
+            data = Model.getCustomerStats();
+        } catch (SQLException e) {
+            showError("Failed to retrieve customer stats: " + e.getMessage());
+        }
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+
+        customerStatsPanel.removeAll();
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        customerStatsPanel.add(scrollPane, gbc);
+        customerStatsPanel.revalidate();
+        customerStatsPanel.repaint();
     }
 
     private JPanel productSalesPnl() {
-        JPanel panel = new JPanel(new GridBagLayout());
-
-        return panel;
+        productSalesPanel = new JPanel(new GridBagLayout());
+        refreshProductSalesPnl();
+        return productSalesPanel;
     }
 
-    private JPanel securityReportsPnl() {
-        JPanel panel = new JPanel(new GridBagLayout());
+    public void refreshProductSalesPnl() {
+        String[] columnNames = {"Category", "Total Sales Per Month"};
+        Object[][] data = {};
 
-        return panel;
+        try {
+            data = Model.getProductSales();
+        } catch (SQLException e) {
+            showError("Failed to retrieve product sales: " + e.getMessage());
+        }
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+
+        productSalesPanel.removeAll();
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        productSalesPanel.add(scrollPane, gbc);
+        productSalesPanel.revalidate();
+        productSalesPanel.repaint();
+    }
+
+    private JPanel shippingReportsPnl() {
+        shippingReportsPanel = new JPanel(new GridBagLayout());
+        refreshShippingReportsPnl();
+        return shippingReportsPanel;
+    }
+
+    public void refreshShippingReportsPnl() {
+        String[] columnNames = {"Shipping Status", "Number of Orders"};
+        Object[][] data = {};
+
+        try {
+            data = Model.getShippingReports();
+        } catch (SQLException e) {
+            showError("Failed to retrieve security reports: " + e.getMessage());
+        }
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+
+        shippingReportsPanel.removeAll();
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        shippingReportsPanel.add(scrollPane, gbc);
+        shippingReportsPanel.revalidate();
+        shippingReportsPanel.repaint();
     }
 
     private JPanel affinityPnl() {
-        JPanel panel = new JPanel(new GridBagLayout());
+        affinityPanel = new JPanel(new GridBagLayout());
+        refreshAffinityPnl();
+        return affinityPanel;
+    }
 
-        return panel;
+    public void refreshAffinityPnl() {
+        String[] columnNames = {"Customer Name", "Store Name", "Number of Orders Made at Store", "Total Amount Spent"};
+        Object[][] data = {};
+
+        try {
+            data = Model.getAffinity();
+        } catch (SQLException e) {
+            showError("Failed to retrieve affinity: " + e.getMessage());
+        }
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+
+        affinityPanel.removeAll();
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        affinityPanel.add(scrollPane, gbc);
+        affinityPanel.revalidate();
+        affinityPanel.repaint();
     }
 
     private void adjustColumnWidths(JTable table) {
