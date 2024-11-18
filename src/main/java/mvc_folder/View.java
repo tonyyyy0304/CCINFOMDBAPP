@@ -46,7 +46,10 @@ public class View extends JFrame {
 
     //logistics table
     private JTextField logisticsCompanyID, logisticsCompanyName,
-            logisticsCompanyLocationID, shipmentScope;
+            logisticsCompanyLocationID, logisticsLotNum,
+            logisticsStreetName, logisticsCityName, logisticsZipCode,
+            logisticsCountry;
+    private JComboBox<String> shipmentScope;
 
     // Buttons
     private JButton productAddBtn, productRemoveBtn,
@@ -674,8 +677,16 @@ public class View extends JFrame {
 
         logisticsCompanyName = new JTextField(COLUMN_WIDTH);
         logisticsCompanyLocationID = new JTextField(COLUMN_WIDTH);
-        shipmentScope = new JTextField(COLUMN_WIDTH);
+        logisticsLotNum = new JTextField(COLUMN_WIDTH);
+        logisticsStreetName = new JTextField(COLUMN_WIDTH);
+        logisticsCityName = new JTextField(COLUMN_WIDTH);
+        logisticsZipCode = new JTextField(COLUMN_WIDTH);
+        logisticsCountry = new JTextField(COLUMN_WIDTH);
 
+        shipmentScope = new JComboBox<String>();
+        shipmentScope.addItem("domestic");
+        shipmentScope.addItem("international");
+        
         GridBagConstraints gbc = setGBC();
 
         logisticsAddBtn = new JButton("Add Company");
@@ -686,11 +697,34 @@ public class View extends JFrame {
         gbc.gridx++;
         panel.add(logisticsCompanyName, gbc);
 
+        gbc.gridwidth = 1;
         gbc.gridx = 0;
         gbc.gridy++;
-        panel.add(new JLabel("Logistics Company Location:"), gbc);
+        panel.add(new JLabel("Lot Number:"), gbc);
         gbc.gridx++;
-        panel.add(logisticsCompanyLocationID, gbc);
+        panel.add(logisticsLotNum, gbc);
+
+        gbc.gridx++;
+        panel.add(new JLabel("Street Name:"), gbc);
+        gbc.gridx++;
+        panel.add(logisticsStreetName, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("City Name:"), gbc);
+        gbc.gridx++;
+        panel.add(logisticsCityName, gbc);
+
+        gbc.gridx++;
+        panel.add(new JLabel("Zip Code:"), gbc);
+        gbc.gridx++;
+        panel.add(logisticsZipCode, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Country:"), gbc);
+        gbc.gridx++;
+        panel.add(logisticsCountry, gbc);
 
         gbc.gridwidth = 2;
         gbc.gridx = 0;
@@ -1318,12 +1352,32 @@ public class View extends JFrame {
         return logisticsCompanyID.getText();
     }
 
-    public String getLogisticsCompanyLocation() {
-        return logisticsCompanyLocationID.getText();
+    public String getLogisticsLotNum() {
+        return logisticsLotNum.getText();
+    }
+
+    public String getLogisticsStreetName() {
+        return logisticsStreetName.getText();
+    }
+
+    public String getLogisticsCityName() {
+        return logisticsCityName.getText();
+    }
+
+    public String getLogisticsZipCode() {
+        return logisticsZipCode.getText();
+    }
+
+    public String getLogisticsCountry() {
+        return logisticsCountry.getText();
     }
 
     public String getLogisticsCompanyName() {
         return logisticsCompanyName.getText();
+    }
+
+    public String getLogisticsScope() {
+        return shipmentScope.getSelectedItem().toString();
     }
 
 

@@ -624,12 +624,13 @@ public class Model
         }
     }
 
-    public boolean addLogisticsCompany(String name, String location) throws SQLException {
-        String sql = "INSERT INTO logistics_companies (company_name, company_location) VALUES (?, ?)";
+    public boolean addLogisticsCompany(String name, int location, String scope) throws SQLException {
+        String sql = "INSERT INTO logistics_companies (logistics_company_name, location_id, shipment_scope) VALUES (?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, name);
-            stmt.setString(2, location);
+            stmt.setInt(2, location);
+            stmt.setString(3, scope);
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0; // Returns true if the insert was successful
         }
