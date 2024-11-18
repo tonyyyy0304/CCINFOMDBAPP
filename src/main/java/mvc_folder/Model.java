@@ -472,7 +472,7 @@ public class Model
     }
 
     public boolean payForOrder(int customerId, int orderId, double paymentAmount) throws SQLException {
-        String sql = "SELECT o.order_id, o.customer_id, o.total_amount FROM orders o WHERE o.order_id = ?";
+        String sql = "SELECT o.order_id, o.customer_id, o.price, o.shipping_price FROM orders o WHERE o.order_id = ?";
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -481,7 +481,9 @@ public class Model
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
                     int orderCustomerId = rs.getInt("customer_id");
-                    double totalAmount = rs.getDouble("total_amount");
+                    double price = rs.getDouble("price");
+                    double shippingPrice = rs.getDouble("shipping_price");
+                    double totalAmount = price + shippingPrice;
 
                     // Check if the customer ID matches
                     if (orderCustomerId != customerId) {
@@ -493,10 +495,13 @@ public class Model
                         return false; // Payment is less than the total amount
                     }
 
-                    // Proceed to update the payment status
-                    String updatePaymentSql = "UPDATE orders SET payment_status = 'Paid' WHERE order_id = ?";
+                    // Proceed to update the payment
+                    String updatePaymentSql =
+                        "UPDATE payments SET payment_status = 'Completed', " + 
+                        "amount_paid = ?, payment_date = CURRENT_DATE WHERE order_id = ?";
                     try (PreparedStatement updateStmt = conn.prepareStatement(updatePaymentSql)) {
-                        updateStmt.setInt(1, orderId);
+                        updateStmt.setDouble(1, paymentAmount);
+                        updateStmt.setInt(2, orderId);
                         updateStmt.executeUpdate();
                     }
 
