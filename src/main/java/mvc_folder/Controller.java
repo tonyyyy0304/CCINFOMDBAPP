@@ -393,7 +393,7 @@ public class Controller
             public void actionPerformed(ActionEvent e) {
                 try {
                     // Retrieve the inputs from the view
-                    String productIDInput = view.getAdjustStockProductId(); // Assuming this method exists
+                    String productIDInput = view.getAdjustStockProductId(); // Method to get the product ID
                     String amountInput = view.getAdjustStockQuantity(); // Method to get the stock amount
 
                     // Validate and parse the product ID

@@ -59,6 +59,7 @@ public class View extends JFrame {
 
     // Adjust Stock
     private JTextField adjustStockProductId, adjustStockQuantity;
+    private JComboBox<String> adjustStockType;
     private JButton adjustStockBtn;
 
     // Pay for Order
@@ -759,6 +760,10 @@ public class View extends JFrame {
         adjustStockProductId = new JTextField(COLUMN_WIDTH);
         adjustStockQuantity = new JTextField(COLUMN_WIDTH);
 
+        adjustStockType = new JComboBox<String>();
+        adjustStockType.addItem("Increase");
+        adjustStockType.addItem("Decrease");
+
         adjustStockBtn = new JButton("Adjust Stock");
         adjustStockBtn.setActionCommand("Adjust Stock");
 
@@ -775,6 +780,13 @@ public class View extends JFrame {
         panel.add(new JLabel("Quantity:"), gbc);
         gbc.gridx++;
         panel.add(adjustStockQuantity, gbc);
+
+        // Adjustment Type
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Adjustment Type:"), gbc);
+        gbc.gridx++;
+        panel.add(adjustStockType, gbc);
 
         // Adjust Stock Button
         gbc.gridx = 0;
@@ -1071,6 +1083,10 @@ public class View extends JFrame {
         return adjustStockQuantity.getText();
     }
 
+    public String getAdjustStockType() {
+        return adjustStockType.getSelectedItem().toString();
+    }
+
     public String getPaymentCustomerId() {
         return paymentCustomerId.getText();
     }
@@ -1139,9 +1155,11 @@ public class View extends JFrame {
         orderCustomerId.setText("");
         orderProductId.setText("");
         orderQuantity.setText("");
+        orderPaymentMethod.setSelectedIndex(0);
 
         adjustStockProductId.setText("");
         adjustStockQuantity.setText("");
+        adjustStockType.setSelectedIndex(0);
 
         paymentCustomerId.setText("");
         paymentOrderId.setText("");
