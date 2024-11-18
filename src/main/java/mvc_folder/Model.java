@@ -408,7 +408,6 @@ public class Model
     }
 
     public static Object[][] getCustomerStats() throws SQLException {
-        // TODO: Implement this method
         String sql = "SELECT c.customer_id, CONCAT(c.first_name, ' ', c.last_name) AS customer_name,"+ 
         " COUNT(o.order_id) / TIMESTAMPDIFF(MONTH, c.registration_date, NOW()) AS num_orders_per_month,"+ 
         " SUM(amount_paid) / TIMESTAMPDIFF(MONTH, c.registration_date, NOW()) AS amount_spent_per_month" +
@@ -437,7 +436,7 @@ public class Model
 
     public static Object[][] getProductSales() throws SQLException {
         // TODO: Implement this method
-
+        
 
         return new Object[0][]; // Placeholder
     }
