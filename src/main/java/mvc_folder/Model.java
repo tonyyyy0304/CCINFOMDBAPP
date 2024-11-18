@@ -417,7 +417,10 @@ public class Model
         }
     }
 
-    public boolean placeOrder(int customerId, int productId, int quantity, String paymentMethod) throws SQLException {
+    public boolean placeOrder(int customerId, int productId, int quantity,
+        int lotNum, String streetName, String cityName, int zipCode, String countryName,
+        String paymentMethod) throws SQLException
+    {
         // Check if the customer exists
         if (!customerExists(customerId)) {
             return false; // Customer does not exist
@@ -442,8 +445,15 @@ public class Model
             }
         }
 
+        int locationId;
+        // Creates a new location if it does not exist
+        if (!locationExists(lotNum, streetName, cityName, countryName, zipCode)) {
+            addLocationId(lotNum, streetName, cityName, countryName, zipCode);
+        }
+        locationId = getLocationId(lotNum, streetName, cityName, countryName, zipCode);
+        
         // Now, insert the order into the orders table
-        String insertOrderSql = "INSERT INTO orders (customer_id, product_id, quantity, payment_method) VALUES (?, ?, ?, ?)";
+        String insertOrderSql = "INSERT INTO orders (customer_id, product_id, quantity, payment_method, delivery_location_id) VALUES (?, ?, ?, ?, ?)";
         int orderId;
         try (Connection conn = getConnection();
              PreparedStatement insertStmt = conn.prepareStatement(insertOrderSql, Statement.RETURN_GENERATED_KEYS)) {
@@ -451,6 +461,7 @@ public class Model
             insertStmt.setInt(2, productId);
             insertStmt.setInt(3, quantity);
             insertStmt.setString(4, paymentMethod);
+            insertStmt.setInt(5, locationId);
             insertStmt.executeUpdate();
 
             ResultSet generatedKeys = insertStmt.getGeneratedKeys();

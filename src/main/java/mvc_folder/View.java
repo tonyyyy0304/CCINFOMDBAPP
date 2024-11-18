@@ -57,7 +57,8 @@ public class View extends JFrame {
             storeAddBtn, storeRemoveBtn, logisticsAddBtn, logisticsRemoveBtn;
 
     // Place Order
-    private JTextField orderCustomerId, orderProductId, orderQuantity;
+    private JTextField orderCustomerId, orderProductId, orderQuantity,
+                orderLotNum, orderStreetName, orderCityName, orderZipCode, orderCountry;
     private JComboBox<String> orderPaymentMethod;
     private JButton placeOrderBtn;
 
@@ -743,6 +744,11 @@ public class View extends JFrame {
         orderCustomerId = new JTextField(COLUMN_WIDTH);
         orderProductId = new JTextField(COLUMN_WIDTH);
         orderQuantity = new JTextField(COLUMN_WIDTH);
+        orderLotNum = new JTextField(COLUMN_WIDTH);
+        orderStreetName = new JTextField(COLUMN_WIDTH);
+        orderCityName = new JTextField(COLUMN_WIDTH);
+        orderZipCode = new JTextField(COLUMN_WIDTH);
+        orderCountry = new JTextField(COLUMN_WIDTH);
 
         orderPaymentMethod = new JComboBox<String>();
         orderPaymentMethod.addItem("Credit");
@@ -759,8 +765,7 @@ public class View extends JFrame {
         panel.add(orderCustomerId, gbc);
 
         // Product ID
-        gbc.gridx = 0;
-        gbc.gridy++;
+        gbc.gridx++;
         panel.add(new JLabel("Product ID:"), gbc);
         gbc.gridx++;
         panel.add(orderProductId, gbc);
@@ -772,6 +777,39 @@ public class View extends JFrame {
         gbc.gridx++;
         panel.add(orderQuantity, gbc);
 
+        // Address
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Delivery Address:"), gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Lot Number:"), gbc);
+        gbc.gridx++;
+        panel.add(orderLotNum, gbc);
+
+        gbc.gridx++;
+        panel.add(new JLabel("Street Name:"), gbc);
+        gbc.gridx++;
+        panel.add(orderStreetName, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("City Name:"), gbc);
+        gbc.gridx++;
+        panel.add(orderCityName, gbc);
+
+        gbc.gridx++;
+        panel.add(new JLabel("Zip Code:"), gbc);
+        gbc.gridx++;
+        panel.add(orderZipCode, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Country:"), gbc);
+        gbc.gridx++;
+        panel.add(orderCountry, gbc);
+
         // Payment Method
         gbc.gridx = 0;
         gbc.gridy++;
@@ -782,7 +820,7 @@ public class View extends JFrame {
         // Place Order Button
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 4;
         panel.add(placeOrderBtn, gbc);
 
         return panel;
@@ -1225,6 +1263,26 @@ public class View extends JFrame {
         return orderQuantity.getText();
     }
 
+    public String getOrderLotNum() {
+        return orderLotNum.getText();
+    }
+
+    public String getOrderStreetName() {
+        return orderStreetName.getText();
+    }
+
+    public String getOrderCityName() {
+        return orderCityName.getText();
+    }
+
+    public String getOrderZipCode() {
+        return orderZipCode.getText();
+    }
+
+    public String getOrderCountry() {
+        return orderCountry.getText();
+    }
+
     public String getOrderPaymentMethod() {
         return orderPaymentMethod.getSelectedItem().toString();
     }
@@ -1329,6 +1387,11 @@ public class View extends JFrame {
         orderCustomerId.setText("");
         orderProductId.setText("");
         orderQuantity.setText("");
+        orderLotNum.setText("");
+        orderStreetName.setText("");
+        orderCityName.setText("");
+        orderZipCode.setText("");
+        orderCountry.setText("");
         orderPaymentMethod.setSelectedIndex(0);
 
         adjustStockProductId.setText("");

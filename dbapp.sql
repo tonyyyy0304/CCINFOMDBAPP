@@ -124,25 +124,6 @@ ALTER TABLE stock_adjustment_history ADD CONSTRAINT fk_stock_history_customer FO
 -- Triggers
 DELIMITER //
 
-CREATE TRIGGER set_default_delivery_location
-BEFORE INSERT ON orders
-FOR EACH ROW
-BEGIN
-    DECLARE customer_location_id INT;
-    
-    -- Get the customer's location_id
-    SELECT location_id INTO customer_location_id
-    FROM customers
-    WHERE customer_id = NEW.customer_id;
-    
-    -- Set the delivery_location_id to the customer's location_id
-    SET NEW.delivery_location_id = customer_location_id;
-END //
-
-DELIMITER ;
-
-DELIMITER //
-
 CREATE TRIGGER set_default_order_price
 BEFORE INSERT ON orders
 FOR EACH ROW

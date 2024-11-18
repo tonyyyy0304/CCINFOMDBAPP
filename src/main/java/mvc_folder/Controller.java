@@ -461,6 +461,11 @@ public class Controller
                     int customerId = Integer.parseInt(view.getOrderCustomerId());
                     int productId = Integer.parseInt(view.getOrderProductId());
                     int quantity = Integer.parseInt(view.getOrderQuantity());
+                    int lotNum = Integer.parseInt(view.getOrderLotNum());
+                    String streetName = view.getOrderStreetName();
+                    String cityName = view.getOrderCityName();
+                    int zipCode = Integer.parseInt(view.getOrderZipCode());
+                    String countryName = view.getOrderCountry();
                     String paymentMethod = view.getOrderPaymentMethod();
 
                     // Check if customer exists
@@ -476,7 +481,8 @@ public class Controller
                     }
 
                     // Call the model to place the order
-                    boolean success = model.placeOrder(customerId, productId, quantity, paymentMethod);
+                    boolean success = model.placeOrder(customerId, productId, quantity,
+                                lotNum, streetName, cityName, zipCode, countryName, paymentMethod);
                     if (success) {
                         view.showSuccess("Order placed successfully!");
                         view.clearFields(); // Clear fields after success
@@ -486,7 +492,7 @@ public class Controller
                         view.showError("Failed to place order. Please check the stock availability.");
                     }
                 } catch (NumberFormatException ex) {
-                    view.showError("Please enter valid numbers for Customer ID, Product ID, and Quantity.");
+                    view.showError("Please enter valid numbers for Customer ID, Product ID, Lot Number, Zip Code, and Quantity.");
                 } catch (SQLException ex) {
                     view.showError("Database error: " + ex.getMessage());
                 } catch (Exception ex) {
