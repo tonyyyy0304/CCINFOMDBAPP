@@ -490,10 +490,42 @@ public class Model
     }
 
     public static Object[][] getAffinity() throws SQLException {
-        // TODO: Implement this method
+        String sql = 
+        "SELECT" + 
+        " CONCAT(c.first_name, ' ', c.last_name) AS customer_name," + 
+        " s.store_name," +
+        " COUNT(o.order_id) AS num_orders_made_at_store," + 
+        " SUM(pm.amount_paid) AS total_amount_spent" + 
+        " FROM" + 
+        " customers c" +
+        " LEFT JOIN" +
+        " orders o ON o.customer_id = c.customer_id" + 
+        " LEFT JOIN" +
+        " products p ON p.product_id = o.product_id" +
+        " LEFT JOIN" + 
+        " store s ON s.store_id = p.store_id" +
+        " LEFT JOIN" + 
+        " payments pm ON pm.order_id = o.order_id" +
+        " GROUP BY" +
+        " c.customer_id, s.store_id" + 
+        " ORDER BY" + 
+        " s.store_name";
 
-
-        return new Object[0][]; // Placeholder
+        try (Connection conn = getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery()) 
+        {
+            List<Object[]> records = new ArrayList<>();
+            while (rs.next()) {
+                records.add(new Object[]{
+                    rs.getString("customer_name"),
+                    rs.getString("store_name"),
+                    rs.getInt("num_orders_made_at_store"),
+                    rs.getDouble("total_amount_spent")
+                });
+            }
+            return records.toArray(new Object[0][]);
+        }
     }
 
 
