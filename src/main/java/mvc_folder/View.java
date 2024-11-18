@@ -1149,6 +1149,14 @@ public class View extends JFrame {
 
         shipOrderId.setText("");
         shipLogisticsId.setText("");
+
+        logisticsCompanyID.setText("");
+        logisticsCompanyName.setText("");
+        logisticsCompanyLocationID.setText("");
+
+        refreshProductRecords();
+        refreshCustomerRecords();
+        refreshStoresCustomerBoughtFrom();
     }
 
     public void showMessage(String message) {

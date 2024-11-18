@@ -474,6 +474,7 @@ public class Controller
                         view.showSuccess("Order placed successfully!");
                         view.clearFields(); // Clear fields after success
                         view.refreshStoresCustomerBoughtFrom(); // Refresh the stores the customer bought from
+                        view.refreshProductRecords(); // Refresh the product records
                     } else {
                         view.showError("Failed to place order. Please check the stock availability.");
                     }

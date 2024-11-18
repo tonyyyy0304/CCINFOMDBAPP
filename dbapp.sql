@@ -79,8 +79,8 @@ CREATE TABLE payments (
     store_id INT NOT NULL,
     customer_id INT NOT NULL,
     product_id INT NOT NULL,
-    amount_paid DECIMAL(10, 2) UNSIGNED NOT NULL,
-    payment_status ENUM('Completed', 'Pending', 'Failed') NOT NULL,
+    amount_paid DECIMAL(10, 2) UNSIGNED NOT NULL DEFAULT 0.0,
+    payment_status ENUM('Completed', 'Pending', 'Failed') NOT NULL DEFAULT 'Pending',
     payment_date DATE DEFAULT (CURDATE())
 );
 

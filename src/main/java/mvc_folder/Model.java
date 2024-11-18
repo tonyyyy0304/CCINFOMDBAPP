@@ -1,10 +1,12 @@
 package main.java.mvc_folder;
 
+import java.awt.Taskbar.State;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -413,16 +415,60 @@ public class Model
 
         // Now, insert the order into the orders table
         String insertOrderSql = "INSERT INTO orders (customer_id, product_id, quantity, payment_method) VALUES (?, ?, ?, ?)";
+        int orderId;
         try (Connection conn = getConnection();
-             PreparedStatement insertStmt = conn.prepareStatement(insertOrderSql)) {
+             PreparedStatement insertStmt = conn.prepareStatement(insertOrderSql, Statement.RETURN_GENERATED_KEYS)) {
             insertStmt.setInt(1, customerId);
             insertStmt.setInt(2, productId);
             insertStmt.setInt(3, quantity);
             insertStmt.setString(4, paymentMethod);
             insertStmt.executeUpdate();
+
+            ResultSet generatedKeys = insertStmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                orderId = generatedKeys.getInt(1);
+            } else {
+                throw new SQLException("Creating order failed, no ID obtained.");
+            }
+        }
+
+        // Insert the payment to the payments table
+        String insertPaymentSql = "INSERT INTO payments (order_id, store_id, customer_id, product_id) VALUES (?, ?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement insertPaymentStmt = conn.prepareStatement(insertPaymentSql)) {
+            insertPaymentStmt.setInt(1, orderId);
+            insertPaymentStmt.setInt(2, getStoreIdByProductId(productId));
+            insertPaymentStmt.setInt(3, customerId);
+            insertPaymentStmt.setInt(4, productId);
+            insertPaymentStmt.executeUpdate();
+        }
+        
+
+        // Update the stock count of the product
+        String updateStockSql = "UPDATE products SET stock_count = stock_count - ? WHERE product_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement updateStmt = conn.prepareStatement(updateStockSql)) {
+            updateStmt.setInt(1, quantity);
+            updateStmt.setInt(2, productId);
+            updateStmt.executeUpdate();
         }
 
         return true; // Order placed successfully
+    }
+
+    private int getStoreIdByProductId(int productId) throws SQLException {
+        String sql = "SELECT store_id FROM products WHERE product_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, productId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("store_id");
+                } else {
+                    throw new SQLException("Store ID not found for product ID: " + productId);
+                }
+            }
+        }
     }
 
     public boolean payForOrder(int customerId, int orderId, double paymentAmount) throws SQLException {
