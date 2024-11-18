@@ -218,6 +218,7 @@ public class Controller
                     if (success) {
                         view.showSuccess("Store added successfully!");
                         view.clearFields();
+                        view.refreshStoreRecordsPnl();
                     } else {
                         view.showError("Failed to add the store.");
                     }

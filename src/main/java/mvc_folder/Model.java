@@ -355,6 +355,33 @@ public class Model
         }
     }
 
+    public static Object[][] getStoreRecords() throws SQLException {
+        String sql = "SELECT s.store_id, s.store_name, ci.phone_number, ci.email_address, " +
+            "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
+            "s.registration_date " +
+            "FROM store s " +
+            "JOIN contact_information ci ON s.contact_id = ci.contact_id " +
+            "JOIN locations l ON s.location_id = l.location_id";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            List<Object[]> records = new ArrayList<>();
+            while (rs.next()) {
+                records.add(new Object[]{
+                    rs.getInt("store_id"),
+                    rs.getString("store_name"),
+                    rs.getString("phone_number"),
+                    rs.getString("email_address"),
+                    rs.getString("address"),
+                    rs.getDate("registration_date")
+                });
+            }
+            return records.toArray(new Object[0][]);
+        }
+    }
+
     public static Object[][] getCustomerStats() throws SQLException {
         // TODO: Implement this method
 

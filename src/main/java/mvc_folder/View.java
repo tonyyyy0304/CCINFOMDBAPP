@@ -635,9 +635,38 @@ public class View extends JFrame {
     }
 
     private JPanel storeRecordsPnl() {
-        JPanel panel = new JPanel(new GridBagLayout());
+        storeRecordsPanel = new JPanel(new GridBagLayout());
+        refreshStoreRecordsPnl();
+        return storeRecordsPanel;
+    }
 
-        return panel;
+    public void refreshStoreRecordsPnl() {
+        String[] columnNames = {"Store ID", "Store Name", "Phone Number", "Email Address", "Address", "Registration Date"};
+        Object[][] data = {};
+
+        try {
+            data = Model.getStoreRecords();
+        } catch (SQLException e) {
+            showError("Failed to retrieve store records: " + e.getMessage());
+        }
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+
+        storeRecordsPanel.removeAll();
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        storeRecordsPanel.add(scrollPane, gbc);
+        storeRecordsPanel.revalidate();
+        storeRecordsPanel.repaint();
     }
 
     private JPanel logisticsAddPnl() {
@@ -1358,6 +1387,11 @@ public class View extends JFrame {
         refreshProductRecords();
         refreshCustomerRecords();
         refreshStoresCustomerBoughtFrom();
+        refreshStoreRecordsPnl();
+        refreshCustomerStatsPnl();
+        refreshProductSalesPnl();
+        refreshShippingReportsPnl();
+        refreshAffinityPnl();
     }
 
     public void showMessage(String message) {
