@@ -16,7 +16,7 @@ public class Model
 {
     private static final String dbUrl = "jdbc:mysql://localhost:3306/ecommerce_db";
     private static final String userName = "root";
-    private static final String password = "password";
+    private static final String password = "123456";
 
 
     public Model() {
@@ -333,7 +333,8 @@ public class Model
                         "JOIN store s ON p.store_id = s.store_id";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+             ResultSet rs = stmt.executeQuery()) 
+        {
 
             List<Object[]> records = new ArrayList<>();
             DecimalFormat priceFormat = new DecimalFormat("Php #,###.##");
@@ -357,9 +358,30 @@ public class Model
 
     public static Object[][] getCustomerStats() throws SQLException {
         // TODO: Implement this method
+        String sql = "SELECT c.customer_id, CONCAT(c.first_name, ' ', c.last_name) AS customer_name,"+ 
+        " COUNT(o.order_id) / TIMESTAMPDIFF(MONTH, c.registration_date, NOW()) AS num_orders_per_month,"+ 
+        " SUM(amount_paid) / TIMESTAMPDIFF(MONTH, c.registration_date, NOW()) AS amount_spent_per_month" +
+        " FROM customers c"+ 
+        " LEFT JOIN orders o ON c.customer_id = o.customer_id"+
+        " LEFT JOIN payments p ON o.order_id = p.order_id"+
+        " GROUP BY c.customer_id";
 
-
-        return new Object[0][]; // Placeholder
+        try (Connection conn = getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery())
+        {
+            List<Object[]> records = new ArrayList<>();
+            while (rs.next()) 
+            {
+                records.add(new Object[] {
+                        rs.getInt("customer_id"),
+                        rs.getString("customer_name"),
+                        rs.getInt("num_orders_per_month"),
+                        rs.getDouble("amount_spent_per_month"),
+                });
+            }
+            return records.toArray(new Object[0][]);
+        }
     }
 
     public static Object[][] getProductSales() throws SQLException {
@@ -515,7 +537,8 @@ public class Model
         String sql = "SELECT o.order_id, o.customer_id, o.price, o.shipping_price FROM orders o WHERE o.order_id = ?";
 
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) 
+        {
             stmt.setInt(1, orderId);
 
             try (ResultSet rs = stmt.executeQuery()) {
