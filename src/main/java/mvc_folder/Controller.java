@@ -489,6 +489,7 @@ public class Controller
                         view.clearFields(); // Clear fields after success
                         view.refreshStoresCustomerBoughtFrom(); // Refresh the stores the customer bought from
                         view.refreshProductRecords(); // Refresh the product records
+                        view.refreshPaymentReportsPnl(); // Refresh the payment reports
                     } else {
                         view.showError("Failed to place order. Please check the stock availability.");
                     }
@@ -516,6 +517,7 @@ public class Controller
                     if (success) {
                         view.showSuccess("Payment processed successfully!");
                         view.clearFields(); // Clear fields after success
+                        view.refreshPaymentReportsPnl(); // Refresh the payment reports
                     } else {
                         view.showError("Payment failed. Please check if the Customer ID and Order ID are valid and if the payment amount is sufficient.");
                     }

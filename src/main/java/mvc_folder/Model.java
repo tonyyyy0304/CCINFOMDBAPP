@@ -420,11 +420,27 @@ public class Model
         return new Object[0][]; // Placeholder
     }
 
-    public static Object[][] getShippingReports() throws SQLException {
-        // TODO: Implement this method
+    public static Object[][] getPaymentReports() throws SQLException {
+        String sql =
+            "SELECT YEAR(p.payment_date) AS year, p.payment_status, COUNT(*) AS number_of_orders " +
+            "FROM payments p " +
+            "GROUP BY YEAR(p.payment_date), p.payment_status " +
+            "ORDER BY year, p.payment_status";
 
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
-        return new Object[0][]; // Placeholder
+            List<Object[]> records = new ArrayList<>();
+            while (rs.next()) {
+                records.add(new Object[]{
+                    rs.getInt("year"),
+                    rs.getString("payment_status"),
+                    rs.getInt("number_of_orders")
+                });
+            }
+            return records.toArray(new Object[0][]);
+        }
     }
 
     public static Object[][] getAffinity() throws SQLException {

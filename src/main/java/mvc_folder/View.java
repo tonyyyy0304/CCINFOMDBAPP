@@ -23,7 +23,7 @@ public class View extends JFrame {
 
     private JPanel mainPanel, customerRecordsPanel, storesCustomersBoughtFromPnl,
             productRecordsPanel, storeRecordsPanel, logisticsRecordsPanel,
-            customerStatsPanel, productSalesPanel, shippingReportsPanel, affinityPanel;
+            customerStatsPanel, productSalesPanel, paymentReportsPanel, affinityPanel;
 
     //Products Table
     private JTextField productId, productName, productPrice,
@@ -162,7 +162,7 @@ public class View extends JFrame {
         JTabbedPane reportsTabbedPane = new JTabbedPane();
         reportsTabbedPane.addTab("Customer Statistics", customerStatsPnl());
         reportsTabbedPane.addTab("Product Sales", productSalesPnl());
-        reportsTabbedPane.addTab("Shipping Reports", shippingReportsPnl());
+        reportsTabbedPane.addTab("Payment Reports", paymentReportsPnl());
         reportsTabbedPane.addTab("Affinity of Customer to Store", affinityPnl());
         reportsPanel.add(reportsTabbedPane, BorderLayout.CENTER);
 
@@ -1073,18 +1073,18 @@ public class View extends JFrame {
         productSalesPanel.repaint();
     }
 
-    private JPanel shippingReportsPnl() {
-        shippingReportsPanel = new JPanel(new GridBagLayout());
-        refreshShippingReportsPnl();
-        return shippingReportsPanel;
+    private JPanel paymentReportsPnl() {
+        paymentReportsPanel = new JPanel(new GridBagLayout());
+        refreshPaymentReportsPnl();
+        return paymentReportsPanel;
     }
 
-    public void refreshShippingReportsPnl() {
-        String[] columnNames = {"Shipping Status", "Number of Orders"};
+    public void refreshPaymentReportsPnl() {
+        String[] columnNames = {"Year", "Payment Status", "Number of Orders"};
         Object[][] data = {};
 
         try {
-            data = Model.getShippingReports();
+            data = Model.getPaymentReports();
         } catch (SQLException e) {
             showError("Failed to retrieve security reports: " + e.getMessage());
         }
@@ -1095,7 +1095,7 @@ public class View extends JFrame {
 
         adjustColumnWidths(table);
 
-        shippingReportsPanel.removeAll();
+        paymentReportsPanel.removeAll();
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -1104,9 +1104,9 @@ public class View extends JFrame {
         gbc.anchor = GridBagConstraints.NORTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
-        shippingReportsPanel.add(scrollPane, gbc);
-        shippingReportsPanel.revalidate();
-        shippingReportsPanel.repaint();
+        paymentReportsPanel.add(scrollPane, gbc);
+        paymentReportsPanel.revalidate();
+        paymentReportsPanel.repaint();
     }
 
     private JPanel affinityPnl() {
@@ -1473,7 +1473,7 @@ public class View extends JFrame {
         refreshLogisticsRecordPnl();
         refreshCustomerStatsPnl();
         refreshProductSalesPnl();
-        refreshShippingReportsPnl();
+        refreshPaymentReportsPnl();
         refreshAffinityPnl();
     }
 
