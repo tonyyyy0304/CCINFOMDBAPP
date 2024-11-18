@@ -408,7 +408,8 @@ public class Model
     }
 
     public static Object[][] getCustomerStats() throws SQLException {
-        String sql = "SELECT c.customer_id, CONCAT(c.first_name, ' ', c.last_name) AS customer_name,"+ 
+        String sql = 
+        "SELECT c.customer_id, CONCAT(c.first_name, ' ', c.last_name) AS customer_name,"+ 
         " COUNT(o.order_id) / TIMESTAMPDIFF(MONTH, c.registration_date, NOW()) AS num_orders_per_month,"+ 
         " SUM(amount_paid) / TIMESTAMPDIFF(MONTH, c.registration_date, NOW()) AS amount_spent_per_month" +
         " FROM customers c"+ 
@@ -435,10 +436,34 @@ public class Model
     }
 
     public static Object[][] getProductSales() throws SQLException {
-        // TODO: Implement this method
-        
+        String sql = 
+        "SELECT monthly_sales.category, AVG(monthly_sales.total_sales) AS total_sales_per_month"+
+        " FROM ("+
+        " SELECT p1.category," +
+        " DATE_FORMAT(o1.order_date, '%Y-%m') AS month," +
+        " SUM(pm1.amount_paid) AS total_sales"+
+        " FROM products p1"+
+        " LEFT JOIN orders o1 ON o1.product_id = p1.product_id"+
+        " LEFT JOIN payments pm1 ON pm1.order_id = o1.order_id"+
+        " GROUP BY p1.category, month"+
+        ") AS monthly_sales"+
+        " GROUP BY monthly_sales.category"+
+        " ORDER BY monthly_sales.category";
 
-        return new Object[0][]; // Placeholder
+        try (Connection conn = getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery())
+        {
+            List<Object[]> records = new ArrayList<>();
+            while (rs.next())
+            {
+                records.add(new Object[] {
+                    rs.getString("category"),
+                    rs.getDouble("total_sales_per_month")
+                });
+            }
+            return records.toArray(new Object[0][]);
+        }
     }
 
     public static Object[][] getPaymentReports() throws SQLException {
