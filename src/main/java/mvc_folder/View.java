@@ -23,7 +23,7 @@ public class View extends JFrame {
 
     private JPanel mainPanel, customerRecordsPanel, storesCustomersBoughtFromPnl,
             productRecordsPanel, storeRecordsPanel, logisticsRecordsPanel,
-            customerStatsPanel, productSalesPanel, shippingReportsPanel, affinityPanel;
+            customerStatsPanel, productSalesPanel, paymentReportsPanel, affinityPanel;
 
     //Products Table
     private JTextField productId, productName, productPrice,
@@ -46,7 +46,10 @@ public class View extends JFrame {
 
     //logistics table
     private JTextField logisticsCompanyID, logisticsCompanyName,
-            logisticsCompanyLocationID, shipmentScope;
+            logisticsCompanyLocationID, logisticsLotNum,
+            logisticsStreetName, logisticsCityName, logisticsZipCode,
+            logisticsCountry;
+    private JComboBox<String> shipmentScope;
 
     // Buttons
     private JButton productAddBtn, productRemoveBtn,
@@ -159,7 +162,7 @@ public class View extends JFrame {
         JTabbedPane reportsTabbedPane = new JTabbedPane();
         reportsTabbedPane.addTab("Customer Statistics", customerStatsPnl());
         reportsTabbedPane.addTab("Product Sales", productSalesPnl());
-        reportsTabbedPane.addTab("Shipping Reports", shippingReportsPnl());
+        reportsTabbedPane.addTab("Payment Reports", paymentReportsPnl());
         reportsTabbedPane.addTab("Affinity of Customer to Store", affinityPnl());
         reportsPanel.add(reportsTabbedPane, BorderLayout.CENTER);
 
@@ -635,9 +638,38 @@ public class View extends JFrame {
     }
 
     private JPanel storeRecordsPnl() {
-        JPanel panel = new JPanel(new GridBagLayout());
+        storeRecordsPanel = new JPanel(new GridBagLayout());
+        refreshStoreRecordsPnl();
+        return storeRecordsPanel;
+    }
 
-        return panel;
+    public void refreshStoreRecordsPnl() {
+        String[] columnNames = {"Store ID", "Store Name", "Phone Number", "Email Address", "Address", "Registration Date"};
+        Object[][] data = {};
+
+        try {
+            data = Model.getStoreRecords();
+        } catch (SQLException e) {
+            showError("Failed to retrieve store records: " + e.getMessage());
+        }
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+
+        storeRecordsPanel.removeAll();
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        storeRecordsPanel.add(scrollPane, gbc);
+        storeRecordsPanel.revalidate();
+        storeRecordsPanel.repaint();
     }
 
     private JPanel logisticsAddPnl() {
@@ -645,8 +677,16 @@ public class View extends JFrame {
 
         logisticsCompanyName = new JTextField(COLUMN_WIDTH);
         logisticsCompanyLocationID = new JTextField(COLUMN_WIDTH);
-        shipmentScope = new JTextField(COLUMN_WIDTH);
+        logisticsLotNum = new JTextField(COLUMN_WIDTH);
+        logisticsStreetName = new JTextField(COLUMN_WIDTH);
+        logisticsCityName = new JTextField(COLUMN_WIDTH);
+        logisticsZipCode = new JTextField(COLUMN_WIDTH);
+        logisticsCountry = new JTextField(COLUMN_WIDTH);
 
+        shipmentScope = new JComboBox<String>();
+        shipmentScope.addItem("domestic");
+        shipmentScope.addItem("international");
+        
         GridBagConstraints gbc = setGBC();
 
         logisticsAddBtn = new JButton("Add Company");
@@ -657,11 +697,34 @@ public class View extends JFrame {
         gbc.gridx++;
         panel.add(logisticsCompanyName, gbc);
 
+        gbc.gridwidth = 1;
         gbc.gridx = 0;
         gbc.gridy++;
-        panel.add(new JLabel("Logistics Company Location:"), gbc);
+        panel.add(new JLabel("Lot Number:"), gbc);
         gbc.gridx++;
-        panel.add(logisticsCompanyLocationID, gbc);
+        panel.add(logisticsLotNum, gbc);
+
+        gbc.gridx++;
+        panel.add(new JLabel("Street Name:"), gbc);
+        gbc.gridx++;
+        panel.add(logisticsStreetName, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("City Name:"), gbc);
+        gbc.gridx++;
+        panel.add(logisticsCityName, gbc);
+
+        gbc.gridx++;
+        panel.add(new JLabel("Zip Code:"), gbc);
+        gbc.gridx++;
+        panel.add(logisticsZipCode, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Country:"), gbc);
+        gbc.gridx++;
+        panel.add(logisticsCountry, gbc);
 
         gbc.gridwidth = 2;
         gbc.gridx = 0;
@@ -698,9 +761,38 @@ public class View extends JFrame {
     }
 
     private JPanel logisticsRecordPnl() {
-        JPanel panel = new JPanel(new GridBagLayout());
+        logisticsRecordsPanel = new JPanel(new GridBagLayout());
+        refreshLogisticsRecordPnl();
+        return logisticsRecordsPanel;
+    }
 
-        return panel;
+    public void refreshLogisticsRecordPnl() {
+        String[] columnNames = {"Logistics Company ID", "Company Name", "Address", "Shipment Scope"};
+        Object[][] data = {};
+
+        try {
+            data = Model.getLogisticsRecords();
+        } catch (SQLException e) {
+            showError("Failed to retrieve logistics records: " + e.getMessage());
+        }
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+
+        logisticsRecordsPanel.removeAll();
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        logisticsRecordsPanel.add(scrollPane, gbc);
+        logisticsRecordsPanel.revalidate();
+        logisticsRecordsPanel.repaint();
     }
 
     private JPanel placeOrderPnl() {
@@ -937,8 +1029,7 @@ public class View extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         customerStatsPanel.add(scrollPane, gbc);
@@ -982,18 +1073,18 @@ public class View extends JFrame {
         productSalesPanel.repaint();
     }
 
-    private JPanel shippingReportsPnl() {
-        shippingReportsPanel = new JPanel(new GridBagLayout());
-        refreshShippingReportsPnl();
-        return shippingReportsPanel;
+    private JPanel paymentReportsPnl() {
+        paymentReportsPanel = new JPanel(new GridBagLayout());
+        refreshPaymentReportsPnl();
+        return paymentReportsPanel;
     }
 
-    public void refreshShippingReportsPnl() {
-        String[] columnNames = {"Shipping Status", "Number of Orders"};
+    public void refreshPaymentReportsPnl() {
+        String[] columnNames = {"Year", "Payment Status", "Number of Orders"};
         Object[][] data = {};
 
         try {
-            data = Model.getShippingReports();
+            data = Model.getPaymentReports();
         } catch (SQLException e) {
             showError("Failed to retrieve security reports: " + e.getMessage());
         }
@@ -1004,7 +1095,7 @@ public class View extends JFrame {
 
         adjustColumnWidths(table);
 
-        shippingReportsPanel.removeAll();
+        paymentReportsPanel.removeAll();
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -1013,9 +1104,9 @@ public class View extends JFrame {
         gbc.anchor = GridBagConstraints.NORTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
-        shippingReportsPanel.add(scrollPane, gbc);
-        shippingReportsPanel.revalidate();
-        shippingReportsPanel.repaint();
+        paymentReportsPanel.add(scrollPane, gbc);
+        paymentReportsPanel.revalidate();
+        paymentReportsPanel.repaint();
     }
 
     private JPanel affinityPnl() {
@@ -1289,12 +1380,32 @@ public class View extends JFrame {
         return logisticsCompanyID.getText();
     }
 
-    public String getLogisticsCompanyLocation() {
-        return logisticsCompanyLocationID.getText();
+    public String getLogisticsLotNum() {
+        return logisticsLotNum.getText();
+    }
+
+    public String getLogisticsStreetName() {
+        return logisticsStreetName.getText();
+    }
+
+    public String getLogisticsCityName() {
+        return logisticsCityName.getText();
+    }
+
+    public String getLogisticsZipCode() {
+        return logisticsZipCode.getText();
+    }
+
+    public String getLogisticsCountry() {
+        return logisticsCountry.getText();
     }
 
     public String getLogisticsCompanyName() {
         return logisticsCompanyName.getText();
+    }
+
+    public String getLogisticsScope() {
+        return shipmentScope.getSelectedItem().toString();
     }
 
 
@@ -1358,6 +1469,12 @@ public class View extends JFrame {
         refreshProductRecords();
         refreshCustomerRecords();
         refreshStoresCustomerBoughtFrom();
+        refreshStoreRecordsPnl();
+        refreshLogisticsRecordPnl();
+        refreshCustomerStatsPnl();
+        refreshProductSalesPnl();
+        refreshPaymentReportsPnl();
+        refreshAffinityPnl();
     }
 
     public void showMessage(String message) {

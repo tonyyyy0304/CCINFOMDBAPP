@@ -218,6 +218,7 @@ public class Controller
                     if (success) {
                         view.showSuccess("Store added successfully!");
                         view.clearFields();
+                        view.refreshStoreRecordsPnl();
                     } else {
                         view.showError("Failed to add the store.");
                     }
@@ -488,6 +489,7 @@ public class Controller
                         view.clearFields(); // Clear fields after success
                         view.refreshStoresCustomerBoughtFrom(); // Refresh the stores the customer bought from
                         view.refreshProductRecords(); // Refresh the product records
+                        view.refreshPaymentReportsPnl(); // Refresh the payment reports
                     } else {
                         view.showError("Failed to place order. Please check the stock availability.");
                     }
@@ -515,6 +517,7 @@ public class Controller
                     if (success) {
                         view.showSuccess("Payment processed successfully!");
                         view.clearFields(); // Clear fields after success
+                        view.refreshPaymentReportsPnl(); // Refresh the payment reports
                     } else {
                         view.showError("Payment failed. Please check if the Customer ID and Order ID are valid and if the payment amount is sufficient.");
                     }
@@ -558,24 +561,82 @@ public class Controller
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Retrieve input fields from the view
-                String companyName = view.getLogisticsCompanyName();
-                String companyLocation = view.getLogisticsCompanyLocation();
+                String logistics_company_name = view.getLogisticsCompanyName();
+                String logistics_street_name = view.getLogisticsStreetName();
+                String logistics_city_name = view.getLogisticsCityName();
+                String logistics_country_name = view.getLogisticsCountry();
+                String logistics_zipcode = view.getLogisticsZipCode();
+                String logistics_lot_num = view.getLogisticsLotNum();
+                String logistics_scope = view.getLogisticsScope();
+
 
                 // Validate input fields
-                if (companyName.isEmpty() || companyLocation.isEmpty()) {
+                if (logistics_company_name.isEmpty() || logistics_street_name.isEmpty() ||
+                        logistics_city_name.isEmpty() || logistics_country_name.isEmpty() ||
+                        logistics_zipcode.isEmpty() || logistics_lot_num.isEmpty()){
                     view.showMessage("Please fill in all required fields.");
                     return;
                 }
 
                 // You can add more validation here if needed (e.g., check for specific formats)
+                int lot_num = 0;
+                try{
+                    lot_num = Integer.parseInt(logistics_lot_num);
+                    if (lot_num < 0) {
+                        view.showMessage("Lot number cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Lot number must be a valid number.");
+                    return;
+                }
+
+                int zipcode = 0;
+                try{
+                    zipcode = Integer.parseInt(logistics_zipcode);
+                    if (zipcode < 0) {
+                        view.showMessage("Zipcode cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Zipcode must be a valid number.");
+                    return;
+                }
+                try{
+                    // Add new location
+                    if(!model.locationExists(Integer.parseInt(logistics_lot_num),
+                            logistics_street_name, logistics_city_name,
+                            logistics_country_name, Integer.parseInt(logistics_zipcode)))
+                    {
+                        model.addLocationId(Integer.parseInt(logistics_lot_num),
+                                logistics_street_name, logistics_city_name,
+                                logistics_country_name, Integer.parseInt(logistics_zipcode));
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+                int location_id = 0;
+                try{
+                    location_id = model.getLocationId(Integer.parseInt(logistics_lot_num),
+                            logistics_street_name, logistics_city_name,
+                            logistics_country_name, Integer.parseInt(logistics_zipcode));
+                    System.out.println("Retrieved Location ID: " + location_id);
+                } catch(SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
 
                 try {
                     // Call the model to add the logistics company
-                    boolean success = model.addLogisticsCompany(companyName, companyLocation);
+                    boolean success = model.addLogisticsCompany(logistics_company_name, location_id, logistics_scope);
 
                     if (success) {
                         view.showSuccess("Logistics company added successfully!");
                         view.clearFields(); // Clear fields after success
+                        view.refreshLogisticsRecordPnl();
                     } else {
                         view.showError("Failed to add the logistics company.");
                     }
