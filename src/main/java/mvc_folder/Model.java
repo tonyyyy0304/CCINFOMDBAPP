@@ -382,6 +382,30 @@ public class Model
         }
     }
 
+    public static Object[][] getLogisticsRecords() throws SQLException {
+        String sql = "SELECT lc.logistics_company_id, lc.logistics_company_name, " +
+            "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
+            "lc.shipment_scope " +
+            "FROM logistics_companies lc " +
+            "JOIN locations l ON lc.location_id = l.location_id";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            List<Object[]> records = new ArrayList<>();
+            while (rs.next()) {
+                records.add(new Object[]{
+                    rs.getInt("logistics_company_id"),
+                    rs.getString("logistics_company_name"),
+                    rs.getString("address"),
+                    rs.getString("shipment_scope")
+                });
+            }
+            return records.toArray(new Object[0][]);
+        }
+    }
+
     public static Object[][] getCustomerStats() throws SQLException {
         // TODO: Implement this method
 

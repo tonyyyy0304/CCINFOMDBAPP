@@ -634,6 +634,7 @@ public class Controller
                     if (success) {
                         view.showSuccess("Logistics company added successfully!");
                         view.clearFields(); // Clear fields after success
+                        view.refreshLogisticsRecordPnl();
                     } else {
                         view.showError("Failed to add the logistics company.");
                     }

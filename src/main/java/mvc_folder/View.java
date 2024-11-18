@@ -761,9 +761,38 @@ public class View extends JFrame {
     }
 
     private JPanel logisticsRecordPnl() {
-        JPanel panel = new JPanel(new GridBagLayout());
+        logisticsRecordsPanel = new JPanel(new GridBagLayout());
+        refreshLogisticsRecordPnl();
+        return logisticsRecordsPanel;
+    }
 
-        return panel;
+    public void refreshLogisticsRecordPnl() {
+        String[] columnNames = {"Logistics Company ID", "Company Name", "Address", "Shipment Scope"};
+        Object[][] data = {};
+
+        try {
+            data = Model.getLogisticsRecords();
+        } catch (SQLException e) {
+            showError("Failed to retrieve logistics records: " + e.getMessage());
+        }
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+
+        logisticsRecordsPanel.removeAll();
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        logisticsRecordsPanel.add(scrollPane, gbc);
+        logisticsRecordsPanel.revalidate();
+        logisticsRecordsPanel.repaint();
     }
 
     private JPanel placeOrderPnl() {
@@ -1442,6 +1471,7 @@ public class View extends JFrame {
         refreshCustomerRecords();
         refreshStoresCustomerBoughtFrom();
         refreshStoreRecordsPnl();
+        refreshLogisticsRecordPnl();
         refreshCustomerStatsPnl();
         refreshProductSalesPnl();
         refreshShippingReportsPnl();
