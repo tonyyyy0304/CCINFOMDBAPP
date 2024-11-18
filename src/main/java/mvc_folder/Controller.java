@@ -395,6 +395,7 @@ public class Controller
                     // Retrieve the inputs from the view
                     String productIDInput = view.getAdjustStockProductId(); // Method to get the product ID
                     String amountInput = view.getAdjustStockQuantity(); // Method to get the stock amount
+                    String action = view.getAdjustStockType(); // Method to get the action
 
                     // Validate and parse the product ID
                     int productID;
@@ -424,11 +425,17 @@ public class Controller
                     int currentStock = model.getCurrentStock(productID);
 
                     // Check if the amount to remove is valid
-                    if (amount > currentStock) {
+                    if (amount > currentStock && action.equals("Remove")) {
                         view.showError("Cannot remove more stock than available. Current stock: " + currentStock);
                         return; // Exit early if attempting to remove too much stock
                     }
-
+                    
+                    if (action.equals("Remove")) {
+                        amount -= currentStock; // Change the amount to negative if removing stock
+                    }
+                    else{
+                        amount += currentStock; // Change the amount to positive if adding stock
+                    }
                     // Adjust the stock in the model
                     boolean success = model.adjustStock(productID, amount);
                     if (success) {
