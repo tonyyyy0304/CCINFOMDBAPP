@@ -54,6 +54,7 @@ public class View extends JFrame {
 
     // Place Order
     private JTextField orderCustomerId, orderProductId, orderQuantity;
+    private JComboBox<String> orderPaymentMethod;
     private JButton placeOrderBtn;
 
     // Adjust Stock
@@ -707,6 +708,10 @@ public class View extends JFrame {
         orderProductId = new JTextField(COLUMN_WIDTH);
         orderQuantity = new JTextField(COLUMN_WIDTH);
 
+        orderPaymentMethod = new JComboBox<String>();
+        orderPaymentMethod.addItem("Credit");
+        orderPaymentMethod.addItem("Debit");
+
         placeOrderBtn = new JButton("Place Order");
         placeOrderBtn.setActionCommand("Place Order");
 
@@ -730,6 +735,13 @@ public class View extends JFrame {
         panel.add(new JLabel("Quantity:"), gbc);
         gbc.gridx++;
         panel.add(orderQuantity, gbc);
+
+        // Payment Method
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Payment Method:"), gbc);
+        gbc.gridx++;
+        panel.add(orderPaymentMethod, gbc);
 
         // Place Order Button
         gbc.gridx = 0;
@@ -1045,6 +1057,10 @@ public class View extends JFrame {
 
     public String getOrderQuantity() {
         return orderQuantity.getText();
+    }
+
+    public String getOrderPaymentMethod() {
+        return orderPaymentMethod.getSelectedItem().toString();
     }
 
     public String getAdjustStockProductId() {

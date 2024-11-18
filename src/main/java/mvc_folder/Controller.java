@@ -454,6 +454,7 @@ public class Controller
                     int customerId = Integer.parseInt(view.getOrderCustomerId());
                     int productId = Integer.parseInt(view.getOrderProductId());
                     int quantity = Integer.parseInt(view.getOrderQuantity());
+                    String paymentMethod = view.getOrderPaymentMethod();
 
                     // Check if customer exists
                     if (!model.customerExists(customerId)) {
@@ -468,10 +469,11 @@ public class Controller
                     }
 
                     // Call the model to place the order
-                    boolean success = model.placeOrder(customerId, productId, quantity);
+                    boolean success = model.placeOrder(customerId, productId, quantity, paymentMethod);
                     if (success) {
                         view.showSuccess("Order placed successfully!");
                         view.clearFields(); // Clear fields after success
+                        view.refreshStoresCustomerBoughtFrom(); // Refresh the stores the customer bought from
                     } else {
                         view.showError("Failed to place order. Please check the stock availability.");
                     }

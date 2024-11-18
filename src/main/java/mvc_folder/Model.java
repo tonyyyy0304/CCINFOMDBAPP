@@ -256,7 +256,7 @@ public class Model
     }
 
     public boolean customerExists(int customerId) throws SQLException {
-        String sql = "SELECT customer_id FROM customer WHERE customer_id = ?";
+        String sql = "SELECT customer_id FROM customers WHERE customer_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, customerId);
@@ -303,7 +303,7 @@ public class Model
     public static Object[][] getStoresCustomersBoughtFrom() throws SQLException {
         String sql =
                 "SELECT CONCAT(c.first_name, ' ', c.last_name) AS customer_name, " +
-                        "GROUP_CONCAT(DISTINCT s.store_name) AS stores_bought_from " +
+                        "GROUP_CONCAT(DISTINCT s.store_name SEPARATOR ', ') AS stores_bought_from " +
                         "FROM customers c " +
                         "JOIN orders o ON o.customer_id = c.customer_id " +
                         "JOIN products p ON o.product_id = p.product_id " +
@@ -386,7 +386,7 @@ public class Model
         }
     }
 
-    public boolean placeOrder(int customerId, int productId, int quantity) throws SQLException {
+    public boolean placeOrder(int customerId, int productId, int quantity, String paymentMethod) throws SQLException {
         // Check if the customer exists
         if (!customerExists(customerId)) {
             return false; // Customer does not exist
@@ -412,12 +412,13 @@ public class Model
         }
 
         // Now, insert the order into the orders table
-        String insertOrderSql = "INSERT INTO orders (customer_id, product_id, quantity) VALUES (?, ?, ?)";
+        String insertOrderSql = "INSERT INTO orders (customer_id, product_id, quantity, payment_method) VALUES (?, ?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement insertStmt = conn.prepareStatement(insertOrderSql)) {
             insertStmt.setInt(1, customerId);
             insertStmt.setInt(2, productId);
             insertStmt.setInt(3, quantity);
+            insertStmt.setString(4, paymentMethod);
             insertStmt.executeUpdate();
         }
 

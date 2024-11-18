@@ -56,7 +56,7 @@ CREATE TABLE orders (
     order_date DATE DEFAULT (CURDATE()),
     price DECIMAL(10, 2) NOT NULL,
     payment_method ENUM('Credit', 'Debit', 'Cash') NOT NULL,
-    shipping_price DECIMAL(5, 2) NOT NULL
+    shipping_price DECIMAL(5, 2) NOT NULL DEFAULT 50.00
 );
 
 CREATE TABLE shipping (
@@ -120,6 +120,45 @@ ALTER TABLE payments ADD CONSTRAINT fk_payments_product FOREIGN KEY (product_id)
 ALTER TABLE stock_adjustment_history ADD CONSTRAINT fk_stock_history_product FOREIGN KEY (product_id) REFERENCES products(product_id);
 ALTER TABLE stock_adjustment_history ADD CONSTRAINT fk_stock_history_store FOREIGN KEY (store_id) REFERENCES store(store_id);
 ALTER TABLE stock_adjustment_history ADD CONSTRAINT fk_stock_history_customer FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
+
+-- Triggers
+DELIMITER //
+
+CREATE TRIGGER set_default_delivery_location
+BEFORE INSERT ON orders
+FOR EACH ROW
+BEGIN
+    DECLARE customer_location_id INT;
+    
+    -- Get the customer's location_id
+    SELECT location_id INTO customer_location_id
+    FROM customers
+    WHERE customer_id = NEW.customer_id;
+    
+    -- Set the delivery_location_id to the customer's location_id
+    SET NEW.delivery_location_id = customer_location_id;
+END //
+
+DELIMITER ;
+
+DELIMITER //
+
+CREATE TRIGGER set_default_order_price
+BEFORE INSERT ON orders
+FOR EACH ROW
+BEGIN
+    DECLARE product_price DECIMAL(10, 2);
+    
+    -- Get the product's price
+    SELECT price INTO product_price
+    FROM products
+    WHERE product_id = NEW.product_id;
+    
+    -- Set the price to quantity * product price
+    SET NEW.price = NEW.quantity * product_price;
+END //
+
+DELIMITER ;
 
 -- Insert sample data
 INSERT INTO locations (lot_number, street_name, city_name, zip_code, country_name) VALUES
