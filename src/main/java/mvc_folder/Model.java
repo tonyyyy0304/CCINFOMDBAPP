@@ -16,7 +16,7 @@ public class Model
 {
     private static final String dbUrl = "jdbc:mysql://localhost:3306/ecommerce_db";
     private static final String userName = "root";
-    private static final String password = "123456";
+    private static final String password = "password";
 
 
     public Model() {
@@ -466,26 +466,29 @@ public class Model
         }
     }
 
-    public static Object[][] getPaymentReports() throws SQLException {
+    public static Object[][] getPaymentReports(String status) throws SQLException {
         String sql =
             "SELECT YEAR(p.payment_date) AS year, p.payment_status, COUNT(*) AS number_of_orders " +
             "FROM payments p " +
+            "WHERE p.payment_status = ? " +
             "GROUP BY YEAR(p.payment_date), p.payment_status " +
             "ORDER BY year, p.payment_status";
-
+    
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            List<Object[]> records = new ArrayList<>();
-            while (rs.next()) {
-                records.add(new Object[]{
-                    rs.getInt("year"),
-                    rs.getString("payment_status"),
-                    rs.getInt("number_of_orders")
-                });
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, status); // Set the status parameter
+            try (ResultSet rs = stmt.executeQuery()) {
+    
+                List<Object[]> records = new ArrayList<>();
+                while (rs.next()) {
+                    records.add(new Object[]{
+                        rs.getInt("year"),
+                        rs.getString("payment_status"),
+                        rs.getInt("number_of_orders")
+                    });
+                }
+                return records.toArray(new Object[0][]);
             }
-            return records.toArray(new Object[0][]);
         }
     }
 

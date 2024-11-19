@@ -75,6 +75,9 @@ public class View extends JFrame {
     private JTextField shipOrderId, shipLogisticsId;
     private JButton shipOrderBtn;
 
+    // Payment Reports
+    private JComboBox<String> paymentReportSelection;
+
     public View() {
         // Set up the frame
         setTitle("Online Shopping System");
@@ -102,6 +105,8 @@ public class View extends JFrame {
         adjustStockBtn = new JButton("Adjust Stock");
         paymentBtn = new JButton("Pay for Order");
         shipOrderBtn = new JButton("Ship Order");
+
+        paymentReportSelection = new JComboBox<String>(new String[] {"Completed", "Pending", "Failed"});
 
         JTabbedPane mainTabbedPane = new JTabbedPane();
 
@@ -1084,9 +1089,9 @@ public class View extends JFrame {
         Object[][] data = {};
 
         try {
-            data = Model.getPaymentReports();
+            data = Model.getPaymentReports(getPaymentReportSelectionString());
         } catch (SQLException e) {
-            showError("Failed to retrieve security reports: " + e.getMessage());
+            showError("Failed to retrieve payment reports: " + e.getMessage());
         }
 
         JTable table = new JTable(data, columnNames);
@@ -1099,11 +1104,19 @@ public class View extends JFrame {
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        paymentReportsPanel.add(new JLabel("Payment Reports for"), gbc);
+
+        gbc.gridx++;
+        paymentReportsPanel.add(paymentReportSelection, gbc);
+
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.NORTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
+        gbc.gridy++;
         paymentReportsPanel.add(scrollPane, gbc);
         paymentReportsPanel.revalidate();
         paymentReportsPanel.repaint();
@@ -1198,6 +1211,10 @@ public class View extends JFrame {
 
     public void setLogisticsAddBtn(ActionListener listener) {
         logisticsAddBtn.addActionListener(listener);
+    }
+
+    public void setPaymentReportSelection(ActionListener listener) {
+        paymentReportSelection.addActionListener(listener);
     }
 
     public Integer getProductId() {
@@ -1408,6 +1425,9 @@ public class View extends JFrame {
         return shipmentScope.getSelectedItem().toString();
     }
 
+    public String getPaymentReportSelectionString() {
+        return paymentReportSelection.getSelectedItem().toString();
+    }
 
     public void clearFields() {
         productId.setText("");

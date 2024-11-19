@@ -648,5 +648,11 @@ public class Controller
             }
         });
 
+        this.view.setPaymentReportSelection(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                view.refreshPaymentReportsPnl();
+            }
+        });
     }
 }
