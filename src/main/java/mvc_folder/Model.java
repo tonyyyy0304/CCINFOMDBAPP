@@ -444,6 +444,7 @@ public class Model
     }
 
     public static Object[][] getProductSales(String category) throws SQLException {
+        // TODO: change to show yearly total sales instead of per category 
         String sql = 
         "SELECT monthly_sales.category, AVG(monthly_sales.total_sales) AS total_sales_per_month"+
         " FROM ("+
