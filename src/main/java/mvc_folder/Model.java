@@ -412,25 +412,31 @@ public class Model
     public static Object[][] getCustomerStats() throws SQLException {
         String sql = 
         "SELECT c.customer_id, CONCAT(c.first_name, ' ', c.last_name) AS customer_name,"+ 
-        " COUNT(o.order_id) / TIMESTAMPDIFF(MONTH, c.registration_date, NOW()) AS num_orders_per_month,"+ 
-        " SUM(amount_paid) / TIMESTAMPDIFF(MONTH, c.registration_date, NOW()) AS amount_spent_per_month" +
+        " COUNT(o.order_id) / (TIMESTAMPDIFF(YEAR, c.registration_date, NOW()) + 1) AS num_orders_per_year,"+ 
+        " SUM(amount_paid) / (TIMESTAMPDIFF(YEAR, c.registration_date, NOW()) + 1) AS amount_spent_per_year" +
         " FROM customers c"+ 
         " LEFT JOIN orders o ON c.customer_id = o.customer_id"+
         " LEFT JOIN payments p ON o.order_id = p.order_id"+
-        " GROUP BY c.customer_id";
+        " GROUP BY c.customer_id"+
+        " ORDER BY c.customer_id";
 
         try (Connection conn = getConnection();
         PreparedStatement stmt = conn.prepareStatement(sql);
         ResultSet rs = stmt.executeQuery())
         {
             List<Object[]> records = new ArrayList<>();
-            while (rs.next()) 
-            {
-                records.add(new Object[] {
-                        rs.getInt("customer_id"),
-                        rs.getString("customer_name"),
-                        rs.getInt("num_orders_per_month"),
-                        rs.getDouble("amount_spent_per_month"),
+            while (rs.next()) {
+                int customerId = rs.getInt("customer_id");
+                String customerName = rs.getString("customer_name");
+                double numOrdersPerYear = rs.getDouble("num_orders_per_year");
+                double amountSpentPerYear = rs.getDouble("amount_spent_per_year");
+                BigDecimal roundedAmountSpent = BigDecimal.valueOf(amountSpentPerYear).setScale(2, RoundingMode.HALF_UP);
+
+                records.add(new Object[]{
+                    customerId,
+                    customerName,
+                    numOrdersPerYear,
+                    roundedAmountSpent.doubleValue()
                 });
             }
             return records.toArray(new Object[0][]);
@@ -520,7 +526,7 @@ public class Model
         " GROUP BY" +
         " c.customer_id, s.store_id" + 
         " ORDER BY" + 
-        " s.store_name";
+        " customer_name, s.store_name";
 
         try (Connection conn = getConnection();
         PreparedStatement stmt = conn.prepareStatement(sql);
@@ -528,11 +534,16 @@ public class Model
         {
             List<Object[]> records = new ArrayList<>();
             while (rs.next()) {
+                String customerName = rs.getString("customer_name");
+                String storeName = rs.getString("store_name");
+                int numOrdersMadeAtStore = rs.getInt("num_orders_made_at_store");
+                double totalAmountSpent = rs.getDouble("total_amount_spent");
+                BigDecimal roundedTotalAmountSpent = BigDecimal.valueOf(totalAmountSpent).setScale(2, RoundingMode.HALF_UP);
                 records.add(new Object[]{
-                    rs.getString("customer_name"),
-                    rs.getString("store_name"),
-                    rs.getInt("num_orders_made_at_store"),
-                    rs.getDouble("total_amount_spent")
+                    customerName,
+                    storeName,
+                    numOrdersMadeAtStore,
+                    roundedTotalAmountSpent.doubleValue()
                 });
             }
             return records.toArray(new Object[0][]);

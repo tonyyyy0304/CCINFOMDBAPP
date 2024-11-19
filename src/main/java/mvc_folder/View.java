@@ -1018,7 +1018,7 @@ public class View extends JFrame {
     }
 
     public void refreshCustomerStatsPnl() {
-        String[] columnNames = {"Customer ID", "Customer Name", "Number of Orders Per Month", "Amount Spent Per Month"};
+        String[] columnNames = {"Customer ID", "Customer Name", "Average Number of Orders Per Year", "Average Amount Spent Per Year"};
         Object[][] data = {};
 
         try {
