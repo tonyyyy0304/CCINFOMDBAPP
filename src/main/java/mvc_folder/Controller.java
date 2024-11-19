@@ -23,6 +23,36 @@ public class Controller
     }
 
     public void listeners(){
+        this.view.setProductShowAllBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {             
+                view.refreshProductRecords();
+            }
+        });
+        this.view.setProductSearchBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String query = view.getProductSearchField();
+                String criteria = view.getSearchCriteriaComboBox();
+                if(query.isEmpty()){
+                    view.showMessage("Please enter a search query.");
+                    return;
+                }
+                try {
+                    // Call the model to search for products
+                    if(criteria.equals("Product ID")){
+                        view.refreshProductRecords(model.searchProductRecordsById(query));
+                    }else if(criteria.equals("Product Name")){
+                        view.refreshProductRecords(model.searchProductRecordsByName(query));
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+    
         this.view.setProductAddBtn(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){

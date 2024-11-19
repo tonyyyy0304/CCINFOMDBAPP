@@ -57,6 +57,67 @@ public class Model
         }
     }
 
+    public Object[][] searchProductRecordsByName(String query) throws SQLException {
+        String sql = "SELECT p.product_id, p.product_name, p.price, s.store_name, p.stock_count, p.description, p.category, p.r18 " +
+                        "FROM products p " +
+                        "JOIN store s ON p.store_id = s.store_id " +
+                        "WHERE p.product_name LIKE ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + query + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                DecimalFormat priceFormat = new DecimalFormat("Php #,###.##");
+                
+                while (rs.next()) {
+                    String formattedPrice = priceFormat.format(rs.getDouble("price"));
+                    records.add(new Object[]{
+                        rs.getInt("product_id"),
+                        rs.getString("product_name"),
+                        formattedPrice,
+                        rs.getString("store_name"),
+                        rs.getInt("stock_count"),
+                        rs.getString("description"),
+                        rs.getString("category"),
+                        rs.getBoolean("r18")
+                    });
+                }
+                return records.toArray(new Object[0][]);
+            }
+        }
+    }
+    
+    public Object[][] searchProductRecordsById(String query) throws SQLException {
+        String sql = "SELECT p.product_id, p.product_name, p.price, s.store_name, p.stock_count, p.description, p.category, p.r18 " +
+                        "FROM products p " +
+                        "JOIN store s ON p.store_id = s.store_id " + 
+                        "WHERE product_id = ?";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, Integer.parseInt(query));
+            try (ResultSet rs = stmt.executeQuery()) {
+                
+                List<Object[]> records = new ArrayList<>();
+                DecimalFormat priceFormat = new DecimalFormat("Php #,###.##");
+                
+                while (rs.next()) {
+                    String formattedPrice = priceFormat.format(rs.getDouble("price"));
+                    records.add(new Object[]{
+                        rs.getInt("product_id"),
+                        rs.getString("product_name"),
+                        formattedPrice,
+                        rs.getString("store_name"),
+                        rs.getInt("stock_count"),
+                        rs.getString("description"),
+                        rs.getString("category"),
+                        rs.getBoolean("r18")
+                    });
+                }
+                return records.toArray(new Object[0][]);
+            }
+        }
+    }
+    
     public void addLocationId(int lot_num, String street, String city, String country, int zipcode)
     {
         try {

@@ -30,6 +30,9 @@ public class View extends JFrame {
             productStoreId, stockCount, description;
     private JComboBox<String> productCategories;
     private JCheckBox productR18;
+    private JTextField productSearchField;
+    private JButton productSearchBtn, productShowAllBtn;
+    private JComboBox<String> searchCriteriaComboBox;
 
     // Customers Table
     private JTextField customerId, customerFirstName, customerLastName,
@@ -307,9 +310,70 @@ public class View extends JFrame {
     }
 
     private JPanel productRecordsPnl() {
+        productSearchField = new JTextField(20);
+        productSearchBtn = new JButton("Search");
+        productSearchBtn.setPreferredSize(new Dimension(150, 25));
+        productShowAllBtn = new JButton("Show All");
+        productShowAllBtn.setPreferredSize(new Dimension(150, 25));
+        searchCriteriaComboBox = new JComboBox<>(new String[]{"Product Name", "Product ID"});
+
+        GridBagConstraints gbc = setGBC();
         productRecordsPanel = new JPanel(new GridBagLayout());
+
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        productRecordsPanel.add(new JLabel("Search:"), gbc);
+
+        gbc.gridx++;
+        productRecordsPanel.add(productSearchField, gbc);
+
+        gbc.gridx++;
+        productRecordsPanel.add(searchCriteriaComboBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 1;
+        productRecordsPanel.add(productSearchBtn, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 1;
+        productRecordsPanel.add(productShowAllBtn, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 4;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
         refreshProductRecords();
         return productRecordsPanel;
+    }
+
+    public void refreshProductRecords(Object [][] data) {
+        String[] columnNames = {"Product ID", "Product Name", "Price", "Store Name", "Stock Count", "Description", "Category", "R18"};
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+        if (productRecordsPanel.getComponentCount() > 5) {
+            productRecordsPanel.remove(5); // Assuming the table is the fifth component
+        }
+
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 4;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        productRecordsPanel.add(scrollPane, gbc);
+        productRecordsPanel.revalidate();
+        productRecordsPanel.repaint();
     }
 
     public void refreshProductRecords() {
@@ -327,12 +391,14 @@ public class View extends JFrame {
         table.setFillsViewportHeight(true);
 
         adjustColumnWidths(table);
+        if (productRecordsPanel.getComponentCount() > 5) {
+            productRecordsPanel.remove(5); // Assuming the table is the fifth component
+        }
 
-        productRecordsPanel.removeAll();
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
+        gbc.gridy = 5;
+        gbc.gridwidth = 4;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
@@ -1217,6 +1283,18 @@ public class View extends JFrame {
         paymentReportSelection.addActionListener(listener);
     }
 
+    public void setLogisticsRemoveBtn(ActionListener listener) {
+        logisticsRemoveBtn.addActionListener(listener);
+    }
+
+    public void setProductSearchBtn(ActionListener listener) {
+        productSearchBtn.addActionListener(listener);
+    }
+
+    public void setProductShowAllBtn(ActionListener listener) {
+        productShowAllBtn.addActionListener(listener);
+    }
+
     public Integer getProductId() {
         return Integer.parseInt(productId.getText());
     }
@@ -1427,6 +1505,14 @@ public class View extends JFrame {
 
     public String getPaymentReportSelectionString() {
         return paymentReportSelection.getSelectedItem().toString();
+    }
+
+    public String getProductSearchField() {
+        return productSearchField.getText();
+    }
+
+    public String getSearchCriteriaComboBox() {
+        return searchCriteriaComboBox.getSelectedItem().toString();
     }
 
     public void clearFields() {
