@@ -678,6 +678,13 @@ public class Controller
             }
         });
 
+        this.view.setProductSalesCategory(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                view.refreshProductSalesPnl();
+            }
+        });
+
         this.view.setPaymentReportSelection(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

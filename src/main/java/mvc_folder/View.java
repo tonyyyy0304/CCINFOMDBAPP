@@ -77,6 +77,9 @@ public class View extends JFrame {
     // Ship Order
     private JTextField shipOrderId, shipLogisticsId;
     private JButton shipOrderBtn;
+    
+    // Product Sales Category
+    private JComboBox<String> productSalesCategory;
 
     // Payment Reports
     private JComboBox<String> paymentReportSelection;
@@ -109,6 +112,7 @@ public class View extends JFrame {
         paymentBtn = new JButton("Pay for Order");
         shipOrderBtn = new JButton("Ship Order");
 
+        productSalesCategory = new JComboBox<String>(new String[] {"Clothing", "Electronics", "Beauty & Personal Care", "Food & Beverages", "Toys", "Appliances", "Home & Living"});
         paymentReportSelection = new JComboBox<String>(new String[] {"Completed", "Pending", "Failed"});
 
         JTabbedPane mainTabbedPane = new JTabbedPane();
@@ -1080,7 +1084,7 @@ public class View extends JFrame {
     }
 
     public void refreshCustomerStatsPnl() {
-        String[] columnNames = {"Customer ID", "Customer Name", "Number of Orders Per Month", "Amount Spent Per Month"};
+        String[] columnNames = {"Customer ID", "Customer Name", "Average Number of Orders Per Year", "Average Amount Spent Per Year"};
         Object[][] data = {};
 
         try {
@@ -1115,11 +1119,11 @@ public class View extends JFrame {
     }
 
     public void refreshProductSalesPnl() {
-        String[] columnNames = {"Category", "Total Sales Per Month"};
+        String[] columnNames = {"Category", "Average Sales Per Month"};
         Object[][] data = {};
 
         try {
-            data = Model.getProductSales();
+            data = Model.getProductSales(getProductSalesCategory());
         } catch (SQLException e) {
             showError("Failed to retrieve product sales: " + e.getMessage());
         }
@@ -1134,7 +1138,15 @@ public class View extends JFrame {
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        productSalesPanel.add(new JLabel("Product Sales for"), gbc);
+
+        gbc.gridx++;
+        productSalesPanel.add(productSalesCategory, gbc);
+
         gbc.gridwidth = 2;
+        gbc.gridy++;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.NORTH;
         gbc.weightx = 1.0;
@@ -1277,6 +1289,10 @@ public class View extends JFrame {
 
     public void setLogisticsAddBtn(ActionListener listener) {
         logisticsAddBtn.addActionListener(listener);
+    }
+
+    public void setProductSalesCategory(ActionListener listener) {
+        productSalesCategory.addActionListener(listener);
     }
 
     public void setPaymentReportSelection(ActionListener listener) {
@@ -1501,6 +1517,10 @@ public class View extends JFrame {
 
     public String getLogisticsScope() {
         return shipmentScope.getSelectedItem().toString();
+    }
+
+    public String getProductSalesCategory() {
+        return productSalesCategory.getSelectedItem().toString();
     }
 
     public String getPaymentReportSelectionString() {
