@@ -40,7 +40,7 @@ public class Controller
                 }
                 try {
                     // Call the model to search for products
-                    if(criteria.equals("Product ID")){
+                    if(criteria.equals("CustomerID")){
                         view.refreshProductRecords(model.searchProductRecordsById(query));
                     }else if(criteria.equals("Product Name")){
                         view.refreshProductRecords(model.searchProductRecordsByName(query));
@@ -256,6 +256,37 @@ public class Controller
                     view.showError("An unexpected error occurred: " + ex.getMessage());
                 }
 
+            }
+        });
+
+        this.view.setCustomerSearchBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String query = view.getCustomerSearchField();
+                String criteria = view.getCustomerCriteriaComboBox();
+                if(query.isEmpty()){
+                    view.showMessage("Please enter a search query.");
+                    return;
+                }
+                try {
+                    // Call the model to search for customer
+                    if(criteria.equals("Customer ID")){
+                        view.refreshProductRecords(model.searchCustomerRecordsById(query));
+                    }else if(criteria.equals("Customer Name")){
+                        view.refreshProductRecords(model.searchCustomerRecordsByName(query));
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+        this.view.setCustomerShowAllBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                view.refreshCustomerRecords();
             }
         });
 

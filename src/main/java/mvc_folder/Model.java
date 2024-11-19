@@ -290,6 +290,82 @@ public class Model
         }
     }
 
+    public boolean removeStore(int store_id) throws SQLException {
+        String sql = "DELETE FROM store WHERE store_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, store_id);
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    public Object[][] searchCustomerRecordsById(String query){
+        String sql = "SELECT c.customer_id, c.first_name, c.last_name, ci.phone_number, ci.email_address, c.birthdate, " +
+                        "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
+                        "c.customer_status, c.registration_date " +
+                        "FROM customers c " +
+                        "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
+                        "JOIN locations l ON c.location_id = l.location_id " +
+                        "WHERE c.customer_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, Integer.parseInt(query));
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                while (rs.next()) {
+                    records.add(new Object[]{
+                        rs.getInt("customer_id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("phone_number"),
+                        rs.getString("email_address"),
+                        rs.getDate("birthdate"),
+                        rs.getString("address"),
+                        rs.getString("customer_status"),
+                        rs.getDate("registration_date")
+                    });
+                }
+                return records.toArray(new Object[0][]);
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return null;
+        }
+    }
+
+    public Object[][] searchCustomerRecordsByName(String query) throws SQLException {
+        String sql = "SELECT c.customer_id, c.first_name, c.last_name, ci.phone_number, ci.email_address, c.birthdate, " +
+                        "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
+                        "c.customer_status, c.registration_date " +
+                        "FROM customers c " +
+                        "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
+                        "JOIN locations l ON c.location_id = l.location_id " +
+                        "WHERE CONCAT(c.first_name, ' ', c.last_name) LIKE ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + query + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                while (rs.next()) {
+                    records.add(new Object[]{
+                        rs.getInt("customer_id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("phone_number"),
+                        rs.getString("email_address"),
+                        rs.getDate("birthdate"),
+                        rs.getString("address"),
+                        rs.getString("customer_status"),
+                        rs.getDate("registration_date")
+                    });
+                }
+                return records.toArray(new Object[0][]);
+            }
+        }
+    }
+
     public boolean addCustomer(String firstName, String lastName, int contactId, int locationId, Date dateOfBirth) {
         String sql = "INSERT INTO customers (first_name, last_name, contact_id, location_id, birthdate) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = getConnection();

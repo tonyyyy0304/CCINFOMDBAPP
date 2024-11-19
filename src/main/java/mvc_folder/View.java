@@ -40,6 +40,9 @@ public class View extends JFrame {
             customerLotNum, customerStreetName, customerCityName,
             customerZipCode, customerCountry;
     private JDatePickerImpl customerBirthdate;
+    private JButton customerSearchBtn, customerShowAllBtn;
+    private JComboBox<String> customerCriteriaComboBox;
+    private JTextField customerSearchField;
 
     // Stores Table
     private JTextField storeId, storeName,
@@ -538,9 +541,72 @@ public class View extends JFrame {
     }
 
     private JPanel customerRecordsPnl() {
+        
+
+        customerSearchField = new JTextField(20);
+        customerSearchBtn = new JButton("Search");
+        customerSearchBtn.setPreferredSize(new Dimension(150, 25));
+        customerShowAllBtn = new JButton("Show All");
+        customerShowAllBtn.setPreferredSize(new Dimension(150, 25));
+        customerCriteriaComboBox = new JComboBox<>(new String[]{"Customer Name", "Customer ID"});
+        
+        GridBagConstraints gbc = setGBC();
         customerRecordsPanel = new JPanel(new GridBagLayout());
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        customerRecordsPanel.add(new JLabel("Search:"), gbc);
+
+        gbc.gridx++;
+        customerRecordsPanel.add(customerSearchField, gbc);
+
+        gbc.gridx++;
+        customerRecordsPanel.add(customerCriteriaComboBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 1;
+        customerRecordsPanel.add(customerSearchBtn, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 1;
+        customerRecordsPanel.add(customerShowAllBtn, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 4;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+
         refreshCustomerRecords();
         return customerRecordsPanel;
+    }
+
+    public void refreshCustomerRecords(Object data[][]){
+        String[] columnNames = {"Customer ID", "First Name", "Last Name", "Phone Number", "Email Address", "Birthdate", "Address", "Status", "Registration Date"};
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+        if (customerRecordsPanel.getComponentCount() > 5) {
+            customerRecordsPanel.remove(5); // Assuming the table is the fifth component
+        }
+        
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 4;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        customerRecordsPanel.add(scrollPane, gbc);
+        customerRecordsPanel.revalidate();
+        customerRecordsPanel.repaint();
     }
 
     public void refreshCustomerRecords() {
@@ -558,11 +624,13 @@ public class View extends JFrame {
         table.setFillsViewportHeight(true);
 
         adjustColumnWidths(table);
+        if (customerRecordsPanel.getComponentCount() > 5) {
+            customerRecordsPanel.remove(5); // Assuming the table is the fifth component
+        }
 
-        customerRecordsPanel.removeAll();
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
@@ -1311,6 +1379,14 @@ public class View extends JFrame {
         productShowAllBtn.addActionListener(listener);
     }
 
+    public void setCustomerSearchBtn(ActionListener listener) {
+        customerSearchBtn.addActionListener(listener);
+    }
+
+    public void setCustomerShowAllBtn(ActionListener listener) {
+        customerShowAllBtn.addActionListener(listener);
+    }
+
     public Integer getProductId() {
         return Integer.parseInt(productId.getText());
     }
@@ -1533,6 +1609,14 @@ public class View extends JFrame {
 
     public String getSearchCriteriaComboBox() {
         return searchCriteriaComboBox.getSelectedItem().toString();
+    }
+
+    public String getCustomerSearchField() {
+        return customerSearchField.getText();
+    }
+
+    public String getCustomerCriteriaComboBox() {
+        return customerCriteriaComboBox.getSelectedItem().toString();
     }
 
     public void clearFields() {
