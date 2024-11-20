@@ -390,7 +390,7 @@ public class Model
     }
 
     public boolean removeCustomer(int customerId) throws SQLException {
-        String sql = "DELETE FROM customers WHERE customer_id = ?";
+        String sql = "UPDATE customers SET is_deleted = 1 WHERE customer_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, customerId);
