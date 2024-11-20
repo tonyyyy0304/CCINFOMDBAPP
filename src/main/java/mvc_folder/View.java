@@ -1326,8 +1326,8 @@ public class View extends JFrame {
         customerShowAllBtn.addActionListener(listener);
     }
 
-    public Integer getProductId() {
-        return Integer.parseInt(productId.getText());
+    public String getProductId() {
+        return productId.getText();
     }
 
     public String getProductName() {

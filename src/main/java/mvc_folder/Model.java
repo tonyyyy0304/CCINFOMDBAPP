@@ -47,9 +47,19 @@ public class Model
         }
     }
 
+    public boolean removeProduct(int productId) throws SQLException
+    {
+        String sql = "UPDATE products SET is_deleted = 1 WHERE product_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, productId);
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
     public boolean productExists(int productId) throws SQLException
     {
-        String sql = "SELECT product_id FROM products WHERE product_id = ?";
+        String sql = "SELECT product_id FROM products WHERE product_id = ? AND is_deleted != 1 ";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, productId);
@@ -63,7 +73,7 @@ public class Model
         String sql = "SELECT p.product_id, p.product_name, p.price, s.store_name, p.stock_count, p.description, p.category, p.r18 " +
                         "FROM products p " +
                         "JOIN store s ON p.store_id = s.store_id " +
-                        "WHERE p.product_name LIKE ?" +
+                        "WHERE p.product_name LIKE ? AND p.is_deleted != 1 " +
                         "ORDER BY p.product_id";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -94,7 +104,7 @@ public class Model
         String sql = "SELECT p.product_id, p.product_name, p.price, s.store_name, p.stock_count, p.description, p.category, p.r18 " +
                         "FROM products p " +
                         "JOIN store s ON p.store_id = s.store_id " + 
-                        "WHERE product_id = ?" +
+                        "WHERE product_id = ? AND p.is_deleted != 1 " +
                         "ORDER BY p.product_id";
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -399,7 +409,7 @@ public class Model
     }
 
     public boolean customerExists(int customerId) throws SQLException {
-        String sql = "SELECT customer_id FROM customers WHERE customer_id = ?";
+        String sql = "SELECT customer_id FROM customers WHERE customer_id = ? AND is_deleted != 1 ";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, customerId);
@@ -449,6 +459,7 @@ public class Model
                         "JOIN orders o ON o.customer_id = c.customer_id " +
                         "JOIN products p ON o.product_id = p.product_id " +
                         "JOIN store s ON p.store_id = s.store_id " +
+                        "WHERE c.is_deleted != 1 " +
                         "GROUP BY c.customer_id";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -469,7 +480,8 @@ public class Model
         String sql =
                 "SELECT p.product_id, p.product_name, p.price, s.store_name, p.stock_count, p.description, p.category, p.r18 " +
                         "FROM products p " +
-                        "JOIN store s ON p.store_id = s.store_id";
+                        "JOIN store s ON p.store_id = s.store_id" + 
+                        " WHERE p.is_deleted != 1 ";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) 
@@ -554,6 +566,7 @@ public class Model
         " FROM customers c"+ 
         " LEFT JOIN orders o ON c.customer_id = o.customer_id"+
         " LEFT JOIN payments p ON o.order_id = p.order_id"+
+        " WHERE c.is_deleted != 1 "+
         " GROUP BY c.customer_id"+
         " ORDER BY c.customer_id";
 
@@ -661,6 +674,8 @@ public class Model
         " store s ON s.store_id = p.store_id" +
         " LEFT JOIN" + 
         " payments pm ON pm.order_id = o.order_id" +
+        " WHERE" +
+        " c.is_deleted != 1 " +
         " GROUP BY" +
         " c.customer_id, s.store_id" + 
         " ORDER BY" + 
@@ -732,7 +747,7 @@ public class Model
         }
 
         // Check if the product exists and its stock count
-        String checkProductSql = "SELECT stock_count FROM products WHERE product_id = ?";
+        String checkProductSql = "SELECT stock_count FROM products WHERE product_id = ? AND is_deleted != 1 ";
         try (Connection conn = getConnection();
              PreparedStatement checkStmt = conn.prepareStatement(checkProductSql)) {
             checkStmt.setInt(1, productId);

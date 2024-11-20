@@ -129,7 +129,23 @@ public class Controller
         this.view.setProductRemoveBtn(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
-                System.out.println("test");
+                try {
+                    int productId = Integer.parseInt(view.getProductId());
+                    boolean success = model.removeProduct(productId);
+                    if (success) {
+                        view.showSuccess("Product removed successfully!");
+                        view.clearFields();
+                        view.refreshProductRecords();
+                    } else {
+                        view.showError("Failed to remove the product. Product ID may not exist.");
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Product ID must be a valid number.");
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
             }
         });
 
