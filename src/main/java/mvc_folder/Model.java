@@ -63,7 +63,8 @@ public class Model
         String sql = "SELECT p.product_id, p.product_name, p.price, s.store_name, p.stock_count, p.description, p.category, p.r18 " +
                         "FROM products p " +
                         "JOIN store s ON p.store_id = s.store_id " +
-                        "WHERE p.product_name LIKE ?";
+                        "WHERE p.product_name LIKE ?" +
+                        "ORDER BY p.product_id";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, "%" + query + "%");
@@ -93,7 +94,8 @@ public class Model
         String sql = "SELECT p.product_id, p.product_name, p.price, s.store_name, p.stock_count, p.description, p.category, p.r18 " +
                         "FROM products p " +
                         "JOIN store s ON p.store_id = s.store_id " + 
-                        "WHERE product_id = ?";
+                        "WHERE product_id = ?" +
+                        "ORDER BY p.product_id";
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, Integer.parseInt(query));
@@ -306,7 +308,8 @@ public class Model
                         "FROM customers c " +
                         "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
                         "JOIN locations l ON c.location_id = l.location_id " +
-                        "WHERE c.customer_id = ?";
+                        "WHERE c.customer_id = ?" +
+                        "ORDER BY c.customer_id";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, Integer.parseInt(query));
@@ -342,7 +345,8 @@ public class Model
                         "FROM customers c " +
                         "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
                         "JOIN locations l ON c.location_id = l.location_id " +
-                        "WHERE CONCAT(c.first_name, ' ', c.last_name) LIKE ?";
+                        "WHERE CONCAT(c.first_name, ' ', c.last_name) LIKE ?" +
+                        "ORDER BY c.customer_id";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, "%" + query + "%");

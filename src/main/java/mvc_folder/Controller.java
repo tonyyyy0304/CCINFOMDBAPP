@@ -33,16 +33,16 @@ public class Controller
             @Override
             public void actionPerformed(ActionEvent e) {
                 String query = view.getProductSearchField();
-                String criteria = view.getSearchCriteriaComboBox();
+                String criteria = view.getProductSearchCriteriaComboBox();
                 if(query.isEmpty()){
                     view.showMessage("Please enter a search query.");
                     return;
                 }
                 try {
                     // Call the model to search for products
-                    if(criteria.equals("CustomerID")){
+                    if(criteria.equals("Product ID")){
                         view.refreshProductRecords(model.searchProductRecordsById(query));
-                    }else if(criteria.equals("Product Name")){
+                    } else if(criteria.equals("Product Name")){
                         view.refreshProductRecords(model.searchProductRecordsByName(query));
                     }
                 } catch (SQLException ex) {
@@ -264,16 +264,17 @@ public class Controller
             public void actionPerformed(ActionEvent e) {
                 String query = view.getCustomerSearchField();
                 String criteria = view.getCustomerCriteriaComboBox();
-                if(query.isEmpty()){
+
+                if (query.isEmpty()) {
                     view.showMessage("Please enter a search query.");
                     return;
                 }
                 try {
-                    // Call the model to search for customer
-                    if(criteria.equals("Customer ID")){
-                        view.refreshProductRecords(model.searchCustomerRecordsById(query));
-                    }else if(criteria.equals("Customer Name")){
-                        view.refreshProductRecords(model.searchCustomerRecordsByName(query));
+                    // Call the model to search for customers
+                    if (criteria.equals("Customer ID")) {
+                        view.refreshCustomerRecords(model.searchCustomerRecordsById(query));
+                    } else if (criteria.equals("Customer Name")) {
+                        view.refreshCustomerRecords(model.searchCustomerRecordsByName(query));
                     }
                 } catch (SQLException ex) {
                     view.showError("Database error: " + ex.getMessage());

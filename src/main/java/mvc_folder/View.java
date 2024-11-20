@@ -32,7 +32,7 @@ public class View extends JFrame {
     private JCheckBox productR18;
     private JTextField productSearchField;
     private JButton productSearchBtn, productShowAllBtn;
-    private JComboBox<String> searchCriteriaComboBox;
+    private JComboBox<String> productSearchCriteriaComboBox;
 
     // Customers Table
     private JTextField customerId, customerFirstName, customerLastName,
@@ -108,6 +108,7 @@ public class View extends JFrame {
         productRemoveBtn = new JButton("Remove Product");
         customerAddBtn = new JButton("Add Customer");
         customerRemoveBtn = new JButton("Remove Customer");
+        customerSearchBtn = new JButton("Search");
         storeAddBtn = new JButton("Add Store");
         storeRemoveBtn = new JButton("Remove Store");
         placeOrderBtn = new JButton("Place Order");
@@ -322,39 +323,30 @@ public class View extends JFrame {
         productSearchBtn.setPreferredSize(new Dimension(150, 25));
         productShowAllBtn = new JButton("Show All");
         productShowAllBtn.setPreferredSize(new Dimension(150, 25));
-        searchCriteriaComboBox = new JComboBox<>(new String[]{"Product Name", "Product ID"});
+        productSearchCriteriaComboBox = new JComboBox<>(new String[]{"Product Name", "Product ID"});
 
-        GridBagConstraints gbc = setGBC();
         productRecordsPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = setGBC();
 
-
+        gbc.gridwidth = 1;
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 1;
         productRecordsPanel.add(new JLabel("Search:"), gbc);
 
         gbc.gridx++;
         productRecordsPanel.add(productSearchField, gbc);
 
         gbc.gridx++;
-        productRecordsPanel.add(searchCriteriaComboBox, gbc);
+        productRecordsPanel.add(productSearchCriteriaComboBox, gbc);
 
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.gridwidth = 1;
         productRecordsPanel.add(productSearchBtn, gbc);
 
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.gridwidth = 1;
         productRecordsPanel.add(productShowAllBtn, gbc);
         
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 4;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
         refreshProductRecords();
         return productRecordsPanel;
     }
@@ -384,34 +376,13 @@ public class View extends JFrame {
     }
 
     public void refreshProductRecords() {
-        String[] columnNames = {"Product ID", "Product Name", "Price", "Store Name", "Stock Count", "Description", "Category", "R18"};
         Object[][] data = {};
-
         try {
             data = Model.getProductRecords();
         } catch (SQLException e) {
             showError("Failed to retrieve product records: " + e.getMessage());
         }
-
-        JTable table = new JTable(data, columnNames);
-        JScrollPane scrollPane = new JScrollPane(table);
-        table.setFillsViewportHeight(true);
-
-        adjustColumnWidths(table);
-        if (productRecordsPanel.getComponentCount() > 5) {
-            productRecordsPanel.remove(5); // Assuming the table is the fifth component
-        }
-
-        GridBagConstraints gbc = setGBC();
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 4;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        productRecordsPanel.add(scrollPane, gbc);
-        productRecordsPanel.revalidate();
-        productRecordsPanel.repaint();
+        refreshProductRecords(data);
     }
 
     private JPanel customerAddPnl() {
@@ -541,8 +512,6 @@ public class View extends JFrame {
     }
 
     private JPanel customerRecordsPnl() {
-        
-
         customerSearchField = new JTextField(20);
         customerSearchBtn = new JButton("Search");
         customerSearchBtn.setPreferredSize(new Dimension(150, 25));
@@ -550,12 +519,12 @@ public class View extends JFrame {
         customerShowAllBtn.setPreferredSize(new Dimension(150, 25));
         customerCriteriaComboBox = new JComboBox<>(new String[]{"Customer Name", "Customer ID"});
         
-        GridBagConstraints gbc = setGBC();
         customerRecordsPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = setGBC();
 
+        gbc.gridwidth = 1;
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 1;
         customerRecordsPanel.add(new JLabel("Search:"), gbc);
 
         gbc.gridx++;
@@ -566,20 +535,11 @@ public class View extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.gridwidth = 1;
         customerRecordsPanel.add(customerSearchBtn, gbc);
 
         gbc.gridx = 0;
         gbc.gridy++;
-        gbc.gridwidth = 1;
         customerRecordsPanel.add(customerShowAllBtn, gbc);
-        
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 4;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
 
         refreshCustomerRecords();
         return customerRecordsPanel;
@@ -610,34 +570,13 @@ public class View extends JFrame {
     }
 
     public void refreshCustomerRecords() {
-        String[] columnNames = {"Customer ID", "First Name", "Last Name", "Phone Number", "Email Address", "Birthdate", "Address", "Status", "Registration Date"};
         Object[][] data = {};
-
         try {
             data = Model.getCustomerRecords();
         } catch (SQLException e) {
             showError("Failed to retrieve customer records: " + e.getMessage());
         }
-
-        JTable table = new JTable(data, columnNames);
-        JScrollPane scrollPane = new JScrollPane(table);
-        table.setFillsViewportHeight(true);
-
-        adjustColumnWidths(table);
-        if (customerRecordsPanel.getComponentCount() > 5) {
-            customerRecordsPanel.remove(5); // Assuming the table is the fifth component
-        }
-
-        GridBagConstraints gbc = setGBC();
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        customerRecordsPanel.add(scrollPane, gbc);
-        customerRecordsPanel.revalidate();
-        customerRecordsPanel.repaint();
+        refreshCustomerRecords(data);
     }
 
     private JPanel storesCustomersBoughtFromPnl() {
@@ -1607,8 +1546,8 @@ public class View extends JFrame {
         return productSearchField.getText();
     }
 
-    public String getSearchCriteriaComboBox() {
-        return searchCriteriaComboBox.getSelectedItem().toString();
+    public String getProductSearchCriteriaComboBox() {
+        return productSearchCriteriaComboBox.getSelectedItem().toString();
     }
 
     public String getCustomerSearchField() {
