@@ -7,7 +7,8 @@ CREATE TABLE store (
     store_name VARCHAR(45) NOT NULL,
     contact_id INT NOT NULL,
     location_id INT NOT NULL,
-    registration_date DATE DEFAULT (CURDATE())
+    registration_date DATE DEFAULT (CURDATE()),
+    status ENUM('Active', 'Deleted') NOT NULL DEFAULT 'Active'
 );
 
 CREATE TABLE locations (
@@ -31,7 +32,7 @@ CREATE TABLE customers (
     last_name VARCHAR(45) NOT NULL,
     location_id INT NOT NULL,
     contact_id INT NOT NULL,
-    customer_status ENUM('Active', 'Inactive') NOT NULL,
+    status ENUM('Active', 'Deleted') NOT NULL DEFAULT 'Active',
     registration_date DATE DEFAULT (CURDATE()),
     birthdate DATE NOT NULL
 );
@@ -44,7 +45,8 @@ CREATE TABLE products (
     stock_count INT UNSIGNED NOT NULL,
     description VARCHAR(200) NOT NULL,
     category ENUM('Clothing', 'Electronics', 'Beauty & Personal Care', 'Food & Beverages', 'Toys', 'Appliances', 'Home & Living') NOT NULL,
-    r18 ENUM('T', 'F') NOT NULL
+    r18 ENUM('T', 'F') NOT NULL,
+    status ENUM('Active', 'Deleted') NOT NULL DEFAULT 'Active'
 );
 
 CREATE TABLE orders (
@@ -54,7 +56,6 @@ CREATE TABLE orders (
     product_id INT NOT NULL,
     quantity INT UNSIGNED NOT NULL,
     order_date DATE DEFAULT (CURDATE()),
-    price DECIMAL(10, 2) NOT NULL,
     payment_method ENUM('Credit', 'Debit', 'Cash') NOT NULL,
     shipping_price DECIMAL(5, 2) NOT NULL DEFAULT 50.00
 );
@@ -70,16 +71,15 @@ CREATE TABLE logistics_companies (
     logistics_company_id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     location_id INT NOT NULL,
     logistics_company_name VARCHAR(50) NOT NULL,
-    shipment_scope ENUM('Domestic', 'International') NOT NULL
+    shipment_scope ENUM('Domestic', 'International') NOT NULL,
+    status ENUM('Active', 'Deleted') NOT NULL DEFAULT 'Active'
 );
 
 CREATE TABLE payments (
     payment_id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     order_id INT NOT NULL,
     store_id INT NOT NULL,
-    customer_id INT NOT NULL,
     product_id INT NOT NULL,
-    amount_paid DECIMAL(10, 2) UNSIGNED NOT NULL DEFAULT 0.0,
     payment_status ENUM('Completed', 'Pending', 'Failed') NOT NULL DEFAULT 'Pending',
     payment_date DATE DEFAULT (CURDATE())
 );
@@ -114,32 +114,11 @@ ALTER TABLE logistics_companies ADD CONSTRAINT fk_logistics_location FOREIGN KEY
 
 ALTER TABLE payments ADD CONSTRAINT fk_payments_order FOREIGN KEY (order_id) REFERENCES orders(order_id);
 ALTER TABLE payments ADD CONSTRAINT fk_payments_store FOREIGN KEY (store_id) REFERENCES store(store_id);
-ALTER TABLE payments ADD CONSTRAINT fk_payments_customer FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
 ALTER TABLE payments ADD CONSTRAINT fk_payments_product FOREIGN KEY (product_id) REFERENCES products(product_id);
 
 ALTER TABLE stock_adjustment_history ADD CONSTRAINT fk_stock_history_product FOREIGN KEY (product_id) REFERENCES products(product_id);
 ALTER TABLE stock_adjustment_history ADD CONSTRAINT fk_stock_history_store FOREIGN KEY (store_id) REFERENCES store(store_id);
 ALTER TABLE stock_adjustment_history ADD CONSTRAINT fk_stock_history_customer FOREIGN KEY (customer_id) REFERENCES customers(customer_id);
-
--- Triggers
-DELIMITER //
-
-CREATE TRIGGER set_default_order_price
-BEFORE INSERT ON orders
-FOR EACH ROW
-BEGIN
-    DECLARE product_price DECIMAL(10, 2);
-    
-    -- Get the product's price
-    SELECT price INTO product_price
-    FROM products
-    WHERE product_id = NEW.product_id;
-    
-    -- Set the price to quantity * product price
-    SET NEW.price = NEW.quantity * product_price;
-END //
-
-DELIMITER ;
 
 -- Insert sample data
 INSERT INTO locations (lot_number, street_name, city_name, zip_code, country_name) VALUES
@@ -178,12 +157,12 @@ INSERT INTO store (store_name, contact_id, location_id, registration_date) VALUE
     ('T-Shirts Galore', 4, 4, '2020-04-01'), -- store_ID 4
     ('Arts & Crafts', 5, 5, '2020-05-01'); -- store_ID 5
 
-INSERT INTO customers (first_name, last_name, location_id, contact_id, customer_status, registration_date, birthdate) VALUES
-    ('Juan', 'Dela Cruz', 6, 6, 'Active', '2020-01-01', '1990-01-01'), -- customer_ID 1
-    ('Jane', 'Doe', 7, 7, 'Active', '2020-02-01', '1995-02-01'), -- customer_ID 2
-    ('John', 'Doe', 8, 8, 'Active', '2020-03-01', '1998-03-01'), -- customer_ID 3
-    ('Darna', 'Dyesebel', 9, 9, 'Active', '2020-04-01', '1992-04-01'), -- customer_ID 4
-    ('Batman', 'Superman', 10, 10, 'Active', '2020-05-01', '1993-05-01'); -- customer_ID 5
+INSERT INTO customers (first_name, last_name, location_id, contact_id, registration_date, birthdate) VALUES
+    ('Juan', 'Dela Cruz', 6, 6, '2020-01-01', '1990-01-01'), -- customer_ID 1
+    ('Jane', 'Doe', 7, 7, '2020-02-01', '1995-02-01'), -- customer_ID 2
+    ('John', 'Doe', 8, 8, '2020-03-01', '1998-03-01'), -- customer_ID 3
+    ('Darna', 'Dyesebel', 9, 9, '2020-04-01', '1992-04-01'), -- customer_ID 4
+    ('Batman', 'Superman', 10, 10, '2020-05-01', '1993-05-01'); -- customer_ID 5
 
 INSERT INTO products (product_name, price, store_id, stock_count, description, category, r18) VALUES
     ('Antique Vase', 1500.00, 1, 10, 'A beautiful antique vase from the Ming dynasty.', 'Home & Living', 'T'), -- product_ID 1
@@ -199,17 +178,17 @@ INSERT INTO logistics_companies (location_id, logistics_company_name, shipment_s
     (14, 'FedEx', 'International'), -- logistics_company_ID 4
     (15, 'DHL Express', 'International'); -- logistics_company_ID 5
 
-INSERT INTO orders (customer_id, delivery_location_id, product_id, quantity, order_date, price, payment_method, shipping_price) VALUES
-    (1, 1, 1, 2, '2021-01-15', 3000.00, 'Credit', 50.00), -- order_ID 1
-    (2, 2, 2, 1, '2021-02-20', 3000.00, 'Debit', 75.00), -- order_ID 2
-    (3, 3, 3, 4, '2021-03-25', 2000.00, 'Cash', 100.00), -- order_ID 3
-    (4, 4, 4, 3, '2021-04-30', 6000.00, 'Credit', 150.00), -- order_ID 4
-    (5, 5, 5, 5, '2021-05-05', 1250.00, 'Debit', 200.00), -- order_ID 5
-    (1, 6, 1, 1, '2022-06-10', 1500.00, 'Cash', 50.00), -- order_ID 6
-    (2, 7, 2, 2, '2022-07-15', 6000.00, 'Credit', 75.00), -- order_ID 7
-    (3, 8, 3, 3, '2022-08-20', 1500.00, 'Debit', 100.00), -- order_ID 8
-    (4, 9, 4, 4, '2022-09-25', 8000.00, 'Cash', 150.00), -- order_ID 9
-    (5, 10, 5, 5, '2022-10-30', 1250.00, 'Credit', 200.00); -- order_ID 10
+INSERT INTO orders (customer_id, delivery_location_id, product_id, quantity, order_date, payment_method, shipping_price) VALUES
+    (1, 1, 1, 2, '2021-01-15', 'Credit', 50.00), -- order_ID 1
+    (2, 2, 2, 1, '2021-02-20', 'Debit', 75.00), -- order_ID 2
+    (3, 3, 3, 4, '2021-03-25', 'Cash', 100.00), -- order_ID 3
+    (4, 4, 4, 3, '2021-04-30', 'Credit', 150.00), -- order_ID 4
+    (5, 5, 5, 5, '2021-05-05', 'Debit', 200.00), -- order_ID 5
+    (1, 6, 1, 1, '2022-06-10', 'Cash', 50.00), -- order_ID 6
+    (2, 7, 2, 2, '2022-07-15', 'Credit', 75.00), -- order_ID 7
+    (3, 8, 3, 3, '2022-08-20', 'Debit', 100.00), -- order_ID 8
+    (4, 9, 4, 4, '2022-09-25', 'Cash', 150.00), -- order_ID 9
+    (5, 10, 5, 5, '2022-10-30', 'Credit', 200.00); -- order_ID 10
 
 INSERT INTO shipping (order_id, logistics_company_id, expected_arrival_date) VALUES
     (1, 1, '2021-01-20'), -- shipping_ID 1
@@ -223,17 +202,17 @@ INSERT INTO shipping (order_id, logistics_company_id, expected_arrival_date) VAL
     (9, 4, '2022-10-01'), -- shipping_ID 9
     (10, 5, '2022-11-05'); -- shipping_ID 10
 
-INSERT INTO payments (order_id, store_id, customer_id, product_id, amount_paid, payment_status) VALUES
-    (1, 1, 1, 1, 3050.00, 'Completed'), -- payment_ID 1
-    (2, 1, 2, 2, 3075.00, 'Completed'), -- payment_ID 2
-    (3, 2, 3, 3, 2100.00, 'Completed'), -- payment_ID 3
-    (4, 3, 4, 4, 6150.00, 'Completed'), -- payment_ID 4
-    (5, 4, 5, 5, 1450.00, 'Completed'), -- payment_ID 5
-    (6, 1, 1, 1, 1550.00, 'Completed'), -- payment_ID 6
-    (7, 1, 2, 2, 6075.00, 'Completed'), -- payment_ID 7
-    (8, 2, 3, 3, 1600.00, 'Completed'), -- payment_ID 8
-    (9, 3, 4, 4, 8150.00, 'Completed'), -- payment_ID 9
-    (10, 4, 5, 5, 1450.00, 'Completed'); -- payment_ID 10
+INSERT INTO payments (order_id, store_id, product_id, payment_status) VALUES
+    (1, 1, 1, 'Completed'), -- payment_ID 1
+    (2, 1, 2, 'Completed'), -- payment_ID 2
+    (3, 2, 3, 'Completed'), -- payment_ID 3
+    (4, 3, 4, 'Completed'), -- payment_ID 4
+    (5, 4, 5, 'Completed'), -- payment_ID 5
+    (6, 1, 1, 'Completed'), -- payment_ID 6
+    (7, 1, 2, 'Completed'), -- payment_ID 7
+    (8, 2, 3, 'Completed'), -- payment_ID 8
+    (9, 3, 4, 'Completed'), -- payment_ID 9
+    (10, 4, 5, 'Completed'); -- payment_ID 10
 
 INSERT INTO stock_adjustment_history (product_id, store_id, customer_id, adjustment_type, adjustment_amount) VALUES
     (1, 1, 1, 'Decrease', 2), -- stock_adjustment_ID 1
