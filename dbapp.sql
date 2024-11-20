@@ -80,6 +80,7 @@ CREATE TABLE payments (
     order_id INT NOT NULL,
     store_id INT NOT NULL,
     product_id INT NOT NULL,
+    amount_paid DECIMAL(10, 2) UNSIGNED NOT NULL DEFAULT 0.0,
     payment_status ENUM('Completed', 'Pending', 'Failed') NOT NULL DEFAULT 'Pending',
     payment_date DATE DEFAULT (CURDATE())
 );
@@ -202,17 +203,17 @@ INSERT INTO shipping (order_id, logistics_company_id, expected_arrival_date) VAL
     (9, 4, '2022-10-01'), -- shipping_ID 9
     (10, 5, '2022-11-05'); -- shipping_ID 10
 
-INSERT INTO payments (order_id, store_id, product_id, payment_status) VALUES
-    (1, 1, 1, 'Completed'), -- payment_ID 1
-    (2, 1, 2, 'Completed'), -- payment_ID 2
-    (3, 2, 3, 'Completed'), -- payment_ID 3
-    (4, 3, 4, 'Completed'), -- payment_ID 4
-    (5, 4, 5, 'Completed'), -- payment_ID 5
-    (6, 1, 1, 'Completed'), -- payment_ID 6
-    (7, 1, 2, 'Completed'), -- payment_ID 7
-    (8, 2, 3, 'Completed'), -- payment_ID 8
-    (9, 3, 4, 'Completed'), -- payment_ID 9
-    (10, 4, 5, 'Completed'); -- payment_ID 10
+INSERT INTO payments (order_id, store_id, product_id, amount_paid, payment_status) VALUES
+    (1, 1, 1, 3050.00, 'Completed'), -- payment_ID 1
+    (2, 1, 2, 3075.00, 'Completed'), -- payment_ID 2
+    (3, 2, 3, 2100.00, 'Completed'), -- payment_ID 3
+    (4, 3, 4, 6150.00, 'Completed'), -- payment_ID 4
+    (5, 4, 5, 1450.00, 'Completed'), -- payment_ID 5
+    (6, 1, 1, 1550.00, 'Completed'), -- payment_ID 6
+    (7, 1, 2, 6075.00, 'Completed'), -- payment_ID 7
+    (8, 2, 3, 1600.00, 'Completed'), -- payment_ID 8
+    (9, 3, 4, 8150.00, 'Completed'), -- payment_ID 9
+    (10, 4, 5, 1450.00, 'Completed'); -- payment_ID 10
 
 INSERT INTO stock_adjustment_history (product_id, store_id, customer_id, adjustment_type, adjustment_amount) VALUES
     (1, 1, 1, 'Decrease', 2), -- stock_adjustment_ID 1
