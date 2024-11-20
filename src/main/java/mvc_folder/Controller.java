@@ -596,7 +596,7 @@ public class Controller
                         view.clearFields(); // Clear fields after success
                         view.refreshPaymentReportsPnl(); // Refresh the payment reports
                     } else {
-                        view.showError("Payment failed. Please check if the Order ID are valid.");
+                        view.showError("Payment failed. Please check if the Order ID are valid or is pending for payment.");
                     }
                 } catch (NumberFormatException ex) {
                     view.showError("Please enter valid numbers for Order ID.");
@@ -623,7 +623,7 @@ public class Controller
                         view.clearFields(); // Clear fields after success
                         view.refreshPaymentReportsPnl(); // Refresh the payment reports
                     } else {
-                        view.showError("Cancellation failed. Please check if the Order ID are valid.");
+                        view.showError("Cancellation failed. Please check if the Order ID are valid or is pending for payment.");
                     }
                 } catch (NumberFormatException ex) {
                     view.showError("Please enter valid numbers for Order ID.");

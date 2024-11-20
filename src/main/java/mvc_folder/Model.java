@@ -828,7 +828,27 @@ public class Model
         }
     }
 
+    public boolean isOrderPending(int orderId) throws SQLException {
+        String sql = "SELECT payment_status FROM payments WHERE order_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, orderId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String paymentStatus = rs.getString("payment_status");
+                    return paymentStatus.equalsIgnoreCase("Pending");
+                } else {
+                    throw new SQLException("Order not found");
+                }
+            }
+        }
+    }
+
     public boolean cancelPayForOrder(int orderId) throws SQLException {
+        // Check if the order is pending
+        if (!isOrderPending(orderId)) {
+            return false; // Payment already completed/cancelled
+        }
         String sql = "UPDATE payments SET payment_status = 'Cancelled' WHERE order_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -873,6 +893,12 @@ public class Model
     }
 
     public boolean payForOrder(int orderId) throws SQLException {
+        // Check if order is pending
+        if (!isOrderPending(orderId)) {
+            return false; // Payment already completed/cancelled
+        }
+
+
         double shippingPrice = 50;
         //check if order is international
         if (isOrderInternational(orderId)) {

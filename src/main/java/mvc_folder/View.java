@@ -893,6 +893,7 @@ public class View extends JFrame {
         orderPaymentMethod = new JComboBox<String>();
         orderPaymentMethod.addItem("Credit");
         orderPaymentMethod.addItem("Debit");
+        orderPaymentMethod.addItem("Cash");
 
         placeOrderBtn = new JButton("Place Order");
         placeOrderBtn.setActionCommand("Place Order");
@@ -1020,8 +1021,8 @@ public class View extends JFrame {
 
         paymentBtn = new JButton("Pay for Order");
         paymentBtn.setActionCommand("Pay for Order");
-        paymentCancelBtn = new JButton("Cancel");
-        paymentCancelBtn.setActionCommand("Cancel");
+        paymentCancelBtn = new JButton("Cancel Order");
+        paymentCancelBtn.setActionCommand("Cancel Order");
 
 
         // Order ID
