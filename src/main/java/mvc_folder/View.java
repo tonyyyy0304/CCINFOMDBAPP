@@ -75,7 +75,7 @@ public class View extends JFrame {
 
     // Pay for Order
     private JTextField paymentCustomerId, paymentOrderId, paymentAmount;
-    private JButton paymentBtn;
+    private JButton paymentBtn, paymentCancelBtn;
 
     // Ship Order
     private JTextField shipOrderId, shipLogisticsId;
@@ -117,7 +117,7 @@ public class View extends JFrame {
         shipOrderBtn = new JButton("Ship Order");
 
         productSalesCategory = new JComboBox<String>(new String[] {"Clothing", "Electronics", "Beauty & Personal Care", "Food & Beverages", "Toys", "Appliances", "Home & Living"});
-        paymentReportSelection = new JComboBox<String>(new String[] {"Completed", "Pending", "Failed"});
+        paymentReportSelection = new JComboBox<String>(new String[] {"Completed", "Pending", "Cancelled"});
 
         JTabbedPane mainTabbedPane = new JTabbedPane();
 
@@ -1020,13 +1020,9 @@ public class View extends JFrame {
 
         paymentBtn = new JButton("Pay for Order");
         paymentBtn.setActionCommand("Pay for Order");
+        paymentCancelBtn = new JButton("Cancel");
+        paymentCancelBtn.setActionCommand("Cancel");
 
-        // Customer ID
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(new JLabel("Customer ID:"), gbc);
-        gbc.gridx++;
-        panel.add(paymentCustomerId, gbc);
 
         // Order ID
         gbc.gridx = 0;
@@ -1035,18 +1031,16 @@ public class View extends JFrame {
         gbc.gridx++;
         panel.add(paymentOrderId, gbc);
 
-        // Amount
-        gbc.gridx = 0;
-        gbc.gridy++;
-        panel.add(new JLabel("Amount:"), gbc);
-        gbc.gridx++;
-        panel.add(paymentAmount, gbc);
-
         // Pay for Order Button
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 2;
         panel.add(paymentBtn, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        panel.add(paymentCancelBtn, gbc);
 
         return panel;
     }
@@ -1325,6 +1319,12 @@ public class View extends JFrame {
     public void setCustomerShowAllBtn(ActionListener listener) {
         customerShowAllBtn.addActionListener(listener);
     }
+
+    public void setPaymentCancelBtn(ActionListener listener) {
+        paymentCancelBtn.addActionListener(listener);
+    }
+
+    //getters
 
     public String getProductId() {
         return productId.getText();

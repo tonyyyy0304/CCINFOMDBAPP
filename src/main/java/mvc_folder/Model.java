@@ -349,13 +349,13 @@ public class Model
 
     public Object[][] searchCustomerRecordsByName(String query) throws SQLException {
         String sql = "SELECT c.customer_id, c.first_name, c.last_name, ci.phone_number, ci.email_address, c.birthdate, " +
-                    "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
+                        "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
                     "c.registration_date " +
-                    "FROM customers c " +
-                    "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
-                    "JOIN locations l ON c.location_id = l.location_id " +
+                        "FROM customers c " +
+                        "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
+                        "JOIN locations l ON c.location_id = l.location_id " +
                     "WHERE CONCAT(c.first_name, ' ', c.last_name) LIKE ? AND c.is_deleted != 1 " +
-                    "ORDER BY c.customer_id";
+                        "ORDER BY c.customer_id";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, "%" + query + "%");
@@ -424,10 +424,10 @@ public class Model
 
     public static Object[][] getCustomerRecords() throws SQLException {
         String sql = "SELECT c.customer_id, c.first_name, c.last_name, ci.phone_number, ci.email_address, c.birthdate, " +
-                 "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
+                        "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
                  "c.registration_date " +
-                 "FROM customers c " +
-                 "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
+                        "FROM customers c " +
+                        "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
                  "JOIN locations l ON c.location_id = l.location_id " +
                  "WHERE c.is_deleted != 1";
         try (Connection conn = getConnection();
@@ -793,13 +793,10 @@ public class Model
         }
 
         // Insert the payment to the payments table
-        String insertPaymentSql = "INSERT INTO payments (order_id, store_id, customer_id, product_id) VALUES (?, ?, ?, ?)";
+        String insertPaymentSql = "INSERT INTO payments (order_id) VALUES (?)";
         try (Connection conn = getConnection();
              PreparedStatement insertPaymentStmt = conn.prepareStatement(insertPaymentSql)) {
             insertPaymentStmt.setInt(1, orderId);
-            insertPaymentStmt.setInt(2, getStoreIdByProductId(productId));
-            insertPaymentStmt.setInt(3, customerId);
-            insertPaymentStmt.setInt(4, productId);
             insertPaymentStmt.executeUpdate();
         }
         
@@ -831,38 +828,76 @@ public class Model
         }
     }
 
-    public boolean payForOrder(int customerId, int orderId, double paymentAmount) throws SQLException {
-        String sql = "SELECT o.order_id, o.customer_id, o.price, o.shipping_price FROM orders o WHERE o.order_id = ?";
+    public boolean cancelPayForOrder(int orderId) throws SQLException {
+        String sql = "UPDATE payments SET payment_status = 'Cancelled' WHERE order_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, orderId);
+            return stmt.executeUpdate() > 0; // Returns true if the update was successful
+        }
+    }
 
+    public boolean isOrderInternational(int orderId) throws SQLException {
+        // Check if order is international by comparing the country of the store and the delivery address given in order
+        String sql = "SELECT ol.country_name AS delivery_country, sl.country_name AS store_country FROM orders o " +
+            "JOIN products p ON o.product_id = p.product_id " +
+            "JOIN store s ON p.store_id = s.store_id " + 
+            "JOIN locations ol ON o.delivery_location_id = ol.location_id " +
+            "JOIN locations sl ON s.location_id = sl.location_id " +
+            "WHERE o.order_id = ?";
+     
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, orderId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String deliveryCountry = rs.getString("delivery_country");
+                    String storeCountry = rs.getString("store_country");
+                    return !deliveryCountry.equals(storeCountry);
+                } else {
+                    throw new SQLException("Order not found");
+                }
+            }
+            catch(SQLException e){
+                System.out.println("SQLException: " + e.getMessage());
+                System.out.println("SQLState: " + e.getSQLState());
+                System.out.println("VendorError: " + e.getErrorCode());
+                return false;
+            }
+        }catch(SQLException e){
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return false;
+        }
+    }
+
+    public boolean payForOrder(int orderId) throws SQLException {
+        double shippingPrice = 50;
+        //check if order is international
+        if (isOrderInternational(orderId)) {
+            shippingPrice = 200;
+        }
+
+        // Get the price of the product
+        String sql = "SELECT p.price FROM orders o " +
+            "JOIN products p ON o.product_id = p.product_id " +
+            "WHERE o.order_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) 
         {
             stmt.setInt(1, orderId);
-
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    int orderCustomerId = rs.getInt("customer_id");
                     double price = rs.getDouble("price");
-                    double shippingPrice = rs.getDouble("shipping_price");
                     double totalAmount = price + shippingPrice;
-
-                    // Check if the customer ID matches
-                    if (orderCustomerId != customerId) {
-                        return false; // Customer does not match the order
-                    }
-
-                    // Check if the payment amount is sufficient
-                    if (paymentAmount < totalAmount) {
-                        return false; // Payment is less than the total amount
-                    }
-                    paymentAmount = totalAmount; // Set the payment amount to the total amount
 
                     // Proceed to update the payment
                     String updatePaymentSql =
                         "UPDATE payments SET payment_status = 'Completed', " + 
                         "amount_paid = ?, payment_date = CURRENT_DATE WHERE order_id = ?";
                     try (PreparedStatement updateStmt = conn.prepareStatement(updatePaymentSql)) {
-                        updateStmt.setDouble(1, paymentAmount);
+                        updateStmt.setDouble(1, totalAmount);
                         updateStmt.setInt(2, orderId);
                         updateStmt.executeUpdate();
                     }
@@ -897,6 +932,82 @@ public class Model
         }
     }
 
+    public boolean matchLogiscticsScopeToOrderShipping(int orderId, int logisticsCompanyId){
+        //check if logistics company covers international shipping
+        String checkScopeSql = "SELECT shipment_scope FROM logistics_companies WHERE logistics_company_id = ?";
+        boolean isLogisticsInternational = false;
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(checkScopeSql)) {
+            stmt.setInt(1, logisticsCompanyId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String scope = rs.getString("shipment_scope");
+                    if (scope.equals("International")) {
+                        isLogisticsInternational = true;
+                    }
+                } else {
+                    return false; // Logistics company does not exist
+                }
+            }
+            catch(SQLException e){
+                System.out.println("SQLException: " + e.getMessage());
+                System.out.println("SQLState: " + e.getSQLState());
+                System.out.println("VendorError: " + e.getErrorCode());
+            }
+        }
+        catch(SQLException e){
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+        }
+        try{
+            if(isOrderInternational(orderId) && isLogisticsInternational) {
+                return true; // Logistics company covers international shipping
+            }else return false;
+        }catch(SQLException e){
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return false;
+        }
+    }
+
+    public boolean orderShipped(int orderId) throws SQLException {
+        // join orders and shipping tables, if order exist in shipping table, then it is already assigned a logistics company
+        String sql = "SELECT o.order_id FROM orders o " +
+            "JOIN shipping s ON o.order_id = s.order_id " +
+            "WHERE o.order_id = ?";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, orderId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next(); // Returns true if the order is already shipped
+            }
+        }
+    }
+
+    public boolean orderPaid(int orderId){
+        String sql = "SELECT payment_status FROM payments WHERE order_id = ?";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, orderId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String paymentStatus = rs.getString("payment_status");
+                    return paymentStatus.equals("Completed");
+                } else {
+                    return false; // Order does not exist
+                }
+            }
+        }
+        catch(SQLException e){
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return false;
+        }
+    }
+
     public boolean shipOrder(int orderId, int logisticsCompanyId) throws SQLException {
         // Check if the order exists
         if (!orderExists(orderId)) {
@@ -908,16 +1019,28 @@ public class Model
             return false; // Logistics company does not exist
         }
 
-        // Update the order status to 'Shipped' and set the logistics company ID
-        String sql = "UPDATE orders SET order_status = 'Shipped', logistics_company_id = ? WHERE order_id = ?";
+        if(!matchLogiscticsScopeToOrderShipping(orderId, logisticsCompanyId)){
+            return false; // Logistics company does not cover international shipping
+        }
+
+        int deliveryOffset = 3;
+        if(isOrderInternational(orderId)){
+            deliveryOffset = 7;
+        }
+        // Insert the shipping record, add the expected arrival date based on the delivery offset
+        String insertShippingSql = "INSERT INTO shipping (order_id, logistics_company_id, expected_arrival_date) VALUES (?, ?, DATE_ADD(CURRENT_DATE, INTERVAL ? DAY))";
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, logisticsCompanyId);
-            stmt.setInt(2, orderId);
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0; // Returns true if the update was successful
+             PreparedStatement stmt = conn.prepareStatement(insertShippingSql)) {
+            stmt.setInt(1, orderId);
+            stmt.setInt(2, logisticsCompanyId);
+            stmt.setInt(3, deliveryOffset);
+            stmt.executeUpdate();
+            return true;
         }
     }
+
+        
+
 
     public boolean addLogisticsCompany(String name, int location, String scope) throws SQLException {
         String sql = "INSERT INTO logistics_companies (logistics_company_name, location_id, shipment_scope) VALUES (?, ?, ?)";
