@@ -8,7 +8,7 @@ CREATE TABLE store (
     contact_id INT NOT NULL,
     location_id INT NOT NULL,
     registration_date DATE DEFAULT (CURDATE()),
-    status ENUM('Active', 'Deleted') NOT NULL DEFAULT 'Active'
+    is_deleted TINYINT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE locations (
@@ -32,9 +32,9 @@ CREATE TABLE customers (
     last_name VARCHAR(45) NOT NULL,
     location_id INT NOT NULL,
     contact_id INT NOT NULL,
-    status ENUM('Active', 'Deleted') NOT NULL DEFAULT 'Active',
     registration_date DATE DEFAULT (CURDATE()),
-    birthdate DATE NOT NULL
+    birthdate DATE NOT NULL,
+    is_deleted TINYINT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE products (
@@ -46,7 +46,7 @@ CREATE TABLE products (
     description VARCHAR(200) NOT NULL,
     category ENUM('Clothing', 'Electronics', 'Beauty & Personal Care', 'Food & Beverages', 'Toys', 'Appliances', 'Home & Living') NOT NULL,
     r18 ENUM('T', 'F') NOT NULL,
-    status ENUM('Active', 'Deleted') NOT NULL DEFAULT 'Active'
+    is_deleted TINYINT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE orders (
@@ -72,7 +72,7 @@ CREATE TABLE logistics_companies (
     location_id INT NOT NULL,
     logistics_company_name VARCHAR(50) NOT NULL,
     shipment_scope ENUM('Domestic', 'International') NOT NULL,
-    status ENUM('Active', 'Deleted') NOT NULL DEFAULT 'Active'
+    is_deleted TINYINT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE payments (
