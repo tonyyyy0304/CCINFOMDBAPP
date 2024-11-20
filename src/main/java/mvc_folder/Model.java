@@ -304,11 +304,11 @@ public class Model
     public Object[][] searchCustomerRecordsById(String query){
         String sql = "SELECT c.customer_id, c.first_name, c.last_name, ci.phone_number, ci.email_address, c.birthdate, " +
                         "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
-                        "c.customer_status, c.registration_date " +
+                        "c.registration_date " +
                         "FROM customers c " +
                         "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
                         "JOIN locations l ON c.location_id = l.location_id " +
-                        "WHERE c.customer_id = ?" +
+                        "WHERE c.customer_id = ? AND c.is_deleted != 1 " +
                         "ORDER BY c.customer_id";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -324,7 +324,6 @@ public class Model
                         rs.getString("email_address"),
                         rs.getDate("birthdate"),
                         rs.getString("address"),
-                        rs.getString("customer_status"),
                         rs.getDate("registration_date")
                     });
                 }
@@ -340,13 +339,13 @@ public class Model
 
     public Object[][] searchCustomerRecordsByName(String query) throws SQLException {
         String sql = "SELECT c.customer_id, c.first_name, c.last_name, ci.phone_number, ci.email_address, c.birthdate, " +
-                        "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
-                        "c.customer_status, c.registration_date " +
-                        "FROM customers c " +
-                        "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
-                        "JOIN locations l ON c.location_id = l.location_id " +
-                        "WHERE CONCAT(c.first_name, ' ', c.last_name) LIKE ?" +
-                        "ORDER BY c.customer_id";
+                    "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
+                    "c.registration_date " +
+                    "FROM customers c " +
+                    "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
+                    "JOIN locations l ON c.location_id = l.location_id " +
+                    "WHERE CONCAT(c.first_name, ' ', c.last_name) LIKE ? AND c.is_deleted != 1 " +
+                    "ORDER BY c.customer_id";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, "%" + query + "%");
@@ -361,7 +360,6 @@ public class Model
                         rs.getString("email_address"),
                         rs.getDate("birthdate"),
                         rs.getString("address"),
-                        rs.getString("customer_status"),
                         rs.getDate("registration_date")
                     });
                 }
@@ -415,14 +413,13 @@ public class Model
     // ----------------- Queries -----------------
 
     public static Object[][] getCustomerRecords() throws SQLException {
-        String sql =
-                "SELECT c.customer_id, c.first_name, c.last_name, " +
-                        "ci.phone_number, ci.email_address, c.birthdate, " +
-                        "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
-                        "c.customer_status, c.registration_date " +
-                        "FROM customers c " +
-                        "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
-                        "JOIN locations l ON c.location_id = l.location_id";
+        String sql = "SELECT c.customer_id, c.first_name, c.last_name, ci.phone_number, ci.email_address, c.birthdate, " +
+                 "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
+                 "c.registration_date " +
+                 "FROM customers c " +
+                 "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
+                 "JOIN locations l ON c.location_id = l.location_id " +
+                 "WHERE c.is_deleted != 1";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -437,7 +434,6 @@ public class Model
                         rs.getString("email_address"),
                         rs.getDate("birthdate"),
                         rs.getString("address"),
-                        rs.getString("customer_status"),
                         rs.getDate("registration_date")
                 });
             }
@@ -844,6 +840,7 @@ public class Model
                     if (paymentAmount < totalAmount) {
                         return false; // Payment is less than the total amount
                     }
+                    paymentAmount = totalAmount; // Set the payment amount to the total amount
 
                     // Proceed to update the payment
                     String updatePaymentSql =
