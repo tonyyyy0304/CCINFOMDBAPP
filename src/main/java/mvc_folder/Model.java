@@ -18,7 +18,7 @@ public class Model
 {
     private static final String dbUrl = "jdbc:mysql://localhost:3306/ecommerce_db";
     private static final String userName = "root";
-    private static final String password = "123456";
+    private static final String password = "password";
 
 
     public Model() {
@@ -257,6 +257,64 @@ public class Model
         }
     }
 
+    public Object[][] searchStoreRecordsByName(String query) throws SQLException {
+        String sql = "SELECT s.store_id, s.store_name, ci.phone_number, ci.email_address, " +
+                        "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
+                        "s.registration_date " +
+                        "FROM store s " +
+                        "JOIN contact_information ci ON s.contact_id = ci.contact_id " +
+                        "JOIN locations l ON s.location_id = l.location_id " +
+                        "WHERE s.store_name LIKE ? " +
+                        "ORDER BY s.store_id";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + query + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                while (rs.next()) {
+                    records.add(new Object[]{
+                        rs.getInt("store_id"),
+                        rs.getString("store_name"),
+                        rs.getString("phone_number"),
+                        rs.getString("email_address"),
+                        rs.getString("address"),
+                        rs.getDate("registration_date")
+                    });
+                }
+                return records.toArray(new Object[0][]);
+            }
+        }
+    }
+
+    public Object[][] searchStoreRecordsById(String query) throws SQLException {
+        String sql = "SELECT s.store_id, s.store_name, ci.phone_number, ci.email_address, " +
+                        "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
+                        "s.registration_date " +
+                        "FROM store s " +
+                        "JOIN contact_information ci ON s.contact_id = ci.contact_id " +
+                        "JOIN locations l ON s.location_id = l.location_id " +
+                        "WHERE s.store_id = ? " +
+                        "ORDER BY s.store_id";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, Integer.parseInt(query));
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                while (rs.next()) {
+                    records.add(new Object[]{
+                        rs.getInt("store_id"),
+                        rs.getString("store_name"),
+                        rs.getString("phone_number"),
+                        rs.getString("email_address"),
+                        rs.getString("address"),
+                        rs.getDate("registration_date")
+                    });
+                }
+                return records.toArray(new Object[0][]);
+            }
+        }
+    }
+
     public boolean addStore(String store_name, int contact_id, int location_id) {
 
         String sql = "INSERT INTO store (store_name, contact_id, location_id) VALUES (?, ?, ?)";
@@ -419,6 +477,30 @@ public class Model
         }
     }
 
+    
+
+    public boolean addLogisticsCompany(String name, int location, String scope) throws SQLException {
+        String sql = "INSERT INTO logistics_companies (logistics_company_name, location_id, shipment_scope) VALUES (?, ?, ?)";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, name);
+            stmt.setInt(2, location);
+            stmt.setString(3, scope);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0; // Returns true if the insert was successful
+        }
+    }
+
+    public boolean logisticsCompanyExists(int logisticsCompanyId) throws SQLException {
+        String sql = "SELECT logistics_company_id FROM logistics_companies WHERE logistics_company_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, logisticsCompanyId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next(); // Returns true if the logistics company exists
+            }
+        }
+    }
 
     // ----------------- Queries -----------------
 
@@ -531,6 +613,58 @@ public class Model
                 });
             }
             return records.toArray(new Object[0][]);
+        }
+    }
+
+    public Object[][] searchLogisticsRecordsByName(String query) throws SQLException {
+        String sql = "SELECT lc.logistics_company_id, lc.logistics_company_name, " +
+            "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
+            "lc.shipment_scope " +
+            "FROM logistics_companies lc " +
+            "JOIN locations l ON lc.location_id = l.location_id " +
+            "WHERE lc.logistics_company_name LIKE ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + query + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                while (rs.next()) {
+                    records.add(new Object[]{
+                        rs.getInt("logistics_company_id"),
+                        rs.getString("logistics_company_name"),
+                        rs.getString("address"),
+                        rs.getString("shipment_scope")
+                    });
+                }
+                return records.toArray(new Object[0][]);
+            }
+        }
+    }
+
+    public Object[][] searchLogisticsRecordsById(String query) throws SQLException {
+        String sql = "SELECT lc.logistics_company_id, lc.logistics_company_name, " +
+            "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
+            "lc.shipment_scope " +
+            "FROM logistics_companies lc " +
+            "JOIN locations l ON lc.location_id = l.location_id " +
+            "WHERE lc.logistics_company_id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, Integer.parseInt(query));
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                while (rs.next()) {
+                    records.add(new Object[]{
+                        rs.getInt("logistics_company_id"),
+                        rs.getString("logistics_company_name"),
+                        rs.getString("address"),
+                        rs.getString("shipment_scope")
+                    });
+                }
+                return records.toArray(new Object[0][]);
+            }
         }
     }
 
@@ -927,16 +1061,7 @@ public class Model
         }
     }
 
-    public boolean logisticsCompanyExists(int logisticsCompanyId) throws SQLException {
-        String sql = "SELECT logistics_company_id FROM logistics_companies WHERE logistics_company_id = ?";
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, logisticsCompanyId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                return rs.next(); // Returns true if the logistics company exists
-            }
-        }
-    }
+  
 
     public boolean orderExists(int orderId) throws SQLException {
         String sql = "SELECT order_id FROM orders WHERE order_id = ?";
@@ -1056,18 +1181,6 @@ public class Model
         }
     }
 
-        
 
-
-    public boolean addLogisticsCompany(String name, int location, String scope) throws SQLException {
-        String sql = "INSERT INTO logistics_companies (logistics_company_name, location_id, shipment_scope) VALUES (?, ?, ?)";
-        try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, name);
-            stmt.setInt(2, location);
-            stmt.setString(3, scope);
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0; // Returns true if the insert was successful
-        }
-    }
+    
 }

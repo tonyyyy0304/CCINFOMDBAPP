@@ -149,6 +149,49 @@ public class Controller
             }
         });
 
+        this.view.setStoreShowAllBtn(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+                view.refreshStoreRecordsPnl();
+            }
+        });
+
+        this.view.setStoreSearchBtn(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+                String query = view.getStoreSearchField();
+                String criteria = view.getStoreCriteriaComboBox();
+
+                //if criteria is store id, check if the input is a number
+                if(criteria.equals("Store ID")){
+                    try{
+                        Integer.parseInt(query);
+                    } catch (NumberFormatException ex){
+                        view.showError("Store ID must be a valid number.");
+                        return;
+                    }
+                }
+
+                if(query.isEmpty()){
+                    view.showMessage("Please enter a search query.");
+                    return;
+                }
+                try {
+                    // Call the model to search for stores
+                    if(criteria.equals("Store ID")){
+                
+                        view.refreshStoreRecordsPnl(model.searchStoreRecordsById(query));
+                    } else if(criteria.equals("Store Name")){
+                        view.refreshStoreRecordsPnl(model.searchStoreRecordsByName(query));
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
         this.view.setStoreAddBtn(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
@@ -686,6 +729,47 @@ public class Controller
                 }
             }
         });
+
+        this.view.setLogisticsShowAllBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                view.refreshLogisticsRecordPnl();
+            }
+        });
+
+        this.view.setLogisticsSearchBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String query = view.getLogisticsSearchField();
+                String criteria = view.getLogisticsCriteriaComboBox();
+                //check if the input is a number
+                if (criteria.equals("Company ID")) {
+                    try {
+                        Integer.parseInt(query);
+                    } catch (NumberFormatException ex) {
+                        view.showError("Company ID must be a valid number.");
+                        return;
+                    }
+                }
+                if (query.isEmpty()) {
+                    view.showMessage("Please enter a search query.");
+                    return;
+                }
+                try {
+                    // Call the model to search for logistics companies
+                    if (criteria.equals("Company ID")) {
+                        view.refreshLogisticsRecordPnl(model.searchLogisticsRecordsById(query));
+                    } else if (criteria.equals("Company Name")) {
+                        view.refreshLogisticsRecordPnl(model.searchLogisticsRecordsByName(query));
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+        
 
         this.view.setLogisticsAddBtn(new ActionListener() {
             @Override

@@ -52,12 +52,19 @@ public class View extends JFrame {
             storeLotNum, storeStreetName, storeCityName,
             storeZipCode, storeCountry;
 
+    private JButton storeSearchBtn, storeShowAllBtn;
+    private JComboBox<String> storeCriteriaComboBox;
+    private JTextField storeSearchField;
+
     //logistics table
     private JTextField logisticsCompanyID, logisticsCompanyName,
             logisticsCompanyLocationID, logisticsLotNum,
             logisticsStreetName, logisticsCityName, logisticsZipCode,
             logisticsCountry;
     private JComboBox<String> shipmentScope;
+    private JButton logisticsSearchBtn, logisticsShowAllBtn;
+    private JComboBox<String> logisticsCriteriaComboBox;
+    private JTextField logisticsSearchField;
 
     // Buttons
     private JButton productAddBtn, productRemoveBtn,
@@ -634,6 +641,7 @@ public class View extends JFrame {
         storesCustomersBoughtFromPnl.repaint();
     }
 
+    
     private JPanel storeAddPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
@@ -645,6 +653,7 @@ public class View extends JFrame {
         storeCityName = new JTextField(COLUMN_WIDTH);
         storeZipCode = new JTextField(COLUMN_WIDTH);
         storeCountry = new JTextField(COLUMN_WIDTH);
+       
 
         storeAddBtn = new JButton("Add Store");
 
@@ -738,13 +747,67 @@ public class View extends JFrame {
         return panel;
     }
 
+
     private JPanel storeRecordsPnl() {
         storeRecordsPanel = new JPanel(new GridBagLayout());
+
+        storeShowAllBtn = new JButton("Show All");
+        storeSearchBtn = new JButton("Search");
+        storeCriteriaComboBox = new JComboBox<>(new String[]{"Store Name", "Store ID"});
+        storeSearchField = new JTextField(20);
+
+        GridBagConstraints gbc = setGBC();
+
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        storeRecordsPanel.add(new JLabel("Search:"), gbc);
+
+        gbc.gridx++;
+        storeRecordsPanel.add(storeSearchField, gbc);
+
+        gbc.gridx++;
+        storeRecordsPanel.add(storeCriteriaComboBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        storeRecordsPanel.add(storeSearchBtn, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        storeRecordsPanel.add(storeShowAllBtn, gbc);
+
         refreshStoreRecordsPnl();
         return storeRecordsPanel;
     }
 
+    public void refreshStoreRecordsPnl(Object[][] data) {
+        
+        String[] columnNames = {"Store ID", "Store Name", "Phone Number", "Email Address", "Address", "Registration Date"};
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+
+        if(storeRecordsPanel.getComponentCount() > 5) {
+            storeRecordsPanel.remove(5); 
+        }
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 4;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        storeRecordsPanel.add(scrollPane, gbc);
+        storeRecordsPanel.revalidate();
+        storeRecordsPanel.repaint();
+    }
+
     public void refreshStoreRecordsPnl() {
+        
         String[] columnNames = {"Store ID", "Store Name", "Phone Number", "Email Address", "Address", "Registration Date"};
         Object[][] data = {};
 
@@ -760,11 +823,13 @@ public class View extends JFrame {
 
         adjustColumnWidths(table);
 
-        storeRecordsPanel.removeAll();
+        if(storeRecordsPanel.getComponentCount() > 5) {
+            storeRecordsPanel.remove(5); 
+        }
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
+        gbc.gridy = 5;
+        gbc.gridwidth = 4;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
@@ -860,11 +925,66 @@ public class View extends JFrame {
 
         return panel;
     }
-
+    
     private JPanel logisticsRecordPnl() {
         logisticsRecordsPanel = new JPanel(new GridBagLayout());
+        
+        logisticsSearchField = new JTextField(20);
+        logisticsSearchBtn = new JButton("Search");
+        logisticsShowAllBtn = new JButton("Show All");
+        logisticsCriteriaComboBox = new JComboBox<>(new String[]{"Company Name", "Company ID"});
+
+        GridBagConstraints gbc = setGBC();
+
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        logisticsRecordsPanel.add(new JLabel("Search:"), gbc);
+
+        gbc.gridx++;
+        logisticsRecordsPanel.add(logisticsSearchField, gbc);
+        
+        gbc.gridx++;
+        logisticsRecordsPanel.add(logisticsCriteriaComboBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        logisticsRecordsPanel.add(logisticsSearchBtn, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        logisticsRecordsPanel.add(logisticsShowAllBtn, gbc);
+
+
         refreshLogisticsRecordPnl();
         return logisticsRecordsPanel;
+    }
+
+    public void refreshLogisticsRecordPnl(Object[][] data) {
+        String[] columnNames = {"Logistics Company ID", "Company Name", "Address", "Shipment Scope"};
+        
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+
+        if(logisticsRecordsPanel.getComponentCount() > 5) {
+            logisticsRecordsPanel.remove(5); 
+        }
+
+
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 5;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        logisticsRecordsPanel.add(scrollPane, gbc);
+        logisticsRecordsPanel.revalidate();
+        logisticsRecordsPanel.repaint();
     }
 
     public void refreshLogisticsRecordPnl() {
@@ -883,11 +1003,13 @@ public class View extends JFrame {
 
         adjustColumnWidths(table);
 
-        logisticsRecordsPanel.removeAll();
+        if(logisticsRecordsPanel.getComponentCount() > 5) {
+            logisticsRecordsPanel.remove(5); 
+        }
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
+        gbc.gridy = 5;
+        gbc.gridwidth = 5;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
@@ -1360,6 +1482,22 @@ public class View extends JFrame {
     public void setPaymentCancelBtn(ActionListener listener) {
         paymentCancelBtn.addActionListener(listener);
     }
+    
+    public void setLogisticsSearchBtn(ActionListener listener) {
+        logisticsSearchBtn.addActionListener(listener);
+    }
+
+    public void setLogisticsShowAllBtn(ActionListener listener) {
+        logisticsShowAllBtn.addActionListener(listener);
+    }
+
+    public void setStoreSearchBtn(ActionListener listener) {
+        storeSearchBtn.addActionListener(listener);
+    }
+
+    public void setStoreShowAllBtn(ActionListener listener) {
+        storeShowAllBtn.addActionListener(listener);
+    }
 
     //getters
 
@@ -1594,6 +1732,25 @@ public class View extends JFrame {
     public String getCustomerCriteriaComboBox() {
         return customerCriteriaComboBox.getSelectedItem().toString();
     }
+
+    public String getStoreSearchField() {
+        return storeSearchField.getText();
+    }
+
+    public String getStoreCriteriaComboBox() {
+        return storeCriteriaComboBox.getSelectedItem().toString();
+    }
+
+    public String getLogisticsSearchField() {
+        return logisticsSearchField.getText();
+    }
+
+    public String getLogisticsCriteriaComboBox() {
+        return logisticsCriteriaComboBox.getSelectedItem().toString();
+    }
+
+
+
 
     public void clearFields() {
         productId.setText("");
