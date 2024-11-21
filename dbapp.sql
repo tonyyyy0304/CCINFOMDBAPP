@@ -56,8 +56,7 @@ CREATE TABLE orders (
     product_id INT NOT NULL,
     quantity INT UNSIGNED NOT NULL,
     order_date DATE DEFAULT (CURDATE()),
-    payment_method ENUM('Credit', 'Debit', 'Cash') NOT NULL,
-    shipping_price DECIMAL(5, 2) NOT NULL DEFAULT 50.00
+    payment_method ENUM('Credit', 'Debit', 'Cash') NOT NULL
 );
 
 CREATE TABLE shipping (
@@ -78,10 +77,8 @@ CREATE TABLE logistics_companies (
 CREATE TABLE payments (
     payment_id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     order_id INT NOT NULL,
-    store_id INT NOT NULL,
-    product_id INT NOT NULL,
     amount_paid DECIMAL(10, 2) UNSIGNED NOT NULL DEFAULT 0.0,
-    payment_status ENUM('Completed', 'Pending', 'Failed') NOT NULL DEFAULT 'Pending',
+    payment_status ENUM('Completed', 'Pending', 'Cancelled') NOT NULL DEFAULT 'Pending',
     payment_date DATE DEFAULT (CURDATE())
 );
 
@@ -114,8 +111,6 @@ ALTER TABLE shipping ADD CONSTRAINT fk_shipping_logistics FOREIGN KEY (logistics
 ALTER TABLE logistics_companies ADD CONSTRAINT fk_logistics_location FOREIGN KEY (location_id) REFERENCES locations(location_id);
 
 ALTER TABLE payments ADD CONSTRAINT fk_payments_order FOREIGN KEY (order_id) REFERENCES orders(order_id);
-ALTER TABLE payments ADD CONSTRAINT fk_payments_store FOREIGN KEY (store_id) REFERENCES store(store_id);
-ALTER TABLE payments ADD CONSTRAINT fk_payments_product FOREIGN KEY (product_id) REFERENCES products(product_id);
 
 ALTER TABLE stock_adjustment_history ADD CONSTRAINT fk_stock_history_product FOREIGN KEY (product_id) REFERENCES products(product_id);
 ALTER TABLE stock_adjustment_history ADD CONSTRAINT fk_stock_history_store FOREIGN KEY (store_id) REFERENCES store(store_id);
@@ -179,17 +174,17 @@ INSERT INTO logistics_companies (location_id, logistics_company_name, shipment_s
     (14, 'FedEx', 'International'), -- logistics_company_ID 4
     (15, 'DHL Express', 'International'); -- logistics_company_ID 5
 
-INSERT INTO orders (customer_id, delivery_location_id, product_id, quantity, order_date, payment_method, shipping_price) VALUES
-    (1, 1, 1, 2, '2021-01-15', 'Credit', 50.00), -- order_ID 1
-    (2, 2, 2, 1, '2021-02-20', 'Debit', 75.00), -- order_ID 2
-    (3, 3, 3, 4, '2021-03-25', 'Cash', 100.00), -- order_ID 3
-    (4, 4, 4, 3, '2021-04-30', 'Credit', 150.00), -- order_ID 4
-    (5, 5, 5, 5, '2021-05-05', 'Debit', 200.00), -- order_ID 5
-    (1, 6, 1, 1, '2022-06-10', 'Cash', 50.00), -- order_ID 6
-    (2, 7, 2, 2, '2022-07-15', 'Credit', 75.00), -- order_ID 7
-    (3, 8, 3, 3, '2022-08-20', 'Debit', 100.00), -- order_ID 8
-    (4, 9, 4, 4, '2022-09-25', 'Cash', 150.00), -- order_ID 9
-    (5, 10, 5, 5, '2022-10-30', 'Credit', 200.00); -- order_ID 10
+INSERT INTO orders (customer_id, delivery_location_id, product_id, quantity, order_date, payment_method) VALUES
+    (1, 1, 1, 2, '2021-01-15', 'Credit'), -- order_ID 1
+    (2, 2, 2, 1, '2021-02-20', 'Debit'), -- order_ID 2
+    (3, 3, 3, 4, '2021-03-25', 'Cash'), -- order_ID 3
+    (4, 4, 4, 3, '2021-04-30', 'Credit'), -- order_ID 4
+    (5, 5, 5, 5, '2021-05-05', 'Debit'), -- order_ID 5
+    (1, 6, 1, 1, '2022-06-10', 'Cash'), -- order_ID 6
+    (2, 7, 2, 2, '2022-07-15', 'Credit'), -- order_ID 7
+    (3, 8, 3, 3, '2022-08-20', 'Debit'), -- order_ID 8
+    (4, 9, 4, 4, '2022-09-25', 'Cash'), -- order_ID 9
+    (5, 10, 5, 5, '2022-10-30', 'Credit'); -- order_ID 10
 
 INSERT INTO shipping (order_id, logistics_company_id, expected_arrival_date) VALUES
     (1, 1, '2021-01-20'), -- shipping_ID 1
@@ -203,17 +198,17 @@ INSERT INTO shipping (order_id, logistics_company_id, expected_arrival_date) VAL
     (9, 4, '2022-10-01'), -- shipping_ID 9
     (10, 5, '2022-11-05'); -- shipping_ID 10
 
-INSERT INTO payments (order_id, store_id, product_id, amount_paid, payment_status) VALUES
-    (1, 1, 1, 3050.00, 'Completed'), -- payment_ID 1
-    (2, 1, 2, 3075.00, 'Completed'), -- payment_ID 2
-    (3, 2, 3, 2100.00, 'Completed'), -- payment_ID 3
-    (4, 3, 4, 6150.00, 'Completed'), -- payment_ID 4
-    (5, 4, 5, 1450.00, 'Completed'), -- payment_ID 5
-    (6, 1, 1, 1550.00, 'Completed'), -- payment_ID 6
-    (7, 1, 2, 6075.00, 'Completed'), -- payment_ID 7
-    (8, 2, 3, 1600.00, 'Completed'), -- payment_ID 8
-    (9, 3, 4, 8150.00, 'Completed'), -- payment_ID 9
-    (10, 4, 5, 1450.00, 'Completed'); -- payment_ID 10
+INSERT INTO payments (order_id, amount_paid, payment_status) VALUES
+    (1, 3050.00, 'Completed'), -- payment_ID 1
+    (2, 3075.00, 'Completed'), -- payment_ID 2
+    (3, 2100.00, 'Completed'), -- payment_ID 3
+    (4, 6150.00, 'Completed'), -- payment_ID 4
+    (5, 1450.00, 'Completed'), -- payment_ID 5
+    (6, 1550.00, 'Completed'), -- payment_ID 6
+    (7, 6075.00, 'Completed'), -- payment_ID 7
+    (8, 1600.00, 'Completed'), -- payment_ID 8
+    (9, 8150.00, 'Completed'), -- payment_ID 9
+    (10, 1450.00, 'Completed'); -- payment_ID 10
 
 INSERT INTO stock_adjustment_history (product_id, store_id, customer_id, adjustment_type, adjustment_amount) VALUES
     (1, 1, 1, 'Decrease', 2), -- stock_adjustment_ID 1

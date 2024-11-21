@@ -586,21 +586,47 @@ public class Controller
             public void actionPerformed(ActionEvent e) {
                 try {
                     // Retrieve and validate inputs
-                    int customerId = Integer.parseInt(view.getPaymentCustomerId());
                     int orderId = Integer.parseInt(view.getPaymentOrderId());
-                    double paymentAmount = Double.parseDouble(view.getPaymentAmount());
+                    
 
                     // Call the model to process the payment
-                    boolean success = model.payForOrder(customerId, orderId, paymentAmount);
+                    boolean success = model.payForOrder(orderId);
                     if (success) {
                         view.showSuccess("Payment processed successfully!");
                         view.clearFields(); // Clear fields after success
                         view.refreshPaymentReportsPnl(); // Refresh the payment reports
                     } else {
-                        view.showError("Payment failed. Please check if the Customer ID and Order ID are valid and if the payment amount is sufficient.");
+                        view.showError("Payment failed. Please check if the Order ID are valid or is pending for payment.");
                     }
                 } catch (NumberFormatException ex) {
-                    view.showError("Please enter valid numbers for Customer ID, Order ID, and Payment Amount.");
+                    view.showError("Please enter valid numbers for Order ID.");
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+        this.view.setPaymentCancelBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    // Retrieve and validate inputs
+                    int orderId = Integer.parseInt(view.getPaymentOrderId());
+                    
+
+                    // Call the model to process the payment
+                    boolean success = model.cancelPayForOrder(orderId);
+                    if (success) {
+                        view.showSuccess("Order cancelled successfully!");
+                        view.clearFields(); // Clear fields after success
+                        view.refreshPaymentReportsPnl(); // Refresh the payment reports
+                    } else {
+                        view.showError("Cancellation failed. Please check if the Order ID are valid or is pending for payment.");
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Please enter valid numbers for Order ID.");
                 } catch (SQLException ex) {
                     view.showError("Database error: " + ex.getMessage());
                 } catch (Exception ex) {
@@ -617,12 +643,38 @@ public class Controller
                     int orderId = Integer.parseInt(view.getShipOrderId());
                     int logisticsCompanyId = Integer.parseInt(view.getShipLogisticsId());
 
+                    if(!model.logisticsCompanyExists(logisticsCompanyId)){
+                        view.showError("Logistics Company with ID " + logisticsCompanyId + " does not exist.");
+                        return; // Exit early if logistics company does not exist
+                    }
+
+                    if(!model.orderExists(orderId)){
+                        view.showError("Order with ID " + orderId + " does not exist.");
+                        return; // Exit early if order does not exist
+                    }
+
+                    if(model.orderShipped(orderId)){
+                        view.showError("Order with ID " + orderId + " has already been shipped.");
+                        return; // Exit early if order has already been shipped
+                    }
+
+                    if(!model.orderPaid(orderId)){
+                        view.showError("Order with ID " + orderId + " has not been paid for.");
+                        return; // Exit early if order has not been paid for
+                    }
+
+                    if(!model.matchLogiscticsScopeToOrderShipping(orderId, logisticsCompanyId)){
+                        view.showError("Logistics Company with ID " + logisticsCompanyId + " does not match the order's shipping scope.");
+                        return; // Exit early if logistics company does not match the order's shipping scope
+                    }
+
                     // Call the model to process the shipping
                     boolean success = model.shipOrder(orderId, logisticsCompanyId);
                     if (success) {
                         view.showSuccess("Order shipped successfully!");
                         view.clearFields(); // Clear fields after success
-                    } else {
+                    } 
+                    else {
                         view.showError("Shipping failed. Please check if the Order ID and Logistics Company ID are valid.");
                     }
                 } catch (NumberFormatException ex) {
