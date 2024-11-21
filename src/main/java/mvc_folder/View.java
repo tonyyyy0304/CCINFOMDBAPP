@@ -17,6 +17,8 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 
 public class View extends JFrame {
     private final int COLUMN_WIDTH = 10;
@@ -87,6 +89,10 @@ public class View extends JFrame {
     // Payment Reports
     private JComboBox<String> paymentReportSelection;
 
+    // Year Selection
+    private JComboBox<Integer> startYearComboBox;
+    private JComboBox<Integer> endYearComboBox;
+
     public View() {
         // Set up the frame
         setTitle("Online Shopping System");
@@ -118,6 +124,19 @@ public class View extends JFrame {
 
         productSalesCategory = new JComboBox<String>(new String[] {"Clothing", "Electronics", "Beauty & Personal Care", "Food & Beverages", "Toys", "Appliances", "Home & Living"});
         paymentReportSelection = new JComboBox<String>(new String[] {"Completed", "Pending", "Failed"});
+
+        startYearComboBox = new JComboBox<>();
+        endYearComboBox = new JComboBox<>();
+        for (int year = 2000; year <= 2030; year++) {
+            startYearComboBox.addItem(year);
+            endYearComboBox.addItem(year);
+        }
+        startYearComboBox.setSelectedItem(2020);
+        endYearComboBox.setSelectedItem(2024);
+
+        // Add action listeners to combo boxes
+        startYearComboBox.addActionListener(e -> refreshProductSalesPnl());
+        endYearComboBox.addActionListener(e -> refreshProductSalesPnl());
 
         JTabbedPane mainTabbedPane = new JTabbedPane();
 
@@ -1126,11 +1145,16 @@ public class View extends JFrame {
     }
 
     public void refreshProductSalesPnl() {
-        String[] columnNames = {"Category", "Average Sales Per Month"};
+        int startYear = (int) startYearComboBox.getSelectedItem();
+        int endYear = (int) endYearComboBox.getSelectedItem();
+
+        // Define column names
+        String[] columnNames = {"Year", "Category", "Total Sales"};
+
         Object[][] data = {};
 
         try {
-            data = Model.getProductSales(getProductSalesCategory());
+            data = Model.getProductSales(startYear, endYear);
         } catch (SQLException e) {
             showError("Failed to retrieve product sales: " + e.getMessage());
         }
@@ -1150,15 +1174,27 @@ public class View extends JFrame {
         productSalesPanel.add(new JLabel("Product Sales for"), gbc);
 
         gbc.gridx++;
-        productSalesPanel.add(productSalesCategory, gbc);
+        productSalesPanel.add(new JLabel(startYear + " - " + endYear), gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        productSalesPanel.add(new JLabel("Start Year:"), gbc);
+        gbc.gridx++;
+        productSalesPanel.add(startYearComboBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        productSalesPanel.add(new JLabel("End Year:"), gbc);
+        gbc.gridx++;
+        productSalesPanel.add(endYearComboBox, gbc);
 
         gbc.gridwidth = 2;
         gbc.gridy++;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         productSalesPanel.add(scrollPane, gbc);
+
         productSalesPanel.revalidate();
         productSalesPanel.repaint();
     }

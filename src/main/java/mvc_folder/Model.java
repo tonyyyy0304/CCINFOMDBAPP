@@ -18,7 +18,7 @@ public class Model
 {
     private static final String dbUrl = "jdbc:mysql://localhost:3306/ecommerce_db";
     private static final String userName = "root";
-    private static final String password = "password";
+    private static final String password = "123456";
 
 
     public Model() {
@@ -593,39 +593,30 @@ public class Model
         }
     }
 
-    public static Object[][] getProductSales(String category) throws SQLException {
-        // TODO: change to show yearly average sales instead of monthly 
-        String sql = 
-        "SELECT monthly_sales.category, AVG(monthly_sales.total_sales) AS total_sales_per_month"+
-        " FROM ("+
-        " SELECT p1.category," +
-        " DATE_FORMAT(o1.order_date, '%Y-%m') AS month," +
-        " SUM(pm1.amount_paid) AS total_sales"+
-        " FROM products p1"+
-        " LEFT JOIN orders o1 ON o1.product_id = p1.product_id"+
-        " LEFT JOIN payments pm1 ON pm1.order_id = o1.order_id"+
-        " GROUP BY p1.category, month"+
-        ") AS monthly_sales"+
-        " WHERE monthly_sales.category = ?"+
-        " GROUP BY monthly_sales.category"+
-        " ORDER BY monthly_sales.category";
+    public static Object[][] getProductSales(int startYear, int endYear) throws SQLException {
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT YEAR(o.order_date) AS year, p.category, SUM(o.quantity * p.price) AS total_sales ")
+           .append("FROM products p ")
+           .append("LEFT JOIN orders o ON p.product_id = o.product_id ")
+           .append("WHERE YEAR(o.order_date) BETWEEN ? AND ? ")
+           .append("GROUP BY YEAR(o.order_date), p.category ")
+           .append("ORDER BY YEAR(o.order_date), p.category");
 
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, category); // Set the category parameter
-            try (ResultSet rs = stmt.executeQuery()) {
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            stmt.setInt(1, startYear);
+            stmt.setInt(2, endYear);
 
+            try (ResultSet rs = stmt.executeQuery()) {
                 List<Object[]> records = new ArrayList<>();
                 while (rs.next()) {
-                    String categoryValue = rs.getString("category");
-                    double totalSalesPerMonth = rs.getDouble("total_sales_per_month");
-                    BigDecimal roundedTotalSales = BigDecimal.valueOf(totalSalesPerMonth).setScale(2, RoundingMode.HALF_UP);
+                    int year = rs.getInt("year");
+                    String category = rs.getString("category");
+                    double totalSales = rs.getDouble("total_sales");
 
-                    records.add(new Object[]{
-                        categoryValue,
-                        roundedTotalSales.doubleValue()
-                    });
+                    records.add(new Object[]{year, category, totalSales});
                 }
+
                 return records.toArray(new Object[0][]);
             }
         }
