@@ -797,14 +797,12 @@ public class Model
     }
 
     public Object[][] getOrdersHandledByLogisticsCompanyId(int companyId){
-        //include name in select
-        String sql = "SELECT o.order_id, s.logistics_company_id, lc.logistics_company_name, o.order_date, s.expected_arrival_date" +
+        String sql = "SELECT o.order_id, s.logistics_company_id, lc.logistics_company_name, o.order_date, s.expected_arrival_date " +
                         "FROM orders o " +
                         "JOIN shipping s ON o.order_id = s.order_id " +
                         "JOIN logistics_companies lc ON s.logistics_company_id = lc.logistics_company_id " +
-                        "WHERE s.logistics_company_id = ?"+
+                        "WHERE s.logistics_company_id = ? " +
                         "ORDER BY o.order_id";
-        
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -815,6 +813,7 @@ public class Model
                     records.add(new Object[]{
                         rs.getInt("order_id"),
                         rs.getInt("logistics_company_id"),
+                        rs.getString("logistics_company_name"),
                         rs.getDate("order_date"),
                         rs.getDate("expected_arrival_date")
                     });

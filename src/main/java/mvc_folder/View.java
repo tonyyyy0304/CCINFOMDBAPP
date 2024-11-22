@@ -79,6 +79,10 @@ public class View extends JFrame {
     private JButton logisticsSearchBtn, logisticsShowAllBtn;
     private JComboBox<String> logisticsCriteriaComboBox;
     private JTextField logisticsSearchField;
+    private JPanel logisticsRelatedRecordsPanel;
+    private JButton logisticsRelatedRecordSearchBtn, logisticsRelatedRecordShowAllBtn;
+    private JComboBox<String> logisticsRelatedRecordCriteriaComboBox;
+    private JTextField logisticsRelatedRecordSearchField;
 
     private JTextField logisticsUpdateId, logisticsUpdateName,
             logisticsUpdateLotNum, logisticsUpdateStreetName, logisticsUpdateCityName,
@@ -190,6 +194,7 @@ public class View extends JFrame {
         JPanel productsPanel = new JPanel(new BorderLayout());
         JTabbedPane productsTabbedPane = new JTabbedPane();
         productsTabbedPane.addTab("Product Records", productRecordsPnl());
+        productsTabbedPane.addTab("Stores Selling Specific Category", productRecordsPnl());
         productsTabbedPane.addTab("Add Product", productAddPnl());
         productsTabbedPane.addTab("Remove Product", productRemovePnl());
         productsTabbedPane.addTab("Update Product", productUpdatePnl());
@@ -209,6 +214,7 @@ public class View extends JFrame {
         JPanel storesPanel = new JPanel(new BorderLayout());
         JTabbedPane storesTabbedPane = new JTabbedPane();
         storesTabbedPane.addTab("Store Records", storeRecordsPnl());
+        storesTabbedPane.addTab("Product List of Stores", productRecordsPnl());
         storesTabbedPane.addTab("Add Store", storeAddPnl());
         storesTabbedPane.addTab("Remove Store", storeRemovePnl());
         storesTabbedPane.addTab("Update Store", storeUpdatePnl());
@@ -218,6 +224,7 @@ public class View extends JFrame {
         JPanel logisticsPanel = new JPanel(new BorderLayout());
         JTabbedPane logisticsTabbedPane = new JTabbedPane();
         logisticsTabbedPane.addTab("Logistics Company Records", logisticsRecordPnl());
+        logisticsTabbedPane.addTab("Orders Handled by Logistics Companies", ordersHandledByLogisticsCompaniesPnl());
         logisticsTabbedPane.addTab("Add Logistics Company", logisticsAddPnl());
         logisticsTabbedPane.addTab("Remove Logistics Company", logisticsRemovePnl());
         logisticsTabbedPane.addTab("Update Logistics Company", logisticsUpdatePnl());
@@ -813,6 +820,91 @@ public class View extends JFrame {
             showError("Failed to retrieve customer records: " + e.getMessage());
         }
         refreshCustomerRecords(data);
+    }
+
+    private JPanel ordersHandledByLogisticsCompaniesPnl() {
+        logisticsRelatedRecordsPanel = new JPanel(new GridBagLayout());
+
+        //search 
+        logisticsRelatedRecordSearchField = new JTextField(20);
+        logisticsRelatedRecordSearchBtn = new JButton("Search");
+        logisticsRelatedRecordCriteriaComboBox = new JComboBox<>(new String[]{"Company Name", "Company ID"});
+
+        GridBagConstraints gbc = setGBC();
+
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        logisticsRelatedRecordsPanel.add(new JLabel("Search:"), gbc);
+
+        gbc.gridx++;
+        logisticsRelatedRecordsPanel.add(logisticsRelatedRecordSearchField, gbc);
+
+        gbc.gridx++;
+        logisticsRelatedRecordsPanel.add(logisticsRelatedRecordCriteriaComboBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        logisticsRelatedRecordsPanel.add(logisticsRelatedRecordSearchBtn, gbc);
+        
+
+
+        refreshOrdersHandledByLogisticsCompanies();
+        return logisticsRelatedRecordsPanel;
+    }
+
+    public void refreshOrdersHandledByLogisticsCompanies(){
+        String[] columnNames = {"Order ID", "Logistics Company ID", "Company Name", "Order Date", "Delivery Date"};
+
+        Object[][] data = {};
+
+        JTable table = new JTable(data, columnNames);
+
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+
+        if(logisticsRelatedRecordsPanel.getComponentCount() > 4) {
+            logisticsRelatedRecordsPanel.remove(4); 
+        }
+
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 5;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        logisticsRelatedRecordsPanel.add(scrollPane, gbc);
+
+        logisticsRelatedRecordsPanel.revalidate();
+        logisticsRelatedRecordsPanel.repaint();
+    }
+
+    public void refreshOrdersHandledByLogisticsCompanies(Object[][] data){
+        String[] columnNames = {"Order ID", "Logistics Company ID", "Company Name", "Order Date", "Delivery Date"};
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+
+        if(logisticsRelatedRecordsPanel.getComponentCount() > 4) {
+            logisticsRelatedRecordsPanel.remove(4); 
+        }
+
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 5;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        logisticsRelatedRecordsPanel.add(scrollPane, gbc);
+        logisticsRelatedRecordsPanel.revalidate();
+        logisticsRelatedRecordsPanel.repaint();
     }
 
     private JPanel storesCustomersBoughtFromPnl() {
@@ -2086,6 +2178,10 @@ public class View extends JFrame {
         affinityShowAllBtn.addActionListener(listener);
     }
 
+    public void setLogisticsRelatedRecordSearchBtn(ActionListener listener) {
+        logisticsRelatedRecordSearchBtn.addActionListener(listener);
+    }
+
 
     public void setProductUpdateId(String text) {
         productUpdateId.setText(text);
@@ -2623,7 +2719,13 @@ public class View extends JFrame {
         return logisticsCriteriaComboBox.getSelectedItem().toString();
     }
 
+    public String getLogisticsRelatedRecordSearchField() {
+        return logisticsRelatedRecordSearchField.getText();
+    }
 
+    public String getLogisticsRelatedRecordCriteriaComboBox() {
+        return logisticsRelatedRecordCriteriaComboBox.getSelectedItem().toString();
+    }
     public void productUpdateEditable(boolean editable) {
         productUpdateId.setEditable(!editable);
         productUpdateSelectBtn.setEnabled(!editable);
