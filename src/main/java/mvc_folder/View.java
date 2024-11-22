@@ -89,8 +89,12 @@ public class View extends JFrame {
     // Ship Order
     private JTextField shipOrderId, shipLogisticsId;
     private JButton shipOrderBtn;
+
+    // Customer Statistics
+    private JTextField customerStatsStartYearTF, customerStatsEndYearTF;
+    private JButton customerStatsSearchBtn, customerStatsShowAllBtn;
     
-    // Product Sales Category
+    // Product Sales
     private JComboBox<String> productSalesCategory;
     private JTextField productSalesReportStartYearTF;
     private JTextField productSalesReportEndYearTF;
@@ -133,6 +137,8 @@ public class View extends JFrame {
         adjustStockBtn = new JButton("Adjust Stock");
         paymentBtn = new JButton("Pay for Order");
         shipOrderBtn = new JButton("Ship Order");
+        customerStatsSearchBtn = new JButton("Search");
+        customerStatsShowAllBtn = new JButton("Show All");
         productSalesReportSearchBtn = new JButton("Search");
         productSalesReportShowAllBtn = new JButton("Show All");
         paymentReportSearchBtn = new JButton("Search");
@@ -1215,19 +1221,44 @@ public class View extends JFrame {
 
     private JPanel customerStatsPnl() {
         customerStatsPanel = new JPanel(new GridBagLayout());
+        customerStatsStartYearTF = new JTextField(COLUMN_WIDTH);
+        customerStatsEndYearTF = new JTextField(COLUMN_WIDTH);
+
+        customerStatsStartYearTF.setText("2000");
+        customerStatsEndYearTF.setText("2030");
+
+        GridBagConstraints gbc = setGBC();
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        customerStatsPanel.add(new JLabel("Customer Stats for"), gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        customerStatsPanel.add(new JLabel("Start Year:"), gbc);
+        gbc.gridx++;
+        customerStatsPanel.add(customerStatsStartYearTF, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        customerStatsPanel.add(new JLabel("End Year:"), gbc);
+        gbc.gridx++;
+        customerStatsPanel.add(customerStatsEndYearTF, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        customerStatsPanel.add(customerStatsSearchBtn, gbc);
+        gbc.gridx++;
+        customerStatsPanel.add(customerStatsShowAllBtn, gbc);
+
         refreshCustomerStatsPnl();
         return customerStatsPanel;
     }
 
-    public void refreshCustomerStatsPnl() {
-        String[] columnNames = {"Customer ID", "Customer Name", "Average Number of Orders Per Year", "Average Amount Spent Per Year"};
-        Object[][] data = {};
-
-        try {
-            data = Model.getCustomerStats();
-        } catch (SQLException e) {
-            showError("Failed to retrieve customer stats: " + e.getMessage());
-        }
+    public void refreshCustomerStatsPnl(Object[][] data) {
+        String[] columnNames = {"Year", "Customer Name", "Total Orders", "Total Spent"};
 
         JTable table = new JTable(data, columnNames);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -1235,17 +1266,31 @@ public class View extends JFrame {
 
         adjustColumnWidths(table);
 
-        customerStatsPanel.removeAll();
+        if (customerStatsPanel.getComponentCount() > 7) {
+            customerStatsPanel.remove(7);
+        }
+
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = 4;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         customerStatsPanel.add(scrollPane, gbc);
+
         customerStatsPanel.revalidate();
         customerStatsPanel.repaint();
+    }
+
+    public void refreshCustomerStatsPnl() {
+        Object[][] data = {};
+        try {
+            data = Model.getCustomerStats(2000, 2030);
+        } catch (SQLException e) {
+            showError("Failed to retrieve customer stats: " + e.getMessage());
+        }
+        refreshCustomerStatsPnl(data);
     }
 
     private JPanel productSalesPnl() {
@@ -1532,9 +1577,18 @@ public class View extends JFrame {
         productSalesCategory.addActionListener(listener);
     }
 
+    public void setCustomerStatsSearchBtn(ActionListener listener) {
+        customerStatsSearchBtn.addActionListener(listener);
+    }
+
+    public void setCustomerStatsShowAllBtn(ActionListener listener) {
+        customerStatsShowAllBtn.addActionListener(listener);
+    }
+
     public void setProductSalesReportSearchBtn(ActionListener listener) {
         productSalesReportSearchBtn.addActionListener(listener);
     }
+    
     public void setProductSalesReportShowAllBtn(ActionListener listener) {
         productSalesReportShowAllBtn.addActionListener(listener);
     }
@@ -1765,6 +1819,14 @@ public class View extends JFrame {
         return productSalesCategory.getSelectedItem().toString();
     }
 
+    public String getCustomerStatsStartYear() {
+        return customerStatsStartYearTF.getText();
+    }
+
+    public String getCustomerStatsEndYear() {
+        return customerStatsEndYearTF.getText();
+    }
+
     public String getProductSalesStartYear() {
         return productSalesReportStartYearTF.getText();
     }
@@ -1872,6 +1934,9 @@ public class View extends JFrame {
         logisticsCompanyID.setText("");
         logisticsCompanyName.setText("");
         logisticsCompanyLocationID.setText("");
+
+        customerStatsStartYearTF.setText("2000");
+        customerStatsEndYearTF.setText("2030");
 
         productSalesReportStartYearTF.setText("2000");
         productSalesReportEndYearTF.setText("2030");

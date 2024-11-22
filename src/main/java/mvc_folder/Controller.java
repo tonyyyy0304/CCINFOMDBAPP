@@ -52,13 +52,7 @@ public class Controller
                 }
             }
         });
-        
-        this.view.setProductSalesReportShowAllBtn(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                view.refreshProductSalesPnl();
-            }
-        });
+
 
         this.view.setProductAddBtn(new ActionListener(){
             @Override
@@ -640,6 +634,7 @@ public class Controller
                         view.clearFields(); // Clear fields after success
                         view.refreshStoresCustomerBoughtFrom(); // Refresh the stores the customer bought from
                         view.refreshProductRecords(); // Refresh the product records
+                        view.refreshCustomerStatsPnl(); // Refresh the customer stats
                         view.refreshPaymentReportsPnl(); // Refresh the payment reports
                     } else {
                         view.showError("Failed to place order. Please check the stock availability or if you are of age to order this product.");
@@ -925,6 +920,53 @@ public class Controller
             }
         });
 
+        this.view.setCustomerStatsSearchBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String start_yearS = view.getCustomerStatsStartYear();
+                String end_yearS = view.getCustomerStatsEndYear();
+
+                int start_year = 0;
+                int end_year = 0;
+
+                if (start_yearS.isEmpty() || end_yearS.isEmpty()) {
+                    view.showError("Please fill in all required fields.");
+                    view.clearFields();
+                    return;
+                }
+
+                try {
+                    start_year = Integer.parseInt(start_yearS);
+                    end_year = Integer.parseInt(end_yearS);
+                } catch (Exception ex) {
+                    view.showError("Year must be a valid number.");
+                    view.clearFields();
+                    return;
+                }
+
+                if (start_year > end_year) {
+                    view.showError("Start year cannot be greater than end year.");
+                    view.clearFields();
+                    return;
+                }
+
+                try {
+                    view.refreshCustomerStatsPnl(Model.getCustomerStats(start_year, end_year));
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+        this.view.setCustomerStatsShowAllBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                view.refreshCustomerStatsPnl();
+            }
+        });
+
         this.view.setProductSalesReportSearchBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -944,8 +986,8 @@ public class Controller
                     end_year = Integer.parseInt(end_yearS);
                 } catch (Exception ex) {
                     view.showError("Year must be a valid number.");
-                    start_year = 2000;
-                    end_year = 2030;
+                    view.clearFields();
+                    return;
                 }
 
                 if (start_year > end_year) {
@@ -961,6 +1003,13 @@ public class Controller
                 } catch (Exception ex) {
                     view.showError("An unexpected error occurred: " + ex.getMessage());
                 }
+            }
+        });
+        
+        this.view.setProductSalesReportShowAllBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                view.refreshProductSalesPnl();
             }
         });
 
@@ -984,8 +1033,8 @@ public class Controller
                     end_year = Integer.parseInt(end_yearS);
                 } catch (Exception ex) {
                     view.showError("Year must be a valid number.");
-                    start_year = 2000;
-                    end_year = 2030;
+                    view.clearFields();
+                    return;
                 }
 
                 if (start_year > end_year) {

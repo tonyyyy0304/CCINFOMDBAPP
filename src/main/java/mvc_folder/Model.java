@@ -701,38 +701,35 @@ public class Model
         }
     }
 
-    public static Object[][] getCustomerStats() throws SQLException {
-        String sql = 
-        "SELECT c.customer_id, CONCAT(c.first_name, ' ', c.last_name) AS customer_name,"+ 
-        " COUNT(o.order_id) / (TIMESTAMPDIFF(YEAR, c.registration_date, NOW()) + 1) AS num_orders_per_year,"+ 
-        " SUM(amount_paid) / (TIMESTAMPDIFF(YEAR, c.registration_date, NOW()) + 1) AS amount_spent_per_year" +
-        " FROM customers c"+ 
-        " LEFT JOIN orders o ON c.customer_id = o.customer_id"+
-        " LEFT JOIN payments p ON o.order_id = p.order_id"+
-        " WHERE c.is_deleted != 1 "+
-        " GROUP BY c.customer_id"+
-        " ORDER BY c.customer_id";
+    public static Object[][] getCustomerStats(int startYear, int endYear) throws SQLException {
+        String sql = "SELECT YEAR(o.order_date) as year, " +
+                     "CONCAT(c.first_name, ' ', c.last_name) as customer_name, " +
+                     "COUNT(o.order_id) as total_orders, " +
+                     "SUM(o.quantity * p.price) as total_sales " +
+                     "FROM customers c " +
+                     "JOIN orders o ON o.customer_id = c.customer_id " +
+                     "JOIN products p ON o.product_id = p.product_id " +
+                     "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
+                     "GROUP BY year, customer_name " +
+                     "ORDER BY year, customer_name";
 
         try (Connection conn = getConnection();
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        ResultSet rs = stmt.executeQuery())
-        {
-            List<Object[]> records = new ArrayList<>();
-            while (rs.next()) {
-                int customerId = rs.getInt("customer_id");
-                String customerName = rs.getString("customer_name");
-                double numOrdersPerYear = rs.getDouble("num_orders_per_year");
-                double amountSpentPerYear = rs.getDouble("amount_spent_per_year");
-                BigDecimal roundedAmountSpent = BigDecimal.valueOf(amountSpentPerYear).setScale(2, RoundingMode.HALF_UP);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, startYear);
+            stmt.setInt(2, endYear);
 
-                records.add(new Object[]{
-                    customerId,
-                    customerName,
-                    numOrdersPerYear,
-                    roundedAmountSpent.doubleValue()
-                });
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                while (rs.next()) {
+                    int year = rs.getInt("year");
+                    String customerName = rs.getString("customer_name");
+                    int totalOrders = rs.getInt("total_orders");
+                    double totalSales = rs.getDouble("total_sales");
+
+                    records.add(new Object[]{year, customerName, totalOrders, totalSales});
+                }
+                return records.toArray(new Object[0][]);
             }
-            return records.toArray(new Object[0][]);
         }
     }
 
