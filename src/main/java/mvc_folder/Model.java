@@ -57,6 +57,21 @@ public class Model
         }
     }
 
+    public boolean updateProduct(int productID, String productName, String description, String r18, double price) throws SQLException
+    {
+        String sql = "UPDATE products SET product_name = ?, description = ?, r18 = ?, price = ? WHERE product_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, productName);
+            stmt.setString(2, description);
+            stmt.setString(3, r18);
+            stmt.setDouble(4, price);
+            stmt.setInt(5, productID);
+
+            return stmt.executeUpdate() > 0; // Returns true if the update was successful
+        }
+    }
+
     public String[] getProductData(int productId) throws SQLException
     {
         String sql = "SELECT product_name, price, description, r18 FROM products WHERE product_id = ? AND is_deleted != 1";
