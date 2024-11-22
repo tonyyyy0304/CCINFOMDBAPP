@@ -361,7 +361,7 @@ public class Model
     }
 
     public boolean removeStore(int store_id) throws SQLException {
-        String sql = "DELETE FROM store WHERE store_id = ?";
+        String sql = "UPDATE store SET is_deleted = 1 WHERE store_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, store_id);
@@ -595,7 +595,8 @@ public class Model
             "s.registration_date " +
             "FROM store s " +
             "JOIN contact_information ci ON s.contact_id = ci.contact_id " +
-            "JOIN locations l ON s.location_id = l.location_id";
+            "JOIN locations l ON s.location_id = l.location_id " + 
+            "WHERE s.is_deleted != 1 ";
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);

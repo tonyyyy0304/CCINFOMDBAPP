@@ -1545,6 +1545,10 @@ public class View extends JFrame {
         return productR18.isSelected();
     }
 
+    public String getStoreId() {
+        return storeId.getText();
+    }
+
     public String getStoreName() {
         return storeName.getText();
     }

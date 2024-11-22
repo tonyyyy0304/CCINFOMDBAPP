@@ -556,6 +556,29 @@ public class Controller
             }
         });
 
+        this.view.setStoreRemoveBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    int storeId = Integer.parseInt(view.getStoreId());
+                    boolean success = model.removeStore(storeId);
+                    if (success) {
+                        view.showSuccess("Store removed successfully!");
+                        view.clearFields();
+                        view.refreshStoreRecordsPnl();
+                    } else {
+                        view.showError("Failed to remove the store. Store ID may not exist.");
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Store ID must be a valid number.");
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
         this.view.setAdjustStockBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
