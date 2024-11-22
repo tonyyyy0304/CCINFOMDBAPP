@@ -15,10 +15,7 @@ import org.jdatepicker.impl.SqlDateModel;
 
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Properties;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class View extends JFrame {
     private final int COLUMN_WIDTH = 10;
@@ -403,7 +400,6 @@ public class View extends JFrame {
         if (productRecordsPanel.getComponentCount() > 5) {
             productRecordsPanel.remove(5); // Assuming the table is the fifth component
         }
-
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
         gbc.gridy = 5;
@@ -963,10 +959,10 @@ public class View extends JFrame {
         logisticsCityName = new JTextField(COLUMN_WIDTH);
         logisticsZipCode = new JTextField(COLUMN_WIDTH);
         logisticsCountry = new JTextField(COLUMN_WIDTH);
-
+        // TODO: logistics add panel add a combo box(domestic, international) insert to database
         shipmentScope = new JComboBox<String>();
-        shipmentScope.addItem("domestic");
-        shipmentScope.addItem("international");
+        shipmentScope.addItem("Domestic");
+        shipmentScope.addItem("International");
         
         GridBagConstraints gbc = setGBC();
 
@@ -1007,8 +1003,18 @@ public class View extends JFrame {
         gbc.gridx++;
         panel.add(logisticsCountry, gbc);
 
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Shipment Scope:"), gbc);
+        gbc.gridx++;
+        panel.add(shipmentScope, gbc);
+
         gbc.gridwidth = 4;
         gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel(" "), gbc);
+        gbc.gridy++;
+        panel.add(new JLabel(" "), gbc);
         gbc.gridy++;
         panel.add(logisticsAddBtn, gbc);
 
@@ -2159,7 +2165,7 @@ public class View extends JFrame {
         productPrice.setText("");
         productCategories.setSelectedIndex(0);
         productR18.setSelected(false);
-
+        
         customerId.setText("");
         customerFirstName.setText("");
         customerLastName.setText("");
@@ -2218,6 +2224,12 @@ public class View extends JFrame {
         logisticsCompanyID.setText("");
         logisticsCompanyName.setText("");
         logisticsCompanyLocationID.setText("");
+        logisticsLotNum.setText("");
+        logisticsStreetName.setText("");
+        logisticsCityName.setText("");
+        logisticsZipCode.setText("");
+        logisticsCountry.setText("");
+        shipmentScope.setSelectedIndex(0);
 
         customerStatsStartYearTF.setText("2000");
         customerStatsEndYearTF.setText("2030");
