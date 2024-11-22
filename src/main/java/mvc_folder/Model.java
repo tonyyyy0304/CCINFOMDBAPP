@@ -18,7 +18,7 @@ public class Model
 {
     private static final String dbUrl = "jdbc:mysql://localhost:3306/ecommerce_db";
     private static final String userName = "root";
-    private static final String password = "password";
+    private static final String password = "123456";
 
 
     public Model() {
@@ -387,6 +387,24 @@ public class Model
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, store_id);
             return stmt.executeUpdate() > 0;
+        }
+    }
+
+    public boolean updateStore(int store_id, String store_name, int contact_id, int location_id) {
+        String sql = "UPDATE store SET store_name = ?, contact_id = ?, location_id = ? WHERE store_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, store_name);
+            stmt.setInt(2, contact_id);
+            stmt.setInt(3, location_id);
+            stmt.setInt(4, store_id);
+
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return false;
         }
     }
 
