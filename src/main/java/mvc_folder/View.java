@@ -2006,6 +2006,14 @@ public class View extends JFrame {
         logisticsRemoveBtn.addActionListener(listener);
     }
 
+    public void setLogisticsUpdateSelectBtn(ActionListener listener) {
+        logisticsUpdateSelectBtn.addActionListener(listener);
+    }
+
+    public void setLogisticsUpdateBtn(ActionListener listener) {
+        logisticsUpdateBtn.addActionListener(listener);
+    }
+
     public void setProductSearchBtn(ActionListener listener) {
         productSearchBtn.addActionListener(listener);
     }
@@ -2134,6 +2142,12 @@ public class View extends JFrame {
     public void setCustomerUpdateCountry(String text) {
         customerUpdateCountry.setText(text);
     }
+
+    public void setStoreUpdateId(String text) {
+        storeUpdateId.setText(text);
+    }
+
+
     
 
     //getters
@@ -2226,42 +2240,6 @@ public class View extends JFrame {
         return storeCountry.getText();
     }
 
-    public String getStoreUpdateId() {
-        return storeUpdateId.getText();
-    }
-
-    public String getStoreUpdateName() {
-        return storeUpdateName.getText();
-    }
-
-    public String getStoreUpdatePhoneNumber() {
-        return storeUpdatePhoneNumber.getText();
-    }
-
-    public String getStoreUpdateEmailAddress() {
-        return storeUpdateEmailAddress.getText();
-    }
-
-    public String getStoreUpdateLotNum() {
-        return storeUpdateLotNum.getText();
-    }
-
-    public String getStoreUpdateStreetName() {
-        return storeUpdateStreetName.getText();
-    }
-
-    public String getStoreUpdateCityName() {
-        return storeUpdateCityName.getText();
-    }
-
-    public String getStoreUpdateZipCode() {
-        return storeUpdateZipCode.getText();
-    }
-
-    public String getStoreUpdateCountry() {
-        return storeUpdateCountry.getText();
-    }
-
     public String getCustomerId() {
         return customerId.getText();
     }
@@ -2344,6 +2322,74 @@ public class View extends JFrame {
 
     public String getCustomerUpdateCountry() {
         return customerUpdateCountry.getText();
+    }
+
+    public String getStoreUpdateId() {
+        return storeUpdateId.getText();
+    }
+
+    public String getStoreUpdateName() {
+        return storeUpdateName.getText();
+    }
+
+    public String getStoreUpdatePhoneNumber() {
+        return storeUpdatePhoneNumber.getText();
+    }
+
+    public String getStoreUpdateEmailAddress() {
+        return storeUpdateEmailAddress.getText();
+    }
+
+    public String getStoreUpdateLotNum() {
+        return storeUpdateLotNum.getText();
+    }
+
+    public String getStoreUpdateStreetName() {
+        return storeUpdateStreetName.getText();
+    }
+
+    public String getStoreUpdateCityName() {
+        return storeUpdateCityName.getText();
+    }
+
+    public String getStoreUpdateZipCode() {
+        return storeUpdateZipCode.getText();
+    }
+
+    public String getStoreUpdateCountry() {
+        return storeUpdateCountry.getText();
+    }
+
+    public String getLogisticsUpdateId() {
+        return logisticsUpdateId.getText();
+    }
+
+    public String getLogisticsUpdateName() {
+        return logisticsUpdateName.getText();
+    }
+
+    public String getLogisticsUpdateLotNum() {
+        return logisticsUpdateLotNum.getText();
+    }
+
+    public String getLogisticsUpdateStreetName() {
+        return logisticsUpdateStreetName.getText();
+    }
+
+    public String getLogisticsUpdateCityName() {
+        return logisticsUpdateCityName.getText();
+    }
+
+    public String getLogisticsUpdateZipCode() {
+        return logisticsUpdateZipCode.getText();
+    }
+
+    public String getLogisticsUpdateCountry() {
+        return logisticsUpdateCountry.getText();
+    }
+
+    public String getLogisticsUpdateShipmentScope() {
+        return logisticsUpdateShipmentScope.getSelectedItem().toString();
     }
 
     public String getOrderCustomerId() {
@@ -2623,6 +2669,17 @@ public class View extends JFrame {
         storeZipCode.setText("");
         storeCountry.setText("");
 
+        storeUpdateId.setText("");
+        storeUpdateName.setText("");
+        storeUpdatePhoneNumber.setText("");
+        storeUpdateEmailAddress.setText("");
+        storeUpdateLotNum.setText("");
+        storeUpdateStreetName.setText("");
+        storeUpdateCityName.setText("");
+        storeUpdateZipCode.setText("");
+        storeUpdateCountry.setText("");
+        storeUpdateEditable(false);
+
         orderCustomerId.setText("");
         orderProductId.setText("");
         orderQuantity.setText("");
@@ -2653,6 +2710,15 @@ public class View extends JFrame {
         logisticsZipCode.setText("");
         logisticsCountry.setText("");
         shipmentScope.setSelectedIndex(0);
+
+        logisticsUpdateId.setText("");
+        logisticsUpdateName.setText("");
+        logisticsUpdateLotNum.setText("");
+        logisticsUpdateStreetName.setText("");
+        logisticsUpdateCityName.setText("");
+        logisticsUpdateZipCode.setText("");
+        logisticsUpdateCountry.setText("");
+        logisticsUpdateShipmentScope.setSelectedItem(null);
 
         customerStatsStartYearTF.setText("2000");
         customerStatsEndYearTF.setText("2030");
