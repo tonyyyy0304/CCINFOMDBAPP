@@ -52,7 +52,53 @@ public class Controller
                 }
             }
         });
-    
+        
+        this.view.setProductSalesReportSearchBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String start_yearS = view.getProductSalesStartYear();
+                String end_yearS = view.getProductSalesEndYear();
+
+                int start_year = 0;
+                int end_year = 0;
+
+                if (start_yearS.isEmpty() || end_yearS.isEmpty()) {
+                    view.showError("Please fill in all required fields.");
+                    return;
+                }
+
+                try {
+                    start_year = Integer.parseInt(start_yearS);
+                    end_year = Integer.parseInt(end_yearS);
+                } catch (Exception ex) {
+                    view.showError("Year must be a valid number.");
+                    start_year = 2000;
+                    end_year = 2030;
+                }
+
+                if (start_year > end_year) {
+                    view.showError("Start year cannot be greater than end year.");
+                    start_year = 2000;
+                    end_year = 2030;
+                }
+
+                try {
+                    view.refreshProductSalesPnl(Model.getProductSales(start_year, end_year));
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+        this.view.setProductSalesReportShowAllBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                view.refreshProductSalesPnl();
+            }
+        });
+
         this.view.setProductAddBtn(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){

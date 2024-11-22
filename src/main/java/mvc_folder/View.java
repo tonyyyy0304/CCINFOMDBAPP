@@ -92,13 +92,15 @@ public class View extends JFrame {
     
     // Product Sales Category
     private JComboBox<String> productSalesCategory;
+    private JTextField productSalesReportStartYearTF;
+    private JTextField productSalesReportEndYearTF;
+    private JButton productSalesReportSearchBtn;
+    private JButton productSalesReportShowAllBtn;
 
     // Payment Reports
     private JComboBox<String> paymentReportSelection;
 
-    // Year Selection
-    private JComboBox<Integer> startYearComboBox;
-    private JComboBox<Integer> endYearComboBox;
+   
 
     public View() {
         // Set up the frame
@@ -128,22 +130,11 @@ public class View extends JFrame {
         adjustStockBtn = new JButton("Adjust Stock");
         paymentBtn = new JButton("Pay for Order");
         shipOrderBtn = new JButton("Ship Order");
+        productSalesReportSearchBtn = new JButton("Search");
+        productSalesReportShowAllBtn = new JButton("Show All");
 
         productSalesCategory = new JComboBox<String>(new String[] {"Clothing", "Electronics", "Beauty & Personal Care", "Food & Beverages", "Toys", "Appliances", "Home & Living"});
         paymentReportSelection = new JComboBox<String>(new String[] {"Completed", "Pending", "Cancelled"});
-
-        startYearComboBox = new JComboBox<>();
-        endYearComboBox = new JComboBox<>();
-        for (int year = 2000; year <= 2030; year++) {
-            startYearComboBox.addItem(year);
-            endYearComboBox.addItem(year);
-        }
-        startYearComboBox.setSelectedItem(2020);
-        endYearComboBox.setSelectedItem(2024);
-
-        // Add action listeners to combo boxes
-        startYearComboBox.addActionListener(e -> refreshProductSalesPnl());
-        endYearComboBox.addActionListener(e -> refreshProductSalesPnl());
 
         JTabbedPane mainTabbedPane = new JTabbedPane();
 
@@ -1257,24 +1248,44 @@ public class View extends JFrame {
 
     private JPanel productSalesPnl() {
         productSalesPanel = new JPanel(new GridBagLayout());
+        productSalesReportStartYearTF = new JTextField(COLUMN_WIDTH);
+        productSalesReportEndYearTF = new JTextField(COLUMN_WIDTH);
+
+        productSalesReportStartYearTF.setText("2000");
+        productSalesReportEndYearTF.setText("2030");
+
+        GridBagConstraints gbc = setGBC();
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        productSalesPanel.add(new JLabel("Product Sales for"), gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        productSalesPanel.add(new JLabel("Start Year:"), gbc);
+        gbc.gridx++;
+        productSalesPanel.add(productSalesReportStartYearTF, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        productSalesPanel.add(new JLabel("End Year:"), gbc);
+        gbc.gridx++;
+        productSalesPanel.add(productSalesReportEndYearTF, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy++;
+        productSalesPanel.add(productSalesReportSearchBtn, gbc);
+        gbc.gridx++;
+        productSalesPanel.add(productSalesReportShowAllBtn, gbc);
+
         refreshProductSalesPnl();
         return productSalesPanel;
     }
 
-    public void refreshProductSalesPnl() {
-        int startYear = (int) startYearComboBox.getSelectedItem();
-        int endYear = (int) endYearComboBox.getSelectedItem();
-
-        // Define column names
+    public void refreshProductSalesPnl(Object[][] data) {
         String[] columnNames = {"Year", "Category", "Total Sales"};
-
-        Object[][] data = {};
-
-        try {
-            data = Model.getProductSales(startYear, endYear);
-        } catch (SQLException e) {
-            showError("Failed to retrieve product sales: " + e.getMessage());
-        }
 
         JTable table = new JTable(data, columnNames);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -1282,31 +1293,15 @@ public class View extends JFrame {
 
         adjustColumnWidths(table);
 
-        productSalesPanel.removeAll();
+        if (productSalesPanel.getComponentCount() > 7) {
+            productSalesPanel.remove(7); // Assuming the table is the fourth component
+        }
+        
         GridBagConstraints gbc = setGBC();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        productSalesPanel.add(new JLabel("Product Sales for"), gbc);
-
-        gbc.gridx++;
-        productSalesPanel.add(new JLabel(startYear + " - " + endYear), gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        productSalesPanel.add(new JLabel("Start Year:"), gbc);
-        gbc.gridx++;
-        productSalesPanel.add(startYearComboBox, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        productSalesPanel.add(new JLabel("End Year:"), gbc);
-        gbc.gridx++;
-        productSalesPanel.add(endYearComboBox, gbc);
-
+        
         gbc.gridwidth = 2;
-        gbc.gridy++;
+        gbc.gridx = 0;
+        gbc.gridy = 4;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
@@ -1314,6 +1309,16 @@ public class View extends JFrame {
 
         productSalesPanel.revalidate();
         productSalesPanel.repaint();
+    }
+
+    public void refreshProductSalesPnl() {
+        Object[][] data = {};
+        try {
+            data = Model.getProductSales(2000, 2030);
+        } catch (SQLException e) {
+            showError("Failed to retrieve product sales: " + e.getMessage());
+        }
+        refreshProductSalesPnl(data);
     }
 
     private JPanel paymentReportsPnl() {
@@ -1453,6 +1458,13 @@ public class View extends JFrame {
 
     public void setProductSalesCategory(ActionListener listener) {
         productSalesCategory.addActionListener(listener);
+    }
+
+    public void setProductSalesReportSearchBtn(ActionListener listener) {
+        productSalesReportSearchBtn.addActionListener(listener);
+    }
+    public void setProductSalesReportShowAllBtn(ActionListener listener) {
+        productSalesReportShowAllBtn.addActionListener(listener);
     }
 
     public void setPaymentReportSelection(ActionListener listener) {
@@ -1713,6 +1725,14 @@ public class View extends JFrame {
         return productSalesCategory.getSelectedItem().toString();
     }
 
+    public String getProductSalesStartYear() {
+        return productSalesReportStartYearTF.getText();
+    }
+
+    public String getProductSalesEndYear() {
+        return productSalesReportEndYearTF.getText();
+    }
+
     public String getPaymentReportSelectionString() {
         return paymentReportSelection.getSelectedItem().toString();
     }
@@ -1808,6 +1828,9 @@ public class View extends JFrame {
         logisticsCompanyID.setText("");
         logisticsCompanyName.setText("");
         logisticsCompanyLocationID.setText("");
+
+        productSalesReportStartYearTF.setText("2000");
+        productSalesReportEndYearTF.setText("2030");
 
         refreshProductRecords();
         refreshCustomerRecords();
