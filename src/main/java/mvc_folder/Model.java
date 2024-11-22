@@ -18,7 +18,7 @@ public class Model
 {
     private static final String dbUrl = "jdbc:mysql://localhost:3306/ecommerce_db";
     private static final String userName = "root";
-    private static final String password = "password";
+    private static final String password = "123456";
 
 
     public Model() {

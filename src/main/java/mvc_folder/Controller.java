@@ -86,7 +86,7 @@ public class Controller
                     view.showError("Price must be a valid number.");
                     return;
                 }
-
+                //TODO: check stock count, is int, is positive, is not null, is not empty
                 try
                 {
                     int storeId = Integer.parseInt(product_store_id);
@@ -1152,7 +1152,7 @@ public class Controller
             }
         });
 
-
+        //TODO: check if product does not exists/deleted
         this.view.setProductUpdateSelectBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
