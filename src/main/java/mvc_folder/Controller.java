@@ -915,6 +915,47 @@ public class Controller
             }
         });
 
+        this.view.setLogisticsRelatedRecordSearchBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                String query = view.getLogisticsRelatedRecordSearchField();
+            String criteria = view.getLogisticsRelatedRecordCriteriaComboBox();
+
+            if (query.isEmpty()) {
+                view.showMessage("Please enter a search query.");
+                return;
+            }
+
+            if (criteria.equals("Company ID")) {
+                try {
+                    Integer.parseInt(query);
+                } catch (NumberFormatException ex) {
+                    view.showError("Company ID must be a valid number.");
+                    return;
+                }
+            }
+
+            try {
+                Object[][] data = new Object[0][];
+                if (criteria.equals("Company ID")) {
+                    int id = Integer.parseInt(query);
+                    data = model.getOrdersHandledByLogisticsCompanyId(id);
+                } else if (criteria.equals("Company Name")) {
+                    data = model.getOrdersHandledByLogisticsCompanyName(query);
+                }
+                if (data != null) {
+                    view.refreshOrdersHandledByLogisticsCompanies(data);
+                } else {
+                    view.showError("No data found for the given query.");
+                }
+            } catch (Exception ex) {
+                view.showError("An unexpected error occurred: " + ex.getMessage());
+                ex.printStackTrace(); // Log the stack trace for debugging purposes
+            }
+        }
+        });
+
         this.view.setProductSalesCategory(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

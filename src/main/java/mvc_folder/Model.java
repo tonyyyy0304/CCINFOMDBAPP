@@ -538,6 +538,177 @@ public class Model
             }
             return records.toArray(new Object[0][]);
         }
+    } 
+
+    public static Object[][] getListOfStoresSellingSameCategory(String category){
+        String sql = "SELECT s.store_name, COUNT(p.product_id) AS num_products " +
+                        "FROM products p " +
+                        "JOIN store s ON p.store_id = s.store_id " +
+                        "WHERE p.category = ? " +
+                        "GROUP BY s.store_id";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, category);
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                DecimalFormat priceFormat = new DecimalFormat("Php #,###.##");
+                while (rs.next()) {
+                    String formattedPrice = priceFormat.format(rs.getDouble("price"));
+                    records.add(new Object[]{
+                        rs.getString("store_name"),
+                        rs.getString("product_name"),
+                        rs.getString("logistics_company_name"),
+                        formattedPrice,
+                        rs.getInt("stock_count")
+                    });
+                }
+                return records.toArray(new Object[0][]);
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return null;
+        }
+    }
+
+    public Object[][] getOrdersHandledByLogisticsCompanyName(String companyName){
+        String sql = "SELECT o.order_id, s.logistics_company_id, lc.logistics_company_name, o.order_date, s.expected_arrival_date " +
+                        "FROM orders o " +
+                        "JOIN shipping s ON o.order_id = s.order_id " +
+                        "JOIN logistics_companies lc ON s.logistics_company_id = lc.logistics_company_id " +
+                        "WHERE lc.logistics_company_name LIKE ? " +
+                        "ORDER BY o.order_id";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + companyName + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                while (rs.next()) {
+                    records.add(new Object[]{
+                        rs.getInt("order_id"),
+                        rs.getInt("logistics_company_id"),
+                        rs.getString("logistics_company_name"),
+                        rs.getDate("order_date"),
+                        rs.getDate("expected_arrival_date")
+                    });
+                }
+                
+                return records.toArray(new Object[0][]);
+            }catch(SQLException e){
+                System.out.println("SQLException: " + e.getMessage());
+                System.out.println("SQLState: " + e.getSQLState());
+                System.out.println("VendorError: " + e.getErrorCode());
+                return null;
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return null;
+        }
+
+    }
+
+    public Object[][] getOrdersHandledByLogisticsCompanyId(int companyId){
+        //include name in select
+        String sql = "SELECT o.order_id, s.logistics_company_id, lc.logistics_company_name, o.order_date, s.expected_arrival_date" +
+                        "FROM orders o " +
+                        "JOIN shipping s ON o.order_id = s.order_id " +
+                        "JOIN logistics_companies lc ON s.logistics_company_id = lc.logistics_company_id " +
+                        "WHERE s.logistics_company_id = ?"+
+                        "ORDER BY o.order_id";
+        
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, companyId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                while (rs.next()) {
+                    records.add(new Object[]{
+                        rs.getInt("order_id"),
+                        rs.getInt("logistics_company_id"),
+                        rs.getDate("order_date"),
+                        rs.getDate("expected_arrival_date")
+                    });
+                }
+                return records.toArray(new Object[0][]);
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return null;
+        }
+    }
+
+    public static Object[][] getListOfProductsStoreSells(String storeName){
+        String sql = "SELECT p.product_id, p.product_name, p.price, p.stock_count, p.description, p.category, p.r18 " +
+                        "FROM products p " +
+                        "JOIN store s ON p.store_id = s.store_id " +
+                        "WHERE s.store_name LIKE ? AND p.is_deleted != 1 " +
+                        "ORDER BY p.product_id";
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, "%" + storeName + "%");
+                try (ResultSet rs = stmt.executeQuery()) {
+                    List<Object[]> records = new ArrayList<>();
+                    DecimalFormat priceFormat = new DecimalFormat("Php #,###.##");
+                    while (rs.next()) {
+                        String formattedPrice = priceFormat.format(rs.getDouble("price"));
+                        records.add(new Object[]{
+                            rs.getInt("product_id"),
+                            rs.getString("product_name"),
+                            formattedPrice,
+                            rs.getInt("stock_count"),
+                            rs.getString("description"),
+                            rs.getString("category"),
+                            rs.getBoolean("r18")
+                        });
+                    }
+                    return records.toArray(new Object[0][]);
+                }
+            } catch (SQLException e) {
+                System.out.println("SQLException: " + e.getMessage());
+                System.out.println("SQLState: " + e.getSQLState());
+                System.out.println("VendorError: " + e.getErrorCode());
+                return null;
+            }
+        }
+
+    public static Object[][] getListOfProductsStoreSells(int storeId){
+        String sql = "SELECT p.product_id, p.product_name, p.price, p.stock_count, p.description, p.category, p.r18 " +
+                        "FROM products p " +
+                        "WHERE p.store_id = ? AND p.is_deleted != 1 " +
+                        "ORDER BY p.product_id";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, storeId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                DecimalFormat priceFormat = new DecimalFormat("Php #,###.##");
+                while (rs.next()) {
+                    String formattedPrice = priceFormat.format(rs.getDouble("price"));
+                    records.add(new Object[]{
+                        rs.getInt("product_id"),
+                        rs.getString("product_name"),
+                        formattedPrice,
+                        rs.getInt("stock_count"),
+                        rs.getString("description"),
+                        rs.getString("category"),
+                        rs.getBoolean("r18")
+                    });
+                }
+                return records.toArray(new Object[0][]);
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return null;
+        }
     }
 
     public static Object[][] getStoresCustomersBoughtFrom() throws SQLException {
