@@ -634,7 +634,6 @@ public class View extends JFrame {
         storesCustomersBoughtFromPnl.repaint();
     }
 
-    
     private JPanel storeAddPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
@@ -739,7 +738,6 @@ public class View extends JFrame {
 
         return panel;
     }
-
 
     private JPanel storeRecordsPnl() {
         storeRecordsPanel = new JPanel(new GridBagLayout());
@@ -1296,7 +1294,7 @@ public class View extends JFrame {
         adjustColumnWidths(table);
 
         if (productSalesPanel.getComponentCount() > 7) {
-            productSalesPanel.remove(7); // Assuming the table is the fourth component
+            productSalesPanel.remove(7);
         }
         
         GridBagConstraints gbc = setGBC();
@@ -1458,21 +1456,6 @@ public class View extends JFrame {
         logisticsAddBtn.addActionListener(listener);
     }
 
-    public void setProductSalesCategory(ActionListener listener) {
-        productSalesCategory.addActionListener(listener);
-    }
-
-    public void setProductSalesReportSearchBtn(ActionListener listener) {
-        productSalesReportSearchBtn.addActionListener(listener);
-    }
-    public void setProductSalesReportShowAllBtn(ActionListener listener) {
-        productSalesReportShowAllBtn.addActionListener(listener);
-    }
-
-    public void setPaymentReportSelection(ActionListener listener) {
-        paymentReportSelection.addActionListener(listener);
-    }
-
     public void setLogisticsRemoveBtn(ActionListener listener) {
         logisticsRemoveBtn.addActionListener(listener);
     }
@@ -1511,6 +1494,25 @@ public class View extends JFrame {
 
     public void setStoreShowAllBtn(ActionListener listener) {
         storeShowAllBtn.addActionListener(listener);
+    }
+
+    public void setProductSalesCategory(ActionListener listener) {
+        productSalesCategory.addActionListener(listener);
+    }
+
+    public void setProductSalesReportSearchBtn(ActionListener listener) {
+        productSalesReportSearchBtn.addActionListener(listener);
+    }
+    public void setProductSalesReportShowAllBtn(ActionListener listener) {
+        productSalesReportShowAllBtn.addActionListener(listener);
+    }
+
+    public void setPaymentReportSearchBtn(ActionListener listener) {
+        paymentReportSearchBtn.addActionListener(listener);
+    }
+
+    public void setPaymentReportShowAllBtn(ActionListener listener) {
+        paymentReportShowAllBtn.addActionListener(listener);
     }
 
     //getters
