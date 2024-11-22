@@ -681,7 +681,7 @@ public class Controller
                         view.refreshProductRecords(); // Refresh the product records
                         view.refreshPaymentReportsPnl(); // Refresh the payment reports
                     } else {
-                        view.showError("Failed to place order. Please check the stock availability.");
+                        view.showError("Failed to place order. Please check the stock availability or if you are of age to order this product.");
                     }
                 } catch (NumberFormatException ex) {
                     view.showError("Please enter valid numbers for Customer ID, Product ID, Lot Number, Zip Code, and Quantity.");

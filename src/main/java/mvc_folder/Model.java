@@ -880,6 +880,39 @@ public class Model
             return false; // Customer does not exist
         }
 
+        // Check if the product is R18
+        String checkR18Sql = "SELECT r18 FROM products WHERE product_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement checkR18Stmt = conn.prepareStatement(checkR18Sql)) {
+            checkR18Stmt.setInt(1, productId);
+            ResultSet rs = checkR18Stmt.executeQuery();
+
+            if (rs.next()) {
+                String isR18 = rs.getString("r18");
+                if (isR18.equalsIgnoreCase("T")) {
+                    // Check if the customer is 18 years old or older
+                    String checkAgeSql = "SELECT CASE " +
+                        "WHEN TIMESTAMPDIFF(YEAR, (SELECT c.birthdate FROM customers c WHERE c.customer_id = ?), NOW()) < 18 THEN 'TRUE' " +
+                        "ELSE 'FALSE' END AS result " +
+                        "FROM products p " +
+                        "WHERE p.product_id = ?";
+                    try (PreparedStatement checkAgeStmt = conn.prepareStatement(checkAgeSql)) {
+                        checkAgeStmt.setInt(1, customerId);
+                        checkAgeStmt.setInt(2, productId);
+                        ResultSet ageRs = checkAgeStmt.executeQuery();
+                        if (ageRs.next()) {
+                            String isUnderage = ageRs.getString("result");
+                            if (isUnderage.equalsIgnoreCase("TRUE")) {
+                                return false; // Customer is under 18, cannot purchase R18 product
+                            }
+                        }
+                    }
+                }
+            } else {
+                return false; // Product not found
+            }
+        }
+
         // Check if the product exists and its stock count
         String checkProductSql = "SELECT stock_count FROM products WHERE product_id = ? AND is_deleted != 1 ";
         try (Connection conn = getConnection();
