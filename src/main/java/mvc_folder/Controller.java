@@ -931,6 +931,32 @@ public class Controller
             }
         });
 
+        this.view.setLogisticsRemoveBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    // Retrieve the logistics company ID from the view
+                    int logisticsCompanyId = Integer.parseInt(view.getLogisticsCompanyID());
+
+                    // Call the model to remove the logistics company
+                    boolean success = model.removeLogisticsCompany(logisticsCompanyId);
+                    if (success) {
+                        view.showSuccess("Logistics company removed successfully!");
+                        view.clearFields(); // Clear fields after success
+                        view.refreshLogisticsRecordPnl(); // Refresh the logistics records
+                    } else {
+                        view.showError("Failed to remove the logistics company. Logistics Company ID may not exist.");
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Logistics Company ID must be a valid number.");
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
         this.view.setProductSalesCategory(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

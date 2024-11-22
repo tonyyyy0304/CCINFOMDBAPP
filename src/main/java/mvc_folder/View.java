@@ -126,6 +126,8 @@ public class View extends JFrame {
         customerSearchBtn = new JButton("Search");
         storeAddBtn = new JButton("Add Store");
         storeRemoveBtn = new JButton("Remove Store");
+        logisticsAddBtn = new JButton("Add Logistics Company");
+        logisticsRemoveBtn = new JButton("Remove Logistics Company");
         placeOrderBtn = new JButton("Place Order");
         adjustStockBtn = new JButton("Adjust Stock");
         paymentBtn = new JButton("Pay for Order");
@@ -883,7 +885,7 @@ public class View extends JFrame {
         gbc.gridx++;
         panel.add(logisticsCountry, gbc);
 
-        gbc.gridwidth = 2;
+        gbc.gridwidth = 4;
         gbc.gridx = 0;
         gbc.gridy++;
         panel.add(logisticsAddBtn, gbc);

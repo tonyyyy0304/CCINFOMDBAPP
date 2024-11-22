@@ -477,8 +477,6 @@ public class Model
         }
     }
 
-    
-
     public boolean addLogisticsCompany(String name, int location, String scope) throws SQLException {
         String sql = "INSERT INTO logistics_companies (logistics_company_name, location_id, shipment_scope) VALUES (?, ?, ?)";
         try (Connection conn = getConnection();
@@ -491,8 +489,17 @@ public class Model
         }
     }
 
+    public boolean removeLogisticsCompany(int logisticsCompanyId) throws SQLException {
+        String sql = "UPDATE logistics_companies SET is_deleted = 1 WHERE logistics_company_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, logisticsCompanyId);
+            return stmt.executeUpdate() > 0; // Returns true if the deletion was successful
+        }
+    }
+
     public boolean logisticsCompanyExists(int logisticsCompanyId) throws SQLException {
-        String sql = "SELECT logistics_company_id FROM logistics_companies WHERE logistics_company_id = ?";
+        String sql = "SELECT logistics_company_id FROM logistics_companies WHERE logistics_company_id = ? AND is_deleted != 1 ";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, logisticsCompanyId);
@@ -674,7 +681,8 @@ public class Model
             "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
             "lc.shipment_scope " +
             "FROM logistics_companies lc " +
-            "JOIN locations l ON lc.location_id = l.location_id";
+            "JOIN locations l ON lc.location_id = l.location_id " +
+            "WHERE lc.is_deleted != 1 ";
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
