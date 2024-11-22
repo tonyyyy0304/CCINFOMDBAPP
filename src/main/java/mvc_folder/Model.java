@@ -788,49 +788,39 @@ public class Model
         }
     }
 
-    public static Object[][] getAffinity() throws SQLException {
-        String sql = 
-        "SELECT" + 
-        " CONCAT(c.first_name, ' ', c.last_name) AS customer_name," + 
-        " s.store_name," +
-        " COUNT(o.order_id) AS num_orders_made_at_store," + 
-        " SUM(pm.amount_paid) AS total_amount_spent" + 
-        " FROM" + 
-        " customers c" +
-        " LEFT JOIN" +
-        " orders o ON o.customer_id = c.customer_id" + 
-        " LEFT JOIN" +
-        " products p ON p.product_id = o.product_id" +
-        " LEFT JOIN" + 
-        " store s ON s.store_id = p.store_id" +
-        " LEFT JOIN" + 
-        " payments pm ON pm.order_id = o.order_id" +
-        " WHERE" +
-        " c.is_deleted != 1 " +
-        " GROUP BY" +
-        " c.customer_id, s.store_id" + 
-        " ORDER BY" + 
-        " customer_name, s.store_name";
+    public static Object[][] getAffinity(int startYear, int endYear) throws SQLException {
+        // TODO: fix sql query
+        String sql = "SELECT YEAR(o.order_date) as year, " +
+                     "CONCAT(c.first_name, ' ', c.last_name) as customer_name, s.store_name, " +
+                     "COUNT(o.order_id) as num_orders_made_at_store, " +
+                     "SUM(pm.amount_paid) as total_amount_spent " +
+                     "FROM customers c " +
+                     "JOIN orders o ON o.customer_id = c.customer_id " +
+                     "JOIN products p ON p.product_id = o.product_id " +
+                     "JOIN store s ON s.store_id = p.store_id " +
+                     "JOIN payments pm on pm.order_id = pm.order_id " +
+                     "WHERE YEAR(o.order_date) BETWEEN ? AND ? AND c.is_deleted != 1 " +
+                     "GROUP BY year, customer_name, store_name " +
+                     "ORDER BY year, customer_name";
 
         try (Connection conn = getConnection();
-        PreparedStatement stmt = conn.prepareStatement(sql);
-        ResultSet rs = stmt.executeQuery()) 
-        {
-            List<Object[]> records = new ArrayList<>();
-            while (rs.next()) {
-                String customerName = rs.getString("customer_name");
-                String storeName = rs.getString("store_name");
-                int numOrdersMadeAtStore = rs.getInt("num_orders_made_at_store");
-                double totalAmountSpent = rs.getDouble("total_amount_spent");
-                BigDecimal roundedTotalAmountSpent = BigDecimal.valueOf(totalAmountSpent).setScale(2, RoundingMode.HALF_UP);
-                records.add(new Object[]{
-                    customerName,
-                    storeName,
-                    numOrdersMadeAtStore,
-                    roundedTotalAmountSpent.doubleValue()
-                });
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, startYear);
+            stmt.setInt(2, endYear);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                while (rs.next()) {
+                    int year = rs.getInt("year");
+                    String customerName = rs.getString("customer_name");
+                    String storeName = rs.getString("store_name");
+                    int numOrders = rs.getInt("num_orders_made_at_store");
+                    double totalAmountSpent = rs.getDouble("total_amount_spent");
+
+                    records.add(new Object[]{year, customerName, storeName, numOrders, totalAmountSpent});
+                }
+                return records.toArray(new Object[0][]);
             }
-            return records.toArray(new Object[0][]);
         }
     }
 

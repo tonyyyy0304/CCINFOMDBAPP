@@ -105,6 +105,9 @@ public class View extends JFrame {
     private JTextField paymentReportStartYearTF, paymentReportEndYearTF;
     private JButton paymentReportSearchBtn, paymentReportShowAllBtn;
 
+    // Affinity
+    private JTextField affinityStartYearTF, affinityEndYearTF;
+    private JButton affinitySearchBtn, affinityShowAllBtn;
    
 
     public View() {
@@ -143,6 +146,8 @@ public class View extends JFrame {
         productSalesReportShowAllBtn = new JButton("Show All");
         paymentReportSearchBtn = new JButton("Search");
         paymentReportShowAllBtn = new JButton("Show All");
+        affinitySearchBtn = new JButton("Search");
+        affinityShowAllBtn = new JButton("Show All");
 
         productSalesCategory = new JComboBox<String>(new String[] {"Clothing", "Electronics", "Beauty & Personal Care", "Food & Beverages", "Toys", "Appliances", "Home & Living"});
 
@@ -1444,37 +1449,76 @@ public class View extends JFrame {
 
     private JPanel affinityPnl() {
         affinityPanel = new JPanel(new GridBagLayout());
+        affinityStartYearTF = new JTextField(COLUMN_WIDTH);
+        affinityEndYearTF = new JTextField(COLUMN_WIDTH);
+
+        affinityStartYearTF.setText("2000");
+        affinityEndYearTF.setText("2030");
+
+        GridBagConstraints gbc = setGBC();
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        affinityPanel.add(new JLabel("Affinity for"), gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        affinityPanel.add(new JLabel("Start Year:"), gbc);
+        gbc.gridx++;
+        affinityPanel.add(affinityStartYearTF, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        affinityPanel.add(new JLabel("End Year:"), gbc);
+        gbc.gridx++;
+        affinityPanel.add(affinityEndYearTF, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        affinityPanel.add(affinitySearchBtn, gbc);
+        gbc.gridx++;
+        affinityPanel.add(affinityShowAllBtn, gbc);
+
         refreshAffinityPnl();
         return affinityPanel;
     }
 
-    public void refreshAffinityPnl() {
-        String[] columnNames = {"Customer Name", "Store Name", "Number of Orders Made at Store", "Total Amount Spent"};
-        Object[][] data = {};
-
-        try {
-            data = Model.getAffinity();
-        } catch (SQLException e) {
-            showError("Failed to retrieve affinity: " + e.getMessage());
-        }
-
+    public void refreshAffinityPnl(Object[][] data) {
+        String[] columnNames = {"Year", "Customer Name", "Store Name", "Number of Orders Made at Store", "Total Amount Spent"};
+        
         JTable table = new JTable(data, columnNames);
         JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
-
+    
         adjustColumnWidths(table);
 
-        affinityPanel.removeAll();
+        if (affinityPanel.getComponentCount() > 7) {
+            affinityPanel.remove(7);
+        }
+
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.gridy = 4;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         affinityPanel.add(scrollPane, gbc);
+
         affinityPanel.revalidate();
         affinityPanel.repaint();
+    }
+
+    public void refreshAffinityPnl() {
+        Object[][] data = {};
+        try {
+            data = Model.getAffinity(2000, 2030);
+        } catch (SQLException e) {
+            showError("Failed to retrieve affinity: " + e.getMessage());
+        }
+        refreshAffinityPnl(data);
     }
 
     private void adjustColumnWidths(JTable table) {
@@ -1588,7 +1632,7 @@ public class View extends JFrame {
     public void setProductSalesReportSearchBtn(ActionListener listener) {
         productSalesReportSearchBtn.addActionListener(listener);
     }
-    
+
     public void setProductSalesReportShowAllBtn(ActionListener listener) {
         productSalesReportShowAllBtn.addActionListener(listener);
     }
@@ -1599,6 +1643,14 @@ public class View extends JFrame {
 
     public void setPaymentReportShowAllBtn(ActionListener listener) {
         paymentReportShowAllBtn.addActionListener(listener);
+    }
+
+    public void setAffinitySearchBtn(ActionListener listener) {
+        affinitySearchBtn.addActionListener(listener);
+    }
+
+    public void setAffinityShowAllBtn(ActionListener listener) {
+        affinityShowAllBtn.addActionListener(listener);
     }
 
     //getters
@@ -1843,6 +1895,14 @@ public class View extends JFrame {
         return paymentReportEndYearTF.getText();
     }
 
+    public String getAffinityStartYear() {
+        return affinityStartYearTF.getText();
+    }
+
+    public String getAffinityEndYear() {
+        return affinityEndYearTF.getText();
+    }
+
     public String getProductSearchField() {
         return productSearchField.getText();
     }
@@ -1943,6 +2003,9 @@ public class View extends JFrame {
 
         paymentReportStartYearTF.setText("2000");
         paymentReportEndYearTF.setText("2030");
+
+        affinityStartYearTF.setText("2000");
+        affinityEndYearTF.setText("2030");
 
         refreshProductRecords();
         refreshCustomerRecords();

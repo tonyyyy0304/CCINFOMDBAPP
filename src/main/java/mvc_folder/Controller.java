@@ -636,6 +636,7 @@ public class Controller
                         view.refreshProductRecords(); // Refresh the product records
                         view.refreshCustomerStatsPnl(); // Refresh the customer stats
                         view.refreshPaymentReportsPnl(); // Refresh the payment reports
+                        view.refreshAffinityPnl(); // Refresh the affinity report
                     } else {
                         view.showError("Failed to place order. Please check the stock availability or if you are of age to order this product.");
                     }
@@ -663,6 +664,7 @@ public class Controller
                         view.showSuccess("Payment processed successfully!");
                         view.clearFields(); // Clear fields after success
                         view.refreshPaymentReportsPnl(); // Refresh the payment reports
+                        view.refreshAffinityPnl(); // Refresh the affinity report
                     } else {
                         view.showError("Payment failed. Please check if the Order ID are valid or is pending for payment.");
                     }
@@ -1058,6 +1060,53 @@ public class Controller
             @Override
             public void actionPerformed(ActionEvent e) {
                 view.refreshPaymentReportsPnl();
+            }
+        });
+
+        this.view.setAffinitySearchBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String start_yearS = view.getAffinityStartYear();
+                String end_yearS = view.getAffinityEndYear();
+
+                int start_year = 0;
+                int end_year = 0;
+
+                if (start_yearS.isEmpty() || end_yearS.isEmpty()) {
+                    view.showError("Please fill in all required fields.");
+                    view.clearFields();
+                    return;
+                }
+
+                try {
+                    start_year = Integer.parseInt(start_yearS);
+                    end_year = Integer.parseInt(end_yearS);
+                } catch (Exception ex) {
+                    view.showError("Year must be a valid number.");
+                    view.clearFields();
+                    return;
+                }
+
+                if (start_year > end_year) {
+                    view.showError("Start year cannot be greater than end year.");
+                    view.clearFields();
+                    return;
+                }
+
+                try {
+                    view.refreshAffinityPnl(Model.getAffinity(start_year, end_year));
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+        this.view.setAffinityShowAllBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                view.refreshAffinityPnl();
             }
         });
 
