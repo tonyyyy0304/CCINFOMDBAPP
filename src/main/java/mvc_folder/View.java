@@ -2147,6 +2147,69 @@ public class View extends JFrame {
         storeUpdateId.setText(text);
     }
 
+    public void setStoreUpdateName(String text) {
+        storeUpdateName.setText(text);
+    }
+
+    public void setStoreUpdatePhoneNumber(String text) {
+        storeUpdatePhoneNumber.setText(text);
+    }
+
+    public void setStoreUpdateEmailAddress(String text) {
+        storeUpdateEmailAddress.setText(text);
+    }
+
+    public void setStoreUpdateLotNum(String text) {
+        storeUpdateLotNum.setText(text);
+    }
+
+    public void setStoreUpdateStreetName(String text) {
+        storeUpdateStreetName.setText(text);
+    }
+
+    public void setStoreUpdateCityName(String text) {
+        storeUpdateCityName.setText(text);
+    }
+
+    public void setStoreUpdateZipCode(String text) {
+        storeUpdateZipCode.setText(text);
+    }
+
+    public void setStoreUpdateCountry(String text) {
+        storeUpdateCountry.setText(text);
+    }
+
+    public void setLogisticsUpdateId(String text) {
+        logisticsUpdateId.setText(text);
+    }
+
+    public void setLogisticsUpdateName(String text) {
+        logisticsUpdateName.setText(text);
+    }
+
+    public void setLogisticsUpdateLotNum(String text) {
+        logisticsUpdateLotNum.setText(text);
+    }
+
+    public void setLogisticsUpdateStreetName(String text) {
+        logisticsUpdateStreetName.setText(text);
+    }
+
+    public void setLogisticsUpdateCityName(String text) {
+        logisticsUpdateCityName.setText(text);
+    }
+
+    public void setLogisticsUpdateZipCode(String text) {
+        logisticsUpdateZipCode.setText(text);
+    }
+
+    public void setLogisticsUpdateCountry(String text) {
+        logisticsUpdateCountry.setText(text);
+    }
+
+    public void setLogisticsUpdateShipmentScope(String text) {
+        logisticsUpdateShipmentScope.setSelectedItem(text);
+    }
 
     
 
