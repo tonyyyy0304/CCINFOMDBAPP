@@ -857,6 +857,13 @@ public class View extends JFrame {
         String[] columnNames = {"Order ID", "Logistics Company ID", "Company Name", "Order Date", "Delivery Date"};
 
         Object[][] data = {};
+        
+        try {
+            data = Model.getOrdersHandledByLogisticsCompanyName(" ");
+        } catch (Exception e) {
+            showError("Failed to retrieve orders handled by logistics companies: " + e.getMessage());
+        }
+
 
         JTable table = new JTable(data, columnNames);
 

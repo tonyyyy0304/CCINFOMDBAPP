@@ -759,7 +759,7 @@ public class Model
 
     
 
-    public Object[][] getOrdersHandledByLogisticsCompanyName(String companyName){
+    public static Object[][] getOrdersHandledByLogisticsCompanyName(String companyName){
         String sql = "SELECT o.order_id, s.logistics_company_id, lc.logistics_company_name, o.order_date, s.expected_arrival_date " +
                         "FROM orders o " +
                         "JOIN shipping s ON o.order_id = s.order_id " +
