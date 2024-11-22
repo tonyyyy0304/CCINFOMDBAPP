@@ -1191,6 +1191,365 @@ public class Controller
             }
         });
 
+        this.view.setStoreUpdateSelectBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Check if the store ID is empty
+                if (view.getStoreUpdateId().isEmpty()) {
+                    view.showError("Please enter a Store ID.");
+                    return;
+                }
+
+                try {
+                    int storeId = Integer.parseInt(view.getStoreUpdateId());
+                    if (!model.storeExists(storeId)) {
+                        view.showError("Store with ID " + storeId + " does not exist.");
+                        return;
+                    }
+
+                    view.storeUpdateEditable(true); // Enable the fields
+
+                    // Retrieve the store data
+                    String[] storeData = model.getStoreData(storeId);
+                    if (storeData == null) {
+                        view.showError("Failed to retrieve store data.");
+                        return;
+                    }
+
+                    // Set the store data in the view
+                    view.setStoreUpdateName(storeData[0]);
+                    view.setStoreUpdatePhoneNumber(storeData[1]);
+                    view.setStoreUpdateEmailAddress(storeData[2]);
+                    view.setStoreUpdateLotNum(storeData[3]);
+                    view.setStoreUpdateStreetName(storeData[4]);
+                    view.setStoreUpdateCityName(storeData[5]);
+                    view.setStoreUpdateZipCode(storeData[6]);
+                    view.setStoreUpdateCountry(storeData[7]);
+                    
+                } catch (NumberFormatException ex) {
+                    view.showError("Store ID must be a valid number.");
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+        this.view.setLogisticsUpdateSelectBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Check if the logistics company ID is empty
+                if (view.getLogisticsUpdateId().isEmpty()) {
+                    view.showError("Please enter a Logistics Company ID.");
+                    return;
+                }
+
+                try {
+                    int logisticsCompanyId = Integer.parseInt(view.getLogisticsUpdateId());
+                    if (!model.logisticsCompanyExists(logisticsCompanyId)) {
+                        view.showError("Logistics Company with ID " + logisticsCompanyId + " does not exist.");
+                        return;
+                    }
+
+                    view.logisticsUpdateEditable(true); // Enable the fields
+
+                    // Retrieve the logistics company data
+                    String[] logisticsData = model.getLogisticsCompanyData(logisticsCompanyId);
+                    if (logisticsData == null) {
+                        view.showError("Failed to retrieve logistics company data.");
+                        return;
+                    }
+
+                    // Set the logistics company data in the view
+                    view.setLogisticsUpdateName(logisticsData[0]);
+                    view.setLogisticsUpdateLotNum(logisticsData[1]);
+                    view.setLogisticsUpdateStreetName(logisticsData[2]);
+                    view.setLogisticsUpdateCityName(logisticsData[3]);
+                    view.setLogisticsUpdateZipCode(logisticsData[4]);
+                    view.setLogisticsUpdateCountry(logisticsData[5]);
+                    if (logisticsData[6].equalsIgnoreCase("Domestic")) {
+                        view.setLogisticsUpdateShipmentScope(0);
+                    } else {
+                        view.setLogisticsUpdateShipmentScope(1);
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Logistics Company ID must be a valid number.");
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+        this.view.setLogisticsUpdateBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Retrieve input fields from the view
+                String logistics_company_name = view.getLogisticsUpdateName();
+                String logistics_street_name = view.getLogisticsUpdateStreetName();
+                String logistics_city_name = view.getLogisticsUpdateCityName();
+                String logistics_country_name = view.getLogisticsUpdateCountry();
+                String logistics_zipcode = view.getLogisticsUpdateZipCode();
+                String logistics_lot_num = view.getLogisticsUpdateLotNum();
+                String logistics_scope = view.getLogisticsUpdateShipmentScope();
+
+                // Validate input fields
+                if (logistics_company_name.isEmpty() || logistics_street_name.isEmpty() ||
+                        logistics_city_name.isEmpty() || logistics_country_name.isEmpty() ||
+                        logistics_zipcode.isEmpty() || logistics_lot_num.isEmpty()){
+                    view.showMessage("Please fill in all required fields.");
+                    return;
+                }
+
+                // You can add more validation here if needed (e.g., check for specific formats)
+                int lot_num = 0;
+                try{
+                    lot_num = Integer.parseInt(logistics_lot_num);
+                    if (lot_num < 0) {
+                        view.showMessage("Lot number cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Lot number must be a valid number.");
+                    return;
+                }
+
+                int zipcode = 0;
+                try{
+                    zipcode = Integer.parseInt(logistics_zipcode);
+                    if (zipcode < 0) {
+                        view.showMessage("Zipcode cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Zipcode must be a valid number.");
+                    return;
+                }
+                try{
+                    // Add new location
+                    if(!model.locationExists(Integer.parseInt(logistics_lot_num),
+                            logistics_street_name, logistics_city_name,
+                            logistics_country_name, Integer.parseInt(logistics_zipcode)))
+                    {
+                        model.addLocationId(Integer.parseInt(logistics_lot_num),
+                                logistics_street_name, logistics_city_name,
+                                logistics_country_name, Integer.parseInt(logistics_zipcode));
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+                int location_id = 0;
+                try{
+                    location_id = model.getLocationId(Integer.parseInt(logistics_lot_num),
+                            logistics_street_name, logistics_city_name,
+                            logistics_country_name, Integer.parseInt(logistics_zipcode));
+                    System.out.println("Retrieved Location ID: " + location_id);
+                } catch(SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+
+                try {
+                    // Call the model to update the logistics company
+                    boolean success = model.updateLogisticsCompany(Integer.parseInt(view.getLogisticsUpdateId()), logistics_company_name, location_id, logistics_scope);
+
+                    if (success) {
+                        view.showSuccess("Logistics company updated successfully!");
+                        view.clearFields(); // Clear fields after success
+                        view.refreshLogisticsRecordPnl();
+                    } else {
+                        view.showError("Failed to update the logistics company.");
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+        
+        
+        this.view.setCustomerUpdateSelectBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Check if the customer ID is empty
+                if (view.getCustomerUpdateId().isEmpty()) {
+                    view.showError("Please enter a Customer ID.");
+                    return;
+                }
+
+                try {
+                    int customerId = Integer.parseInt(view.getCustomerUpdateId());
+                    if (!model.customerExists(customerId)) {
+                        view.showError("Customer with ID " + customerId + " does not exist.");
+                        return;
+                    }
+
+                    view.customerUpdateEditable(true); // Enable the fields
+
+                    // Retrieve the customer data
+                    String[] customerData = model.getCustomerData(customerId);
+                    if (customerData == null) {
+                        view.showError("Failed to retrieve customer data.");
+                        return;
+                    }
+
+                    // Set the customer data in the view
+                    view.setCustomerUpdateFirstName(customerData[0]);
+                    view.setCustomerUpdateLastName(customerData[1]);
+                    view.setCustomerUpdatePhoneNumber(customerData[2]);
+                    view.setCustomerUpdateEmailAddress(customerData[3]);
+                    view.setCustomerUpdateLotNum(customerData[4]);
+                    view.setCustomerUpdateStreetName(customerData[5]);
+                    view.setCustomerUpdateCityName(customerData[6]);
+                    view.setCustomerUpdateZipCode(customerData[7]);
+                    view.setCustomerUpdateCountry(customerData[8]);
+                    
+                } catch (NumberFormatException ex) {
+                    view.showError("Customer ID must be a valid number.");
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+        this.view.setCustomerUpdateBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String customer_first_name = view.getCustomerUpdateFirstName();
+                String customer_last_name = view.getCustomerUpdateLastName();
+                String customer_contact_num = view.getCustomerUpdatePhoneNumber();
+                String customer_email_add = view.getCustomerUpdateEmailAddress();
+                String customer_lot_num = view.getCustomerUpdateLotNum();
+                String customer_street_name = view.getCustomerUpdateStreetName();
+                String customer_city_name = view.getCustomerUpdateCityName();
+                String customer_zipcode = view.getCustomerUpdateZipCode();
+                String customer_country_name = view.getCustomerUpdateCountry();
+
+                if (customer_first_name.isEmpty() || customer_last_name.isEmpty() ||
+                    customer_contact_num.isEmpty() || customer_email_add.isEmpty() ||
+                    customer_lot_num.isEmpty() || customer_street_name.isEmpty() ||
+                    customer_city_name.isEmpty() || customer_zipcode.isEmpty() ||
+                    customer_country_name.isEmpty()) 
+                {
+                    view.showMessage("Please fill in all required fields.");
+                    return;
+                }
+
+                try {
+                    int lot_num = Integer.parseInt(customer_lot_num);
+                    if (lot_num < 0) {
+                        view.showMessage("Lot number cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Lot number must be a valid number.");
+                    return;
+                }
+                long phone_num = 0;
+                try {
+                    phone_num = Long.parseLong(customer_contact_num);
+                    if (phone_num < 0) {
+                        view.showMessage("Phone number cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Phone number must be a valid number.");
+                    return;
+                }
+                try {
+                    int zipcode = Integer.parseInt(customer_zipcode);
+                    if (zipcode < 0) {
+                        view.showMessage("Zipcode cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Zipcode must be a valid number.");
+                    return;
+                }
+
+                try {
+                    // Add new location
+                    if (!model.locationExists(Integer.parseInt(customer_lot_num),
+                            customer_street_name, customer_city_name,
+                            customer_country_name, Integer.parseInt(customer_zipcode)))
+                    {
+                        model.addLocationId(Integer.parseInt(customer_lot_num),
+                                customer_street_name, customer_city_name,
+                                customer_country_name, Integer.parseInt(customer_zipcode));
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+
+                int customer_locationId = 0;
+                try {
+                    customer_locationId = model.getLocationId(Integer.parseInt(customer_lot_num),
+                            customer_street_name,
+                            customer_city_name,
+                            customer_country_name,
+                            Integer.parseInt(customer_zipcode));
+
+                    System.out.println("Retrieved Location ID: " + customer_locationId);
+                } catch(SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+
+                try {
+                    if (!model.contactExists(phone_num, customer_email_add)) {
+                        model.addContactId(phone_num, customer_email_add);
+                        System.out.println("added");
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+
+                int customer_contactId = 0;
+                try {
+                    customer_contactId = model.getContactId(phone_num, customer_email_add);
+                    System.out.println("Retrieved Contact ID: " + customer_contactId);
+                } catch(SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+
+                try {
+                    // Update customer
+                    boolean success = model.updateCustomer(
+                            Integer.parseInt(view.getCustomerUpdateId()), customer_first_name, 
+                            customer_last_name, customer_contactId, customer_locationId
+                        );
+                    if (success) {
+                        view.showSuccess("Customer updated successfully!");
+                        view.clearFields();
+                        view.refreshCustomerRecords();
+                        view.refreshCustomerStatsPnl();
+                        view.refreshAffinityPnl();
+                    } else {
+                        view.showError("Failed to update the customer.");
+                    }
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+
         this.view.setProductUpdateBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
