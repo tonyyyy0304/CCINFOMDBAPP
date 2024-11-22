@@ -188,7 +188,72 @@ public class Controller
             }
         });
 
-        // TODO: Implement the update product button
+        this.view.setProductUpdateBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String product_id = view.getProductUpdateId();
+                String product_name = view.getProductUpdateName();
+                String product_price = view.getProductUpdatePrice();
+                String product_desc = view.getProductUpdateDescription();
+                boolean product_r18 = view.getProductUpdateR18();
+
+                if (product_price.isEmpty() || product_name.isEmpty() || product_desc.isEmpty())
+                {
+                    view.showMessage("Please fill in all required fields.");
+                    return;
+                }
+
+                double price = 0;
+                try
+                {
+                    price = Double.parseDouble(product_price);
+                    if (price < 0)
+                    {
+                        view.showMessage("Price cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Price must be a valid number.");
+                    return;
+                }
+
+                try
+                {
+                    int productId = Integer.parseInt(product_id);
+                    if (productId < 0)
+                    {
+                        view.showMessage("Product ID cannot be negative.");
+                        return;
+                    }
+
+                    String r18 = product_r18 ? "T" : "F";
+
+                    // Check if product exists
+                    if (!model.productExists(productId))
+                    {
+                        view.showError("Product ID does not exist.");
+                        return;
+                    }
+
+                    // Update product
+                    boolean success = model.updateProduct(productId, product_name, product_desc, r18, price);
+                    if (success)
+                    {
+                        view.showSuccess("Product updated successfully!");
+                        view.clearFields();
+                        view.refreshProductRecords();
+                    } else {
+                        view.showError("Failed to update the product.");
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Product ID must be a valid number.");
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
 
         this.view.setStoreShowAllBtn(new ActionListener(){
             @Override
