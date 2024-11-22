@@ -57,6 +57,42 @@ public class Model
         }
     }
 
+    public boolean updateProduct(int productID, String productName, String description, String r18, double price) throws SQLException
+    {
+        String sql = "UPDATE products SET product_name = ?, description = ?, r18 = ?, price = ? WHERE product_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, productName);
+            stmt.setString(2, description);
+            stmt.setString(3, r18);
+            stmt.setDouble(4, price);
+            stmt.setInt(5, productID);
+
+            return stmt.executeUpdate() > 0; // Returns true if the update was successful
+        }
+    }
+
+    public String[] getProductData(int productId) throws SQLException
+    {
+        String sql = "SELECT product_name, price, description, r18 FROM products WHERE product_id = ? AND is_deleted != 1";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, productId);
+            try (ResultSet rs = stmt.executeQuery()) {
+               if (rs.next()) {
+                  return new String[]{
+                     rs.getString("product_name"),
+                     String.valueOf(rs.getDouble("price")),
+                     rs.getString("description"),
+                     rs.getString("r18")
+                  };
+               } else {
+                  return null; // Product not found
+               }
+            }
+        }
+    }
+
     public boolean productExists(int productId) throws SQLException
     {
         String sql = "SELECT product_id FROM products WHERE product_id = ? AND is_deleted != 1 ";
@@ -350,7 +386,7 @@ public class Model
     }
 
     public boolean storeExists(int store_id) throws SQLException {
-        String sql = "SELECT store_id FROM store WHERE store_id = ?";
+        String sql = "SELECT store_id FROM store WHERE store_id = ? AND is_deleted != 1";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, store_id);
@@ -366,6 +402,59 @@ public class Model
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, store_id);
             return stmt.executeUpdate() > 0;
+        }
+    }
+
+    public boolean updateStore(int store_id, String store_name, int contact_id, int location_id) {
+        String sql = "UPDATE store SET store_name = ?, contact_id = ?, location_id = ? WHERE store_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, store_name);
+            stmt.setInt(2, contact_id);
+            stmt.setInt(3, location_id);
+            stmt.setInt(4, store_id);
+
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return false;
+        }
+    }
+
+    public String[] getStoreData(int storeId) {
+        String sql = "SELECT s.store_name, ci.phone_number, ci.email_address, " +
+                     "l.lot_number, l.street_name, l.city_name, l.zip_code, l.country_name " +
+                     "FROM store s " +
+                     "JOIN contact_information ci ON s.contact_id = ci.contact_id " +
+                     "JOIN locations l ON s.location_id = l.location_id " +
+                     "WHERE s.store_id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, storeId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new String[]{
+                        rs.getString("store_name"),
+                        rs.getString("phone_number"),
+                        rs.getString("email_address"),
+                        rs.getString("lot_number"),
+                        rs.getString("street_name"),
+                        rs.getString("city_name"),
+                        rs.getString("zip_code"),
+                        rs.getString("country_name")
+                    };
+                } else {
+                    return null; // Store not found
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return null;
         }
     }
 
@@ -466,6 +555,43 @@ public class Model
         }
     }
 
+    public String[] getCustomerData(int customerID) {
+        String sql = "SELECT c.first_name, c.last_name, " +
+                     "ci.phone_number, ci.email_address, " +
+                     "l.lot_number, l.street_name, l.city_name, l.zip_code, l.country_name " +
+                     "FROM customers c " +
+                     "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
+                     "JOIN locations l ON c.location_id = l.location_id " +
+                     "WHERE c.customer_id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, customerID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new String[]{
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("phone_number"),
+                        rs.getString("email_address"),
+                        rs.getString("lot_number"),
+                        rs.getString("street_name"),
+                        rs.getString("city_name"),
+                        rs.getString("zip_code"),
+                        rs.getString("country_name")
+                    };
+                } else {
+                    return null; // Customer not found
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return null;
+        }
+    }
+
     public boolean customerExists(int customerId) throws SQLException {
         String sql = "SELECT customer_id FROM customers WHERE customer_id = ? AND is_deleted != 1 ";
         try (Connection conn = getConnection();
@@ -474,6 +600,25 @@ public class Model
             try (ResultSet rs = stmt.executeQuery()) {
                 return rs.next();
             }
+        }
+    }
+
+    public boolean updateCustomer(int customerId, String firstName, String lastName, int contactId, int locationId) {
+        String sql = "UPDATE customers SET first_name = ?, last_name = ?, contact_id = ?, location_id = ? WHERE customer_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, firstName);
+            stmt.setString(2, lastName);
+            stmt.setInt(3, contactId);
+            stmt.setInt(4, locationId);
+            stmt.setInt(5, customerId);
+
+            return stmt.executeUpdate() > 0; // Returns true if the update was successful
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return false; // Return false if there was an error
         }
     }
 
@@ -495,6 +640,46 @@ public class Model
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, logisticsCompanyId);
             return stmt.executeUpdate() > 0; // Returns true if the deletion was successful
+        }
+    }
+
+    public boolean updateLogisticsCompany(int logisticsCompanyId, String name, int location, String scope) throws SQLException {
+        String sql = "UPDATE logistics_companies SET logistics_company_name = ?, location_id = ?, shipment_scope = ? WHERE logistics_company_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, name);
+            stmt.setInt(2, location);
+            stmt.setString(3, scope);
+            stmt.setInt(4, logisticsCompanyId);
+            return stmt.executeUpdate() > 0; // Returns true if the update was successful
+        }
+    }
+
+    public String[] getLogisticsCompanyData(int logisticsCompanyId) throws SQLException {
+        String sql = "SELECT lc.logistics_company_name, lc.shipment_scope, " +
+                     "l.lot_number, l.street_name, l.city_name, l.zip_code, l.country_name, " +
+                     "lc.shipment_scope " +
+                     "FROM logistics_companies lc " +
+                     "JOIN locations l ON lc.location_id = l.location_id " +
+                     "WHERE lc.logistics_company_id = ? AND lc.is_deleted != 1";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, logisticsCompanyId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new String[]{
+                        rs.getString("logistics_company_name"),
+                        rs.getString("lot_number"),
+                        rs.getString("street_name"),
+                        rs.getString("city_name"),
+                        rs.getString("zip_code"),
+                        rs.getString("country_name"),
+                        rs.getString("shipment_scope")
+                    };
+                } else {
+                    return null; // Logistics company not found
+                }
+            }
         }
     }
 

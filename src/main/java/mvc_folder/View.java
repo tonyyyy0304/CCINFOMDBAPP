@@ -15,10 +15,7 @@ import org.jdatepicker.impl.SqlDateModel;
 
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Properties;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class View extends JFrame {
     private final int COLUMN_WIDTH = 10;
@@ -36,6 +33,11 @@ public class View extends JFrame {
     private JButton productSearchBtn, productShowAllBtn;
     private JComboBox<String> productSearchCriteriaComboBox;
 
+    private JTextField productUpdateId, productUpdateName, 
+            productUpdatePrice, productUpdateDescription;
+    private JCheckBox productUpdateR18;
+    private JButton productUpdateSelectBtn, productUpdateBtn;
+
     // Customers Table
     private JTextField customerId, customerFirstName, customerLastName,
             customerPhoneNumber, customerEmailAddress,
@@ -45,6 +47,12 @@ public class View extends JFrame {
     private JButton customerSearchBtn, customerShowAllBtn;
     private JComboBox<String> customerCriteriaComboBox;
     private JTextField customerSearchField;
+
+    private JTextField customerUpdateId, customerUpdateFirstName, customerUpdateLastName,
+            customerUpdatePhoneNumber, customerUpdateEmailAddress,
+            customerUpdateLotNum, customerUpdateStreetName, customerUpdateCityName,
+            customerUpdateZipCode, customerUpdateCountry;
+    private JButton customerUpdateSelectBtn, customerUpdateBtn;
 
     // Stores Table
     private JTextField storeId, storeName,
@@ -56,6 +64,12 @@ public class View extends JFrame {
     private JComboBox<String> storeCriteriaComboBox;
     private JTextField storeSearchField;
 
+    private JTextField storeUpdateId, storeUpdateName,
+            storeUpdatePhoneNumber, storeUpdateEmailAddress,
+            storeUpdateLotNum, storeUpdateStreetName, storeUpdateCityName,
+            storeUpdateZipCode, storeUpdateCountry;
+    private JButton storeUpdateSelectBtn, storeUpdateBtn;
+
     //logistics table
     private JTextField logisticsCompanyID, logisticsCompanyName,
             logisticsCompanyLocationID, logisticsLotNum,
@@ -65,10 +79,12 @@ public class View extends JFrame {
     private JButton logisticsSearchBtn, logisticsShowAllBtn;
     private JComboBox<String> logisticsCriteriaComboBox;
     private JTextField logisticsSearchField;
-    private JPanel logisticsRelatedRecordsPanel;
-    private JButton logisticsRelatedRecordSearchBtn, logisticsRelatedRecordShowAllBtn;
-    private JComboBox<String> logisticsRelatedRecordCriteriaComboBox;
-    private JTextField logisticsRelatedRecordSearchField;
+
+    private JTextField logisticsUpdateId, logisticsUpdateName,
+            logisticsUpdateLotNum, logisticsUpdateStreetName, logisticsUpdateCityName,
+            logisticsUpdateZipCode, logisticsUpdateCountry;
+    private JComboBox<String> logisticsUpdateShipmentScope;
+    private JButton logisticsUpdateSelectBtn, logisticsUpdateBtn;
 
     // Buttons
     private JButton productAddBtn, productRemoveBtn,
@@ -133,13 +149,21 @@ public class View extends JFrame {
         mainPanel = new JPanel(new BorderLayout());
         productAddBtn = new JButton("Add Product");
         productRemoveBtn = new JButton("Remove Product");
+        productUpdateSelectBtn = new JButton("Select Product");
+        productUpdateBtn = new JButton("Update Product");
         customerAddBtn = new JButton("Add Customer");
         customerRemoveBtn = new JButton("Remove Customer");
+        customerUpdateSelectBtn = new JButton("Select Customer");
+        customerUpdateBtn = new JButton("Update Customer");
         customerSearchBtn = new JButton("Search");
         storeAddBtn = new JButton("Add Store");
         storeRemoveBtn = new JButton("Remove Store");
+        storeUpdateSelectBtn = new JButton("Select Store");
+        storeUpdateBtn = new JButton("Update Store");
         logisticsAddBtn = new JButton("Add Logistics Company");
         logisticsRemoveBtn = new JButton("Remove Logistics Company");
+        logisticsUpdateSelectBtn = new JButton("Select Logistics Company");
+        logisticsUpdateBtn = new JButton("Update Logistics Company");
         placeOrderBtn = new JButton("Place Order");
         adjustStockBtn = new JButton("Adjust Stock");
         paymentBtn = new JButton("Pay for Order");
@@ -153,6 +177,7 @@ public class View extends JFrame {
         affinitySearchBtn = new JButton("Search");
         affinityShowAllBtn = new JButton("Show All");
 
+        logisticsUpdateShipmentScope = new JComboBox<String>(new String[] {"Domestic", "International"});
         productSalesCategory = new JComboBox<String>(new String[] {"Clothing", "Electronics", "Beauty & Personal Care", "Food & Beverages", "Toys", "Appliances", "Home & Living"});
 
         JTabbedPane mainTabbedPane = new JTabbedPane();
@@ -165,9 +190,9 @@ public class View extends JFrame {
         JPanel productsPanel = new JPanel(new BorderLayout());
         JTabbedPane productsTabbedPane = new JTabbedPane();
         productsTabbedPane.addTab("Product Records", productRecordsPnl());
-        productsTabbedPane.addTab("Stores Selling Specific Category", productRecordsPnl());
         productsTabbedPane.addTab("Add Product", productAddPnl());
         productsTabbedPane.addTab("Remove Product", productRemovePnl());
+        productsTabbedPane.addTab("Update Product", productUpdatePnl());
         productsPanel.add(productsTabbedPane, BorderLayout.CENTER);
 
         // Customers Panel
@@ -177,24 +202,25 @@ public class View extends JFrame {
         customersTabbedPane.addTab("Stores Customers Bought From", storesCustomersBoughtFromPnl());
         customersTabbedPane.addTab("Add Customer", customerAddPnl());
         customersTabbedPane.addTab("Remove Customer", customerRemovePnl());
+        customersTabbedPane.addTab("Update Customer", customerUpdatePnl());
         customersPanel.add(customersTabbedPane, BorderLayout.CENTER);
 
         // Stores Panel
         JPanel storesPanel = new JPanel(new BorderLayout());
         JTabbedPane storesTabbedPane = new JTabbedPane();
         storesTabbedPane.addTab("Store Records", storeRecordsPnl());
-        storesTabbedPane.addTab("Product List of Stores", productRecordsPnl());
         storesTabbedPane.addTab("Add Store", storeAddPnl());
         storesTabbedPane.addTab("Remove Store", storeRemovePnl());
+        storesTabbedPane.addTab("Update Store", storeUpdatePnl());
         storesPanel.add(storesTabbedPane, BorderLayout.CENTER);
 
         // Logistics Companies Panel
         JPanel logisticsPanel = new JPanel(new BorderLayout());
         JTabbedPane logisticsTabbedPane = new JTabbedPane();
         logisticsTabbedPane.addTab("Logistics Company Records", logisticsRecordPnl());
-        logisticsTabbedPane.addTab("Orders Handled by Logistics Companies", ordersHandledByLogisticsCompaniesPnl());
         logisticsTabbedPane.addTab("Add Logistics Company", logisticsAddPnl());
         logisticsTabbedPane.addTab("Remove Logistics Company", logisticsRemovePnl());
+        logisticsTabbedPane.addTab("Update Logistics Company", logisticsUpdatePnl());
         logisticsPanel.add(logisticsTabbedPane, BorderLayout.CENTER);
 
         recordsManagementTabbedPane.addTab("Products", productsPanel);
@@ -258,7 +284,7 @@ public class View extends JFrame {
 
         productR18 = new JCheckBox("R18");
         productR18.setActionCommand("R18");
-
+        
         productAddBtn = new JButton("Add Product");
         productAddBtn.setActionCommand("Add Product");
 
@@ -318,7 +344,7 @@ public class View extends JFrame {
         // R18
         gbc.gridx++;
         panel.add(productR18, gbc);
-
+        
         // Add Product Button
         gbc.gridwidth = 7;
         gbc.gridx = 0;
@@ -354,6 +380,76 @@ public class View extends JFrame {
         panel.add(productRemoveBtn, gbc);
 
         return panel;
+    }
+
+    private JPanel productUpdatePnl() {
+        JPanel parentPanel = new JPanel(new GridLayout(1, 2));
+        JPanel leftPanel = new JPanel(new GridBagLayout());
+        JPanel rightPanel = new JPanel(new GridBagLayout());
+
+        productUpdateId = new JTextField(COLUMN_WIDTH);
+        productUpdateName = new JTextField(COLUMN_WIDTH);
+        productUpdatePrice = new JTextField(COLUMN_WIDTH);
+        productUpdateDescription = new JTextField(COLUMN_WIDTH);
+
+        productUpdateR18 = new JCheckBox("R18");
+
+        productUpdateSelectBtn = new JButton("Select Product");
+        productUpdateSelectBtn.setActionCommand("Select Product");
+        productUpdateBtn = new JButton("Update Product");
+        productUpdateBtn.setActionCommand("Update Product");
+
+        GridBagConstraints gbc = setGBC();
+
+        // Left Panel
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        leftPanel.add(new JLabel("Product ID:"), gbc);
+        gbc.gridx++;
+        leftPanel.add(productUpdateId, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        leftPanel.add(productUpdateSelectBtn, gbc);
+
+        // Right Panel
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        rightPanel.add(new JLabel("Product Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(productUpdateName, gbc);
+
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Price:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(productUpdatePrice, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Description:"), gbc);
+        gbc.gridwidth = 2;
+        gbc.gridx++;
+        rightPanel.add(productUpdateDescription, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("R18:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(productUpdateR18, gbc);
+
+        gbc.gridwidth = 4;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(productUpdateBtn, gbc);
+
+        productUpdateEditable(false);
+
+        parentPanel.add(leftPanel);
+        parentPanel.add(rightPanel);
+
+        return parentPanel;
     }
 
     private JPanel productRecordsPnl() {
@@ -401,7 +497,6 @@ public class View extends JFrame {
         if (productRecordsPanel.getComponentCount() > 5) {
             productRecordsPanel.remove(5); // Assuming the table is the fifth component
         }
-
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
         gbc.gridy = 5;
@@ -550,6 +645,108 @@ public class View extends JFrame {
         return panel;
     }
 
+    private JPanel customerUpdatePnl() {
+        JPanel parentPanel = new JPanel(new GridLayout(1, 2));
+        JPanel leftPanel = new JPanel(new GridBagLayout());
+        JPanel rightPanel = new JPanel(new GridBagLayout());
+
+        customerUpdateId = new JTextField(COLUMN_WIDTH);
+        customerUpdateFirstName = new JTextField(COLUMN_WIDTH);
+        customerUpdateLastName = new JTextField(COLUMN_WIDTH);
+        customerUpdatePhoneNumber = new JTextField(COLUMN_WIDTH);
+        customerUpdateEmailAddress = new JTextField(COLUMN_WIDTH);
+        customerUpdateLotNum = new JTextField(COLUMN_WIDTH);
+        customerUpdateStreetName = new JTextField(COLUMN_WIDTH);
+        customerUpdateCityName = new JTextField(COLUMN_WIDTH);
+        customerUpdateZipCode = new JTextField(COLUMN_WIDTH);
+        customerUpdateCountry = new JTextField(COLUMN_WIDTH);
+
+        customerUpdateSelectBtn = new JButton("Select Customer");
+        customerUpdateSelectBtn.setActionCommand("Select Customer");
+        customerUpdateBtn = new JButton("Update Customer");
+        customerUpdateBtn.setActionCommand("Update Customer");
+
+        GridBagConstraints gbc = setGBC();
+
+        // Left Panel
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        leftPanel.add(new JLabel("Customer ID:"), gbc);
+        gbc.gridx++;
+        leftPanel.add(customerUpdateId, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        leftPanel.add(customerUpdateSelectBtn, gbc);
+
+
+        // Right Panel
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        rightPanel.add(new JLabel("First Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(customerUpdateFirstName, gbc);
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Last Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(customerUpdateLastName, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Phone Number:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(customerUpdatePhoneNumber, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Email Address:"), gbc);
+        gbc.gridwidth = 2;
+        gbc.gridx++;
+        rightPanel.add(customerUpdateEmailAddress, gbc);
+
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Lot Number:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(customerUpdateLotNum, gbc);
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Street Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(customerUpdateStreetName, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("City Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(customerUpdateCityName, gbc);
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Zip Code:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(customerUpdateZipCode, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Country:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(customerUpdateCountry, gbc);
+
+        gbc.gridwidth = 4;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(customerUpdateBtn, gbc);
+
+        customerUpdateEditable(false);
+
+
+        parentPanel.add(leftPanel);
+        parentPanel.add(rightPanel);
+
+        return parentPanel;
+    }
+
     private JPanel customerRecordsPnl() {
         customerSearchField = new JTextField(20);
         customerSearchBtn = new JButton("Search");
@@ -616,91 +813,6 @@ public class View extends JFrame {
             showError("Failed to retrieve customer records: " + e.getMessage());
         }
         refreshCustomerRecords(data);
-    }
-
-    private JPanel ordersHandledByLogisticsCompaniesPnl() {
-        logisticsRelatedRecordsPanel = new JPanel(new GridBagLayout());
-
-        //search 
-        logisticsRelatedRecordSearchField = new JTextField(20);
-        logisticsRelatedRecordSearchBtn = new JButton("Search");
-        logisticsRelatedRecordCriteriaComboBox = new JComboBox<>(new String[]{"Company Name", "Company ID"});
-
-        GridBagConstraints gbc = setGBC();
-
-        gbc.gridwidth = 1;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        logisticsRelatedRecordsPanel.add(new JLabel("Search:"), gbc);
-
-        gbc.gridx++;
-        logisticsRelatedRecordsPanel.add(logisticsRelatedRecordSearchField, gbc);
-
-        gbc.gridx++;
-        logisticsRelatedRecordsPanel.add(logisticsRelatedRecordCriteriaComboBox, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy++;
-        logisticsRelatedRecordsPanel.add(logisticsRelatedRecordSearchBtn, gbc);
-        
-
-
-        refreshOrdersHandledByLogisticsCompanies();
-        return logisticsRelatedRecordsPanel;
-    }
-
-    public void refreshOrdersHandledByLogisticsCompanies(){
-        String[] columnNames = {"Order ID", "Logistics Company ID", "Company Name", "Order Date", "Delivery Date"};
-
-        Object[][] data = {};
-
-        JTable table = new JTable(data, columnNames);
-
-        JScrollPane scrollPane = new JScrollPane(table);
-        table.setFillsViewportHeight(true);
-
-        adjustColumnWidths(table);
-
-        if(logisticsRelatedRecordsPanel.getComponentCount() > 4) {
-            logisticsRelatedRecordsPanel.remove(4); 
-        }
-
-        GridBagConstraints gbc = setGBC();
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 5;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        logisticsRelatedRecordsPanel.add(scrollPane, gbc);
-
-        logisticsRelatedRecordsPanel.revalidate();
-        logisticsRelatedRecordsPanel.repaint();
-    }
-
-    public void refreshOrdersHandledByLogisticsCompanies(Object[][] data){
-        String[] columnNames = {"Order ID", "Logistics Company ID", "Company Name", "Order Date", "Delivery Date"};
-
-        JTable table = new JTable(data, columnNames);
-        JScrollPane scrollPane = new JScrollPane(table);
-        table.setFillsViewportHeight(true);
-
-        adjustColumnWidths(table);
-
-        if(logisticsRelatedRecordsPanel.getComponentCount() > 4) {
-            logisticsRelatedRecordsPanel.remove(4); 
-        }
-
-        GridBagConstraints gbc = setGBC();
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 5;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        logisticsRelatedRecordsPanel.add(scrollPane, gbc);
-        logisticsRelatedRecordsPanel.revalidate();
-        logisticsRelatedRecordsPanel.repaint();
     }
 
     private JPanel storesCustomersBoughtFromPnl() {
@@ -844,11 +956,107 @@ public class View extends JFrame {
         return panel;
     }
 
+    private JPanel storeUpdatePnl() {
+        JPanel parentPanel = new JPanel(new GridLayout(1, 2));
+        JPanel leftPanel = new JPanel(new GridBagLayout());
+        JPanel rightPanel = new JPanel(new GridBagLayout());
+
+        storeUpdateId = new JTextField(COLUMN_WIDTH);
+        storeUpdateName = new JTextField(COLUMN_WIDTH);
+        storeUpdatePhoneNumber = new JTextField(COLUMN_WIDTH);
+        storeUpdateEmailAddress = new JTextField(COLUMN_WIDTH);
+        storeUpdateLotNum = new JTextField(COLUMN_WIDTH);
+        storeUpdateStreetName = new JTextField(COLUMN_WIDTH);
+        storeUpdateCityName = new JTextField(COLUMN_WIDTH);
+        storeUpdateZipCode = new JTextField(COLUMN_WIDTH);
+        storeUpdateCountry = new JTextField(COLUMN_WIDTH);
+
+        storeUpdateSelectBtn = new JButton("Select Store");
+        storeUpdateSelectBtn.setActionCommand("Select Store");
+        storeUpdateBtn = new JButton("Update Store");
+        storeUpdateBtn.setActionCommand("Update Store");
+
+        GridBagConstraints gbc = setGBC();
+
+        // Left Panel
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        leftPanel.add(new JLabel("Store ID:"), gbc);
+        gbc.gridx++;
+        leftPanel.add(storeUpdateId, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        leftPanel.add(storeUpdateSelectBtn, gbc);
+
+        // Right Panel
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        rightPanel.add(new JLabel("Store Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(storeUpdateName, gbc);
+
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Phone Number:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(storeUpdatePhoneNumber, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Email Address:"), gbc);
+        gbc.gridwidth = 2;
+        gbc.gridx++;
+        rightPanel.add(storeUpdateEmailAddress, gbc);
+
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Lot Number:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(storeUpdateLotNum, gbc);
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Street Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(storeUpdateStreetName, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("City Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(storeUpdateCityName, gbc);
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Zip Code:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(storeUpdateZipCode, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Country:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(storeUpdateCountry, gbc);
+
+        gbc.gridwidth = 4;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(storeUpdateBtn, gbc);
+
+        storeUpdateEditable(false);
+
+        parentPanel.add(leftPanel);
+        parentPanel.add(rightPanel);
+
+        return parentPanel;
+    }
+
     private JPanel storeRecordsPnl() {
         storeRecordsPanel = new JPanel(new GridBagLayout());
 
         storeShowAllBtn = new JButton("Show All");
         storeSearchBtn = new JButton("Search");
+        storeSearchBtn.setPreferredSize(new Dimension(150, 25));
+        storeShowAllBtn.setPreferredSize(new Dimension(150, 25));
         storeCriteriaComboBox = new JComboBox<>(new String[]{"Store Name", "Store ID"});
         storeSearchField = new JTextField(20);
 
@@ -944,10 +1152,9 @@ public class View extends JFrame {
         logisticsCityName = new JTextField(COLUMN_WIDTH);
         logisticsZipCode = new JTextField(COLUMN_WIDTH);
         logisticsCountry = new JTextField(COLUMN_WIDTH);
-
         shipmentScope = new JComboBox<String>();
-        shipmentScope.addItem("domestic");
-        shipmentScope.addItem("international");
+        shipmentScope.addItem("Domestic");
+        shipmentScope.addItem("International");
         
         GridBagConstraints gbc = setGBC();
 
@@ -988,6 +1195,12 @@ public class View extends JFrame {
         gbc.gridx++;
         panel.add(logisticsCountry, gbc);
 
+        gbc.gridx = 0;
+        gbc.gridy++;
+        panel.add(new JLabel("Shipment Scope:"), gbc);
+        gbc.gridx++;
+        panel.add(shipmentScope, gbc);
+
         gbc.gridwidth = 4;
         gbc.gridx = 0;
         gbc.gridy++;
@@ -1021,6 +1234,96 @@ public class View extends JFrame {
 
         return panel;
     }
+
+    private JPanel logisticsUpdatePnl() {
+        JPanel parentPanel = new JPanel(new GridLayout(1, 2));
+        JPanel leftPanel = new JPanel(new GridBagLayout());
+        JPanel rightPanel = new JPanel(new GridBagLayout());
+
+        logisticsUpdateId = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateName = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateLotNum = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateStreetName = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateCityName = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateZipCode = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateCountry = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateShipmentScope = new JComboBox<String>();
+        logisticsUpdateShipmentScope.addItem("Domestic");
+        logisticsUpdateShipmentScope.addItem("International");
+        logisticsUpdateShipmentScope.setSelectedItem(null);
+
+        logisticsUpdateSelectBtn = new JButton("Select Company");
+        logisticsUpdateSelectBtn.setActionCommand("Select Company");
+        logisticsUpdateBtn = new JButton("Update Company");
+        logisticsUpdateBtn.setActionCommand("Update Company");
+
+        GridBagConstraints gbc = setGBC();
+
+        // Left Panel
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        leftPanel.add(new JLabel("Logistics Company ID:"), gbc);
+        gbc.gridx++;
+        leftPanel.add(logisticsUpdateId, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        leftPanel.add(logisticsUpdateSelectBtn, gbc);
+
+        // Right Panel
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        rightPanel.add(new JLabel("Logistics Company Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateName, gbc);
+
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Lot Number:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateLotNum, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Street Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateStreetName, gbc);
+
+        gbc.gridx++;
+        rightPanel.add(new JLabel("City Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateCityName, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Zip Code:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateZipCode, gbc);
+
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Country:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateCountry, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Shipment Scope:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateShipmentScope, gbc);
+
+        gbc.gridwidth = 4;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(logisticsUpdateBtn, gbc);
+
+        logisticsUpdateEditable(false);
+
+        parentPanel.add(leftPanel);
+        parentPanel.add(rightPanel);
+
+        return parentPanel;
+    }
     
     private JPanel logisticsRecordPnl() {
         logisticsRecordsPanel = new JPanel(new GridBagLayout());
@@ -1028,6 +1331,8 @@ public class View extends JFrame {
         logisticsSearchField = new JTextField(20);
         logisticsSearchBtn = new JButton("Search");
         logisticsShowAllBtn = new JButton("Show All");
+        logisticsSearchBtn.setPreferredSize(new Dimension(150, 25));
+        logisticsShowAllBtn.setPreferredSize(new Dimension(150, 25));
         logisticsCriteriaComboBox = new JComboBox<>(new String[]{"Company Name", "Company ID"});
 
         GridBagConstraints gbc = setGBC();
@@ -1329,9 +1634,10 @@ public class View extends JFrame {
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 1;
+        gbc.gridwidth = 2;
         customerStatsPanel.add(new JLabel("Customer Stats for"), gbc);
 
+        gbc.gridwidth = 1;
         gbc.gridx = 0;
         gbc.gridy++;
         customerStatsPanel.add(new JLabel("Start Year:"), gbc);
@@ -1403,10 +1709,11 @@ public class View extends JFrame {
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 1;
+        gbc.gridwidth = 2;
         productSalesPanel.add(new JLabel("Product Sales for"), gbc);
 
         gbc.gridx = 0;
+        gbc.gridwidth = 1;
         gbc.gridy++;
         productSalesPanel.add(new JLabel("Start Year:"), gbc);
         gbc.gridx++;
@@ -1478,10 +1785,11 @@ public class View extends JFrame {
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 1;
+        gbc.gridwidth = 2;
         paymentReportsPanel.add(new JLabel("Payment Reports for"), gbc);
 
         gbc.gridx = 0;
+        gbc.gridwidth = 1;
         gbc.gridy++;
         paymentReportsPanel.add(new JLabel("Start Year:"), gbc);
         gbc.gridx++;
@@ -1552,10 +1860,11 @@ public class View extends JFrame {
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 1;
+        gbc.gridwidth = 2;
         affinityPanel.add(new JLabel("Affinity for"), gbc);
 
         gbc.gridx = 0;
+        gbc.gridwidth = 1;
         gbc.gridy++;
         affinityPanel.add(new JLabel("Start Year:"), gbc);
         gbc.gridx++;
@@ -1633,6 +1942,14 @@ public class View extends JFrame {
         productAddBtn.addActionListener(listener);
     }
 
+    public void setProductUpdateSelectBtn(ActionListener listener) {
+        productUpdateSelectBtn.addActionListener(listener);
+    }
+
+    public void setProductUpdateBtn(ActionListener listener) {
+        productUpdateBtn.addActionListener(listener);
+    }
+
     public void setCustomerAddBtn(ActionListener listener) {
         customerAddBtn.addActionListener(listener);
     }
@@ -1641,12 +1958,28 @@ public class View extends JFrame {
         customerRemoveBtn.addActionListener(listener);
     }
 
+    public void setCustomerUpdateSelectBtn(ActionListener listener) {
+        customerUpdateSelectBtn.addActionListener(listener);
+    }
+
+    public void setCustomerUpdateBtn(ActionListener listener) {
+        customerUpdateBtn.addActionListener(listener);
+    }
+
     public void setStoreAddBtn(ActionListener listener) {
         storeAddBtn.addActionListener(listener);
     }
 
     public void setStoreRemoveBtn(ActionListener listener) {
         storeRemoveBtn.addActionListener(listener);
+    }
+
+    public void setStoreUpdateSelectBtn(ActionListener listener) {
+        storeUpdateSelectBtn.addActionListener(listener);
+    }
+
+    public void setStoreUpdateBtn(ActionListener listener) {
+        storeUpdateBtn.addActionListener(listener);
     }
 
     public void setPlaceOrderBtn(ActionListener listener) {
@@ -1671,6 +2004,14 @@ public class View extends JFrame {
 
     public void setLogisticsRemoveBtn(ActionListener listener) {
         logisticsRemoveBtn.addActionListener(listener);
+    }
+
+    public void setLogisticsUpdateSelectBtn(ActionListener listener) {
+        logisticsUpdateSelectBtn.addActionListener(listener);
+    }
+
+    public void setLogisticsUpdateBtn(ActionListener listener) {
+        logisticsUpdateBtn.addActionListener(listener);
     }
 
     public void setProductSearchBtn(ActionListener listener) {
@@ -1745,10 +2086,132 @@ public class View extends JFrame {
         affinityShowAllBtn.addActionListener(listener);
     }
 
-    public void setLogisticsRelatedRecordSearchBtn(ActionListener listener) {
-        logisticsRelatedRecordSearchBtn.addActionListener(listener);
+
+    public void setProductUpdateId(String text) {
+        productUpdateId.setText(text);
     }
 
+    public void setProductUpdateName(String text) {
+        productUpdateName.setText(text);
+    }
+
+    public void setProductUpdatePrice(String text) {
+        productUpdatePrice.setText(text);
+    }
+
+    public void setProductUpdateDescription(String text) {
+        productUpdateDescription.setText(text);
+    }
+
+    public void setProductUpdateR18(boolean selected) {
+        productUpdateR18.setSelected(selected);
+    }
+
+    public void setCustomerUpdateFirstName(String text) {
+        customerUpdateFirstName.setText(text);
+    }
+
+    public void setCustomerUpdateLastName(String text) {
+        customerUpdateLastName.setText(text);
+    }
+
+    public void setCustomerUpdatePhoneNumber(String text) {
+        customerUpdatePhoneNumber.setText(text);
+    }
+
+    public void setCustomerUpdateEmailAddress(String text) {
+        customerUpdateEmailAddress.setText(text);
+    }
+
+    public void setCustomerUpdateLotNum(String text) {
+        customerUpdateLotNum.setText(text);
+    }
+
+    public void setCustomerUpdateStreetName(String text) {
+        customerUpdateStreetName.setText(text);
+    }
+
+    public void setCustomerUpdateCityName(String text) {
+        customerUpdateCityName.setText(text);
+    }
+
+    public void setCustomerUpdateZipCode(String text) {
+        customerUpdateZipCode.setText(text);
+    }
+
+    public void setCustomerUpdateCountry(String text) {
+        customerUpdateCountry.setText(text);
+    }
+
+    public void setStoreUpdateId(String text) {
+        storeUpdateId.setText(text);
+    }
+
+    public void setStoreUpdateName(String text) {
+        storeUpdateName.setText(text);
+    }
+
+    public void setStoreUpdatePhoneNumber(String text) {
+        storeUpdatePhoneNumber.setText(text);
+    }
+
+    public void setStoreUpdateEmailAddress(String text) {
+        storeUpdateEmailAddress.setText(text);
+    }
+
+    public void setStoreUpdateLotNum(String text) {
+        storeUpdateLotNum.setText(text);
+    }
+
+    public void setStoreUpdateStreetName(String text) {
+        storeUpdateStreetName.setText(text);
+    }
+
+    public void setStoreUpdateCityName(String text) {
+        storeUpdateCityName.setText(text);
+    }
+
+    public void setStoreUpdateZipCode(String text) {
+        storeUpdateZipCode.setText(text);
+    }
+
+    public void setStoreUpdateCountry(String text) {
+        storeUpdateCountry.setText(text);
+    }
+
+    public void setLogisticsUpdateId(String text) {
+        logisticsUpdateId.setText(text);
+    }
+
+    public void setLogisticsUpdateName(String text) {
+        logisticsUpdateName.setText(text);
+    }
+
+    public void setLogisticsUpdateLotNum(String text) {
+        logisticsUpdateLotNum.setText(text);
+    }
+
+    public void setLogisticsUpdateStreetName(String text) {
+        logisticsUpdateStreetName.setText(text);
+    }
+
+    public void setLogisticsUpdateCityName(String text) {
+        logisticsUpdateCityName.setText(text);
+    }
+
+    public void setLogisticsUpdateZipCode(String text) {
+        logisticsUpdateZipCode.setText(text);
+    }
+
+    public void setLogisticsUpdateCountry(String text) {
+        logisticsUpdateCountry.setText(text);
+    }
+
+    public void setLogisticsUpdateShipmentScope(int index) {
+        logisticsUpdateShipmentScope.setSelectedIndex(index);
+    }
+
+    
 
     //getters
 
@@ -1782,6 +2245,26 @@ public class View extends JFrame {
 
     public boolean isProductR18() {
         return productR18.isSelected();
+    }
+
+    public String getProductUpdateId() {
+        return productUpdateId.getText();
+    }
+
+    public String getProductUpdateName() {
+        return productUpdateName.getText();
+    }
+
+    public String getProductUpdatePrice() {
+        return productUpdatePrice.getText();
+    }
+
+    public String getProductUpdateDescription() {
+        return productUpdateDescription.getText();
+    }
+
+    public boolean getProductUpdateR18() {
+        return productUpdateR18.isSelected();
     }
 
     public String getStoreId() {
@@ -1862,6 +2345,114 @@ public class View extends JFrame {
 
     public Date getCustomerBirthdate() {
         return (Date) customerBirthdate.getModel().getValue();
+    }
+
+    public String getCustomerUpdateId() {
+        return customerUpdateId.getText();
+    }
+
+    public String getCustomerUpdateFirstName() {
+        return customerUpdateFirstName.getText();
+    }
+
+    public String getCustomerUpdateLastName() {
+        return customerUpdateLastName.getText();
+    }
+
+    public String getCustomerUpdatePhoneNumber() {
+        return customerUpdatePhoneNumber.getText();
+    }
+
+    public String getCustomerUpdateEmailAddress() {
+        return customerUpdateEmailAddress.getText();
+    }
+
+    public String getCustomerUpdateLotNum() {
+        return customerUpdateLotNum.getText();
+    }
+
+    public String getCustomerUpdateStreetName() {
+        return customerUpdateStreetName.getText();
+    }
+
+    public String getCustomerUpdateCityName() {
+        return customerUpdateCityName.getText();
+    }
+
+    public String getCustomerUpdateZipCode() {
+        return customerUpdateZipCode.getText();
+    }
+
+    public String getCustomerUpdateCountry() {
+        return customerUpdateCountry.getText();
+    }
+
+    public String getStoreUpdateId() {
+        return storeUpdateId.getText();
+    }
+
+    public String getStoreUpdateName() {
+        return storeUpdateName.getText();
+    }
+
+    public String getStoreUpdatePhoneNumber() {
+        return storeUpdatePhoneNumber.getText();
+    }
+
+    public String getStoreUpdateEmailAddress() {
+        return storeUpdateEmailAddress.getText();
+    }
+
+    public String getStoreUpdateLotNum() {
+        return storeUpdateLotNum.getText();
+    }
+
+    public String getStoreUpdateStreetName() {
+        return storeUpdateStreetName.getText();
+    }
+
+    public String getStoreUpdateCityName() {
+        return storeUpdateCityName.getText();
+    }
+
+    public String getStoreUpdateZipCode() {
+        return storeUpdateZipCode.getText();
+    }
+
+    public String getStoreUpdateCountry() {
+        return storeUpdateCountry.getText();
+    }
+
+    public String getLogisticsUpdateId() {
+        return logisticsUpdateId.getText();
+    }
+
+    public String getLogisticsUpdateName() {
+        return logisticsUpdateName.getText();
+    }
+
+    public String getLogisticsUpdateLotNum() {
+        return logisticsUpdateLotNum.getText();
+    }
+
+    public String getLogisticsUpdateStreetName() {
+        return logisticsUpdateStreetName.getText();
+    }
+
+    public String getLogisticsUpdateCityName() {
+        return logisticsUpdateCityName.getText();
+    }
+
+    public String getLogisticsUpdateZipCode() {
+        return logisticsUpdateZipCode.getText();
+    }
+
+    public String getLogisticsUpdateCountry() {
+        return logisticsUpdateCountry.getText();
+    }
+
+    public String getLogisticsUpdateShipmentScope() {
+        return logisticsUpdateShipmentScope.getSelectedItem().toString();
     }
 
     public String getOrderCustomerId() {
@@ -2032,13 +2623,63 @@ public class View extends JFrame {
         return logisticsCriteriaComboBox.getSelectedItem().toString();
     }
 
-    public String getLogisticsRelatedRecordSearchField() {
-        return logisticsRelatedRecordSearchField.getText();
+
+    public void productUpdateEditable(boolean editable) {
+        productUpdateId.setEditable(!editable);
+        productUpdateSelectBtn.setEnabled(!editable);
+
+        productUpdateName.setEditable(editable);
+        productUpdatePrice.setEditable(editable);
+        productUpdateDescription.setEditable(editable);
+        productUpdateR18.setEnabled(editable);
+        productUpdateBtn.setEnabled(editable);
     }
 
-    public String getLogisticsRelatedRecordCriteriaComboBox() {
-        return logisticsRelatedRecordCriteriaComboBox.getSelectedItem().toString();
+    public void customerUpdateEditable(boolean editable) {
+        customerUpdateId.setEditable(!editable);
+        customerUpdateSelectBtn.setEnabled(!editable);
+
+        customerUpdateFirstName.setEditable(editable);
+        customerUpdateLastName.setEditable(editable);
+        customerUpdatePhoneNumber.setEditable(editable);
+        customerUpdateEmailAddress.setEditable(editable);
+        customerUpdateLotNum.setEditable(editable);
+        customerUpdateStreetName.setEditable(editable);
+        customerUpdateCityName.setEditable(editable);
+        customerUpdateZipCode.setEditable(editable);
+        customerUpdateCountry.setEditable(editable);
+        customerUpdateBtn.setEnabled(editable);
     }
+
+    public void storeUpdateEditable(boolean editable) {
+        storeUpdateId.setEditable(!editable);
+        storeUpdateSelectBtn.setEnabled(!editable);
+
+        storeUpdateName.setEditable(editable);
+        storeUpdatePhoneNumber.setEditable(editable);
+        storeUpdateEmailAddress.setEditable(editable);
+        storeUpdateLotNum.setEditable(editable);
+        storeUpdateStreetName.setEditable(editable);
+        storeUpdateCityName.setEditable(editable);
+        storeUpdateZipCode.setEditable(editable);
+        storeUpdateCountry.setEditable(editable);
+        storeUpdateBtn.setEnabled(editable);
+    }
+
+    public void logisticsUpdateEditable(boolean editable) {
+        logisticsUpdateId.setEditable(!editable);
+        logisticsUpdateSelectBtn.setEnabled(!editable);
+
+        logisticsUpdateName.setEditable(editable);
+        logisticsUpdateLotNum.setEditable(editable);
+        logisticsUpdateStreetName.setEditable(editable);
+        logisticsUpdateCityName.setEditable(editable);
+        logisticsUpdateZipCode.setEditable(editable);
+        logisticsUpdateCountry.setEditable(editable);
+        logisticsUpdateShipmentScope.setEnabled(editable);
+        logisticsUpdateBtn.setEnabled(editable);
+    }
+
 
     public void clearFields() {
         productId.setText("");
@@ -2049,6 +2690,13 @@ public class View extends JFrame {
         productPrice.setText("");
         productCategories.setSelectedIndex(0);
         productR18.setSelected(false);
+
+        productUpdateId.setText("");
+        productUpdateName.setText("");
+        productUpdatePrice.setText("");
+        productUpdateDescription.setText("");
+        productUpdateR18.setSelected(false);
+        productUpdateEditable(false);
 
         customerId.setText("");
         customerFirstName.setText("");
@@ -2062,6 +2710,18 @@ public class View extends JFrame {
         customerCountry.setText("");
         customerBirthdate.getModel().setValue(null);
 
+        customerUpdateId.setText("");
+        customerUpdateFirstName.setText("");
+        customerUpdateLastName.setText("");
+        customerUpdatePhoneNumber.setText("");
+        customerUpdateEmailAddress.setText("");
+        customerUpdateLotNum.setText("");
+        customerUpdateStreetName.setText("");
+        customerUpdateCityName.setText("");
+        customerUpdateZipCode.setText("");
+        customerUpdateCountry.setText("");
+        customerUpdateEditable(false);
+
         storeId.setText("");
         storeName.setText("");
         storePhoneNumber.setText("");
@@ -2071,6 +2731,17 @@ public class View extends JFrame {
         storeCityName.setText("");
         storeZipCode.setText("");
         storeCountry.setText("");
+
+        storeUpdateId.setText("");
+        storeUpdateName.setText("");
+        storeUpdatePhoneNumber.setText("");
+        storeUpdateEmailAddress.setText("");
+        storeUpdateLotNum.setText("");
+        storeUpdateStreetName.setText("");
+        storeUpdateCityName.setText("");
+        storeUpdateZipCode.setText("");
+        storeUpdateCountry.setText("");
+        storeUpdateEditable(false);
 
         orderCustomerId.setText("");
         orderProductId.setText("");
@@ -2096,6 +2767,22 @@ public class View extends JFrame {
         logisticsCompanyID.setText("");
         logisticsCompanyName.setText("");
         logisticsCompanyLocationID.setText("");
+        logisticsLotNum.setText("");
+        logisticsStreetName.setText("");
+        logisticsCityName.setText("");
+        logisticsZipCode.setText("");
+        logisticsCountry.setText("");
+        shipmentScope.setSelectedIndex(0);
+        logisticsUpdateEditable(false);
+
+        logisticsUpdateId.setText("");
+        logisticsUpdateName.setText("");
+        logisticsUpdateLotNum.setText("");
+        logisticsUpdateStreetName.setText("");
+        logisticsUpdateCityName.setText("");
+        logisticsUpdateZipCode.setText("");
+        logisticsUpdateCountry.setText("");
+        logisticsUpdateShipmentScope.setSelectedItem(null);
 
         customerStatsStartYearTF.setText("2000");
         customerStatsEndYearTF.setText("2030");
