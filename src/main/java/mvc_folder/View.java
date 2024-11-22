@@ -194,7 +194,7 @@ public class View extends JFrame {
         JPanel productsPanel = new JPanel(new BorderLayout());
         JTabbedPane productsTabbedPane = new JTabbedPane();
         productsTabbedPane.addTab("Product Records", productRecordsPnl());
-        productsTabbedPane.addTab("Stores Selling Specific Category", productRecordsPnl());
+        // productsTabbedPane.addTab("Stores Selling Specific Category", productRecordsPnl()); // TODO: Implement panel
         productsTabbedPane.addTab("Add Product", productAddPnl());
         productsTabbedPane.addTab("Remove Product", productRemovePnl());
         productsTabbedPane.addTab("Update Product", productUpdatePnl());
@@ -214,7 +214,7 @@ public class View extends JFrame {
         JPanel storesPanel = new JPanel(new BorderLayout());
         JTabbedPane storesTabbedPane = new JTabbedPane();
         storesTabbedPane.addTab("Store Records", storeRecordsPnl());
-        storesTabbedPane.addTab("Product List of Stores", productRecordsPnl());
+        // storesTabbedPane.addTab("Product List of Stores", productRecordsPnl()); // TODO: Implement panel
         storesTabbedPane.addTab("Add Store", storeAddPnl());
         storesTabbedPane.addTab("Remove Store", storeRemovePnl());
         storesTabbedPane.addTab("Update Store", storeUpdatePnl());
