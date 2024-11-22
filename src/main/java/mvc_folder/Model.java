@@ -386,7 +386,7 @@ public class Model
     }
 
     public boolean storeExists(int store_id) throws SQLException {
-        String sql = "SELECT store_id FROM store WHERE store_id = ?";
+        String sql = "SELECT store_id FROM store WHERE store_id = ? AND is_deleted != 1";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, store_id);
@@ -420,6 +420,41 @@ public class Model
             System.out.println("SQLState: " + e.getSQLState());
             System.out.println("VendorError: " + e.getErrorCode());
             return false;
+        }
+    }
+
+    public String[] getStoreData(int storeId) {
+        String sql = "SELECT s.store_name, ci.phone_number, ci.email_address, " +
+                     "l.lot_number, l.street_name, l.city_name, l.zip_code, l.country_name " +
+                     "FROM store s " +
+                     "JOIN contact_information ci ON s.contact_id = ci.contact_id " +
+                     "JOIN locations l ON s.location_id = l.location_id " +
+                     "WHERE s.store_id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, storeId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new String[]{
+                        rs.getString("store_name"),
+                        rs.getString("phone_number"),
+                        rs.getString("email_address"),
+                        rs.getString("lot_number"),
+                        rs.getString("street_name"),
+                        rs.getString("city_name"),
+                        rs.getString("zip_code"),
+                        rs.getString("country_name")
+                    };
+                } else {
+                    return null; // Store not found
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return null;
         }
     }
 

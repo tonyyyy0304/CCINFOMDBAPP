@@ -424,18 +424,61 @@ public class Controller
             }
         });
 
-        // TODO: Implement the store update selection button
+        this.view.setStoreUpdateSelectBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Check if the store ID is empty
+                if (view.getStoreUpdateId().isEmpty()) {
+                    view.showError("Please enter a Store ID.");
+                    return;
+                }
+
+                try {
+                    int storeId = Integer.parseInt(view.getStoreUpdateId());
+                    if (!model.storeExists(storeId)) {
+                        view.showError("Store with ID " + storeId + " does not exist.");
+                        return;
+                    }
+
+                    view.storeUpdateEditable(true); // Enable the fields
+
+                    // Retrieve the store data
+                    String[] storeData = model.getStoreData(storeId);
+                    if (storeData == null) {
+                        view.showError("Failed to retrieve store data.");
+                        return;
+                    }
+
+                    // Set the store data in the view
+                    view.setStoreUpdateName(storeData[0]);
+                    view.setStoreUpdatePhoneNumber(storeData[1]);
+                    view.setStoreUpdateEmailAddress(storeData[2]);
+                    view.setStoreUpdateLotNum(storeData[3]);
+                    view.setStoreUpdateStreetName(storeData[4]);
+                    view.setStoreUpdateCityName(storeData[5]);
+                    view.setStoreUpdateZipCode(storeData[6]);
+                    view.setStoreUpdateCountry(storeData[7]);
+                    
+                } catch (NumberFormatException ex) {
+                    view.showError("Store ID must be a valid number.");
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
         this.view.setStoreUpdateBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String store_name = view.getStoreName();
-                String store_contact_num = view.getStorePhoneNumber();
-                String store_email_add = view.getStoreEmailAddress();
-                String store_lot_num = view.getStoreLotNum();
-                String store_street_name = view.getStoreStreetName();
-                String store_city_name = view.getStoreCityName();
-                String store_country_name = view.getStoreCountry();
-                String store_zipcode = view.getStoreZipCode();
+                String store_name = view.getStoreUpdateName();
+                String store_contact_num = view.getStoreUpdatePhoneNumber();
+                String store_email_add = view.getStoreUpdateEmailAddress();
+                String store_lot_num = view.getStoreUpdateLotNum();
+                String store_street_name = view.getStoreUpdateStreetName();
+                String store_city_name = view.getStoreUpdateCityName();
+                String store_country_name = view.getStoreUpdateCountry();
+                String store_zipcode = view.getStoreUpdateZipCode();
 
                 if (store_name.isEmpty() || store_contact_num.isEmpty() ||
                     store_email_add.isEmpty() || store_lot_num.isEmpty() ||
@@ -536,10 +579,9 @@ public class Controller
                             Integer.parseInt(view.getStoreUpdateId()), store_name, store_contactId, store_locationId
                         );
                     if (success) {
-                        view.showSuccess("Customer updated successfully!");
+                        view.showSuccess("Store updated successfully!");
                         view.clearFields();
-                        view.refreshCustomerRecords();
-                        view.refreshCustomerStatsPnl();
+                        view.refreshStoreRecordsPnl();
                         view.refreshAffinityPnl();
                     } else {
                         view.showError("Failed to update the customer.");
@@ -1321,10 +1363,6 @@ public class Controller
                 }
             }
         });
-
-        // TODO: Implement the logistics update selection button
-
-        // TODO: Implement the logistics update button
 
         this.view.setProductSalesCategory(new ActionListener() {
             @Override
