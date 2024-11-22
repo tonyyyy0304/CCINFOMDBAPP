@@ -359,6 +359,10 @@ public class Controller
             }
         });
 
+        // TODO: Implement the store update selection button
+
+        // TODO: Implement the store update button
+
         this.view.setCustomerSearchBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
