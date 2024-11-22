@@ -359,6 +359,10 @@ public class Controller
             }
         });
 
+        // TODO: Implement the store update selection button
+
+        // TODO: Implement the store update button
+
         this.view.setCustomerSearchBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1128,6 +1132,10 @@ public class Controller
                 }
             }
         });
+
+        // TODO: Implement the logistics update selection button
+
+        // TODO: Implement the logistics update button
 
         this.view.setProductSalesCategory(new ActionListener() {
             @Override

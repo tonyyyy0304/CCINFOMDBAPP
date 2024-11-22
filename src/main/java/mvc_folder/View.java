@@ -64,6 +64,12 @@ public class View extends JFrame {
     private JComboBox<String> storeCriteriaComboBox;
     private JTextField storeSearchField;
 
+    private JTextField storeUpdateId, storeUpdateName,
+            storeUpdatePhoneNumber, storeUpdateEmailAddress,
+            storeUpdateLotNum, storeUpdateStreetName, storeUpdateCityName,
+            storeUpdateZipCode, storeUpdateCountry;
+    private JButton storeUpdateSelectBtn, storeUpdateBtn;
+
     //logistics table
     private JTextField logisticsCompanyID, logisticsCompanyName,
             logisticsCompanyLocationID, logisticsLotNum,
@@ -73,6 +79,12 @@ public class View extends JFrame {
     private JButton logisticsSearchBtn, logisticsShowAllBtn;
     private JComboBox<String> logisticsCriteriaComboBox;
     private JTextField logisticsSearchField;
+
+    private JTextField logisticsUpdateId, logisticsUpdateName,
+            logisticsUpdateLotNum, logisticsUpdateStreetName, logisticsUpdateCityName,
+            logisticsUpdateZipCode, logisticsUpdateCountry;
+    private JComboBox<String> logisticsUpdateShipmentScope;
+    private JButton logisticsUpdateSelectBtn, logisticsUpdateBtn;
 
     // Buttons
     private JButton productAddBtn, productRemoveBtn,
@@ -146,8 +158,12 @@ public class View extends JFrame {
         customerSearchBtn = new JButton("Search");
         storeAddBtn = new JButton("Add Store");
         storeRemoveBtn = new JButton("Remove Store");
+        storeUpdateSelectBtn = new JButton("Select Store");
+        storeUpdateBtn = new JButton("Update Store");
         logisticsAddBtn = new JButton("Add Logistics Company");
         logisticsRemoveBtn = new JButton("Remove Logistics Company");
+        logisticsUpdateSelectBtn = new JButton("Select Logistics Company");
+        logisticsUpdateBtn = new JButton("Update Logistics Company");
         placeOrderBtn = new JButton("Place Order");
         adjustStockBtn = new JButton("Adjust Stock");
         paymentBtn = new JButton("Pay for Order");
@@ -161,6 +177,7 @@ public class View extends JFrame {
         affinitySearchBtn = new JButton("Search");
         affinityShowAllBtn = new JButton("Show All");
 
+        logisticsUpdateShipmentScope = new JComboBox<String>(new String[] {"Domestic", "International"});
         productSalesCategory = new JComboBox<String>(new String[] {"Clothing", "Electronics", "Beauty & Personal Care", "Food & Beverages", "Toys", "Appliances", "Home & Living"});
 
         JTabbedPane mainTabbedPane = new JTabbedPane();
@@ -194,6 +211,7 @@ public class View extends JFrame {
         storesTabbedPane.addTab("Store Records", storeRecordsPnl());
         storesTabbedPane.addTab("Add Store", storeAddPnl());
         storesTabbedPane.addTab("Remove Store", storeRemovePnl());
+        storesTabbedPane.addTab("Update Store", storeUpdatePnl());
         storesPanel.add(storesTabbedPane, BorderLayout.CENTER);
 
         // Logistics Companies Panel
@@ -202,6 +220,7 @@ public class View extends JFrame {
         logisticsTabbedPane.addTab("Logistics Company Records", logisticsRecordPnl());
         logisticsTabbedPane.addTab("Add Logistics Company", logisticsAddPnl());
         logisticsTabbedPane.addTab("Remove Logistics Company", logisticsRemovePnl());
+        logisticsTabbedPane.addTab("Update Logistics Company", logisticsUpdatePnl());
         logisticsPanel.add(logisticsTabbedPane, BorderLayout.CENTER);
 
         recordsManagementTabbedPane.addTab("Products", productsPanel);
@@ -937,6 +956,100 @@ public class View extends JFrame {
         return panel;
     }
 
+    private JPanel storeUpdatePnl() {
+        JPanel parentPanel = new JPanel(new GridLayout(1, 2));
+        JPanel leftPanel = new JPanel(new GridBagLayout());
+        JPanel rightPanel = new JPanel(new GridBagLayout());
+
+        storeUpdateId = new JTextField(COLUMN_WIDTH);
+        storeUpdateName = new JTextField(COLUMN_WIDTH);
+        storeUpdatePhoneNumber = new JTextField(COLUMN_WIDTH);
+        storeUpdateEmailAddress = new JTextField(COLUMN_WIDTH);
+        storeUpdateLotNum = new JTextField(COLUMN_WIDTH);
+        storeUpdateStreetName = new JTextField(COLUMN_WIDTH);
+        storeUpdateCityName = new JTextField(COLUMN_WIDTH);
+        storeUpdateZipCode = new JTextField(COLUMN_WIDTH);
+        storeUpdateCountry = new JTextField(COLUMN_WIDTH);
+
+        storeUpdateSelectBtn = new JButton("Select Store");
+        storeUpdateSelectBtn.setActionCommand("Select Store");
+        storeUpdateBtn = new JButton("Update Store");
+        storeUpdateBtn.setActionCommand("Update Store");
+
+        GridBagConstraints gbc = setGBC();
+
+        // Left Panel
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        leftPanel.add(new JLabel("Store ID:"), gbc);
+        gbc.gridx++;
+        leftPanel.add(storeUpdateId, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        leftPanel.add(storeUpdateSelectBtn, gbc);
+
+        // Right Panel
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        rightPanel.add(new JLabel("Store Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(storeUpdateName, gbc);
+
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Phone Number:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(storeUpdatePhoneNumber, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Email Address:"), gbc);
+        gbc.gridwidth = 2;
+        gbc.gridx++;
+        rightPanel.add(storeUpdateEmailAddress, gbc);
+
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Lot Number:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(storeUpdateLotNum, gbc);
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Street Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(storeUpdateStreetName, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("City Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(storeUpdateCityName, gbc);
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Zip Code:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(storeUpdateZipCode, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Country:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(storeUpdateCountry, gbc);
+
+        gbc.gridwidth = 4;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(storeUpdateBtn, gbc);
+
+        storeUpdateEditable(false);
+
+        parentPanel.add(leftPanel);
+        parentPanel.add(rightPanel);
+
+        return parentPanel;
+    }
+
     private JPanel storeRecordsPnl() {
         storeRecordsPanel = new JPanel(new GridBagLayout());
 
@@ -1039,7 +1152,6 @@ public class View extends JFrame {
         logisticsCityName = new JTextField(COLUMN_WIDTH);
         logisticsZipCode = new JTextField(COLUMN_WIDTH);
         logisticsCountry = new JTextField(COLUMN_WIDTH);
-        // TODO: logistics add panel add a combo box(domestic, international) insert to database
         shipmentScope = new JComboBox<String>();
         shipmentScope.addItem("Domestic");
         shipmentScope.addItem("International");
@@ -1121,6 +1233,96 @@ public class View extends JFrame {
         panel.add(logisticsRemoveBtn, gbc);
 
         return panel;
+    }
+
+    private JPanel logisticsUpdatePnl() {
+        JPanel parentPanel = new JPanel(new GridLayout(1, 2));
+        JPanel leftPanel = new JPanel(new GridBagLayout());
+        JPanel rightPanel = new JPanel(new GridBagLayout());
+
+        logisticsUpdateId = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateName = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateLotNum = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateStreetName = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateCityName = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateZipCode = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateCountry = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateShipmentScope = new JComboBox<String>();
+        logisticsUpdateShipmentScope.addItem("Domestic");
+        logisticsUpdateShipmentScope.addItem("International");
+        logisticsUpdateShipmentScope.setSelectedItem(null);
+
+        logisticsUpdateSelectBtn = new JButton("Select Company");
+        logisticsUpdateSelectBtn.setActionCommand("Select Company");
+        logisticsUpdateBtn = new JButton("Update Company");
+        logisticsUpdateBtn.setActionCommand("Update Company");
+
+        GridBagConstraints gbc = setGBC();
+
+        // Left Panel
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        leftPanel.add(new JLabel("Logistics Company ID:"), gbc);
+        gbc.gridx++;
+        leftPanel.add(logisticsUpdateId, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        leftPanel.add(logisticsUpdateSelectBtn, gbc);
+
+        // Right Panel
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        rightPanel.add(new JLabel("Logistics Company Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateName, gbc);
+
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Lot Number:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateLotNum, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Street Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateStreetName, gbc);
+
+        gbc.gridx++;
+        rightPanel.add(new JLabel("City Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateCityName, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Zip Code:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateZipCode, gbc);
+
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Country:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateCountry, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Shipment Scope:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateShipmentScope, gbc);
+
+        gbc.gridwidth = 4;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(logisticsUpdateBtn, gbc);
+
+        logisticsUpdateEditable(false);
+
+        parentPanel.add(leftPanel);
+        parentPanel.add(rightPanel);
+
+        return parentPanel;
     }
     
     private JPanel logisticsRecordPnl() {
@@ -1772,6 +1974,14 @@ public class View extends JFrame {
         storeRemoveBtn.addActionListener(listener);
     }
 
+    public void setStoreUpdateSelectBtn(ActionListener listener) {
+        storeUpdateSelectBtn.addActionListener(listener);
+    }
+
+    public void setStoreUpdateBtn(ActionListener listener) {
+        storeUpdateBtn.addActionListener(listener);
+    }
+
     public void setPlaceOrderBtn(ActionListener listener) {
         placeOrderBtn.addActionListener(listener);
     }
@@ -2014,6 +2224,42 @@ public class View extends JFrame {
 
     public String getStoreCountry() {
         return storeCountry.getText();
+    }
+
+    public String getStoreUpdateId() {
+        return storeUpdateId.getText();
+    }
+
+    public String getStoreUpdateName() {
+        return storeUpdateName.getText();
+    }
+
+    public String getStoreUpdatePhoneNumber() {
+        return storeUpdatePhoneNumber.getText();
+    }
+
+    public String getStoreUpdateEmailAddress() {
+        return storeUpdateEmailAddress.getText();
+    }
+
+    public String getStoreUpdateLotNum() {
+        return storeUpdateLotNum.getText();
+    }
+
+    public String getStoreUpdateStreetName() {
+        return storeUpdateStreetName.getText();
+    }
+
+    public String getStoreUpdateCityName() {
+        return storeUpdateCityName.getText();
+    }
+
+    public String getStoreUpdateZipCode() {
+        return storeUpdateZipCode.getText();
+    }
+
+    public String getStoreUpdateCountry() {
+        return storeUpdateCountry.getText();
     }
 
     public String getCustomerId() {
@@ -2294,6 +2540,35 @@ public class View extends JFrame {
         customerUpdateZipCode.setEditable(editable);
         customerUpdateCountry.setEditable(editable);
         customerUpdateBtn.setEnabled(editable);
+    }
+
+    public void storeUpdateEditable(boolean editable) {
+        storeUpdateId.setEditable(!editable);
+        storeUpdateSelectBtn.setEnabled(!editable);
+
+        storeUpdateName.setEditable(editable);
+        storeUpdatePhoneNumber.setEditable(editable);
+        storeUpdateEmailAddress.setEditable(editable);
+        storeUpdateLotNum.setEditable(editable);
+        storeUpdateStreetName.setEditable(editable);
+        storeUpdateCityName.setEditable(editable);
+        storeUpdateZipCode.setEditable(editable);
+        storeUpdateCountry.setEditable(editable);
+        storeUpdateBtn.setEnabled(editable);
+    }
+
+    public void logisticsUpdateEditable(boolean editable) {
+        logisticsUpdateId.setEditable(!editable);
+        logisticsUpdateSelectBtn.setEnabled(!editable);
+
+        logisticsUpdateName.setEditable(editable);
+        logisticsUpdateLotNum.setEditable(editable);
+        logisticsUpdateStreetName.setEditable(editable);
+        logisticsUpdateCityName.setEditable(editable);
+        logisticsUpdateZipCode.setEditable(editable);
+        logisticsUpdateCountry.setEditable(editable);
+        logisticsUpdateShipmentScope.setEnabled(editable);
+        logisticsUpdateBtn.setEnabled(editable);
     }
 
 
