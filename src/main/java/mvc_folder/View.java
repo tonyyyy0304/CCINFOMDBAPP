@@ -98,7 +98,8 @@ public class View extends JFrame {
     private JButton productSalesReportShowAllBtn;
 
     // Payment Reports
-    private JComboBox<String> paymentReportSelection;
+    private JTextField paymentReportStartYearTF, paymentReportEndYearTF;
+    private JButton paymentReportSearchBtn, paymentReportShowAllBtn;
 
    
 
@@ -134,9 +135,10 @@ public class View extends JFrame {
         shipOrderBtn = new JButton("Ship Order");
         productSalesReportSearchBtn = new JButton("Search");
         productSalesReportShowAllBtn = new JButton("Show All");
+        paymentReportSearchBtn = new JButton("Search");
+        paymentReportShowAllBtn = new JButton("Show All");
 
         productSalesCategory = new JComboBox<String>(new String[] {"Clothing", "Electronics", "Beauty & Personal Care", "Food & Beverages", "Toys", "Appliances", "Home & Living"});
-        paymentReportSelection = new JComboBox<String>(new String[] {"Completed", "Pending", "Cancelled"});
 
         JTabbedPane mainTabbedPane = new JTabbedPane();
 
@@ -1323,19 +1325,44 @@ public class View extends JFrame {
 
     private JPanel paymentReportsPnl() {
         paymentReportsPanel = new JPanel(new GridBagLayout());
+        paymentReportStartYearTF = new JTextField(COLUMN_WIDTH);
+        paymentReportEndYearTF = new JTextField(COLUMN_WIDTH);
+
+        paymentReportStartYearTF.setText("2000");
+        paymentReportEndYearTF.setText("2030");
+
+        GridBagConstraints gbc = setGBC();
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 1;
+        paymentReportsPanel.add(new JLabel("Payment Reports for"), gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        paymentReportsPanel.add(new JLabel("Start Year:"), gbc);
+        gbc.gridx++;
+        paymentReportsPanel.add(paymentReportStartYearTF, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        paymentReportsPanel.add(new JLabel("End Year:"), gbc);
+        gbc.gridx++;
+        paymentReportsPanel.add(paymentReportEndYearTF, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        paymentReportsPanel.add(paymentReportSearchBtn, gbc);
+        gbc.gridx++;
+        paymentReportsPanel.add(paymentReportShowAllBtn, gbc);
+
         refreshPaymentReportsPnl();
         return paymentReportsPanel;
     }
 
-    public void refreshPaymentReportsPnl() {
+    public void refreshPaymentReportsPnl(Object[][] data) {
         String[] columnNames = {"Year", "Payment Status", "Number of Orders"};
-        Object[][] data = {};
-
-        try {
-            data = Model.getPaymentReports(getPaymentReportSelectionString());
-        } catch (SQLException e) {
-            showError("Failed to retrieve payment reports: " + e.getMessage());
-        }
 
         JTable table = new JTable(data, columnNames);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -1343,26 +1370,31 @@ public class View extends JFrame {
 
         adjustColumnWidths(table);
 
-        paymentReportsPanel.removeAll();
+        if (paymentReportsPanel.getComponentCount() > 7) {
+            paymentReportsPanel.remove(7);
+        }
+
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        paymentReportsPanel.add(new JLabel("Payment Reports for"), gbc);
-
-        gbc.gridx++;
-        paymentReportsPanel.add(paymentReportSelection, gbc);
-
+        gbc.gridy = 4;
         gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
-        gbc.gridy++;
         paymentReportsPanel.add(scrollPane, gbc);
+
         paymentReportsPanel.revalidate();
         paymentReportsPanel.repaint();
+    }
+
+    public void refreshPaymentReportsPnl() {
+        Object[][] data = {};
+        try {
+            data = Model.getPaymentReports(2000, 2030);
+        } catch (SQLException e) {
+            showError("Failed to retrieve payment reports: " + e.getMessage());
+        }
+        refreshPaymentReportsPnl(data);
     }
 
     private JPanel affinityPnl() {
@@ -1741,8 +1773,12 @@ public class View extends JFrame {
         return productSalesReportEndYearTF.getText();
     }
 
-    public String getPaymentReportSelectionString() {
-        return paymentReportSelection.getSelectedItem().toString();
+    public String getPaymentReportStartYear() {
+        return paymentReportStartYearTF.getText();
+    }
+
+    public String getPaymentReportEndYear() {
+        return paymentReportEndYearTF.getText();
     }
 
     public String getProductSearchField() {
@@ -1839,6 +1875,9 @@ public class View extends JFrame {
 
         productSalesReportStartYearTF.setText("2000");
         productSalesReportEndYearTF.setText("2030");
+
+        paymentReportStartYearTF.setText("2000");
+        paymentReportEndYearTF.setText("2030");
 
         refreshProductRecords();
         refreshCustomerRecords();

@@ -925,7 +925,6 @@ public class Controller
             }
         });
 
-        this.view.setPaymentReportSelection(new ActionListener() {
         this.view.setProductSalesReportSearchBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1006,10 +1005,13 @@ public class Controller
         });
 
 
+        this.view.setPaymentReportShowAllBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 view.refreshPaymentReportsPnl();
             }
         });
+
+
     }
 }

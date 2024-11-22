@@ -765,26 +765,26 @@ public class Model
         }
     }
 
-    public static Object[][] getPaymentReports(String status) throws SQLException {
-        String sql =
-            "SELECT YEAR(p.payment_date) AS year, p.payment_status, COUNT(*) AS number_of_orders " +
-            "FROM payments p " +
-            "WHERE p.payment_status = ? " +
-            "GROUP BY YEAR(p.payment_date), p.payment_status " +
-            "ORDER BY year, p.payment_status";
-    
+    public static Object[][] getPaymentReports(int startYear, int endYear) throws SQLException {
+        String sql = "SELECT YEAR(payment_date) as year, payment_status, COUNT(payment_status) as count " +
+                     "FROM payments " +
+                     "WHERE YEAR(payment_date) BETWEEN ? AND ? " +
+                     "GROUP BY YEAR(payment_date), payment_status " + 
+                     "ORDER BY year, payment_status";
+
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, status); // Set the status parameter
+            stmt.setInt(1, startYear);
+            stmt.setInt(2, endYear);
+
             try (ResultSet rs = stmt.executeQuery()) {
-    
                 List<Object[]> records = new ArrayList<>();
                 while (rs.next()) {
-                    records.add(new Object[]{
-                        rs.getInt("year"),
-                        rs.getString("payment_status"),
-                        rs.getInt("number_of_orders")
-                    });
+                    int year = rs.getInt("year");
+                    String paymentStatus = rs.getString("payment_status");
+                    int count = rs.getInt("count");
+
+                    records.add(new Object[]{year, paymentStatus, count});
                 }
                 return records.toArray(new Object[0][]);
             }
