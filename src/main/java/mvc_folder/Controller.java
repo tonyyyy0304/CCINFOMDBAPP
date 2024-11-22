@@ -29,6 +29,7 @@ public class Controller
                 view.refreshProductRecords();
             }
         });
+
         this.view.setProductSearchBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1235,6 +1236,133 @@ public class Controller
                 }
             }
         });
+
+        this.view.setStoreUpdateBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String store_name = view.getStoreUpdateName();
+                String store_contact_num = view.getStoreUpdatePhoneNumber();
+                String store_email_add = view.getStoreUpdateEmailAddress();
+                String store_lot_num = view.getStoreUpdateLotNum();
+                String store_street_name = view.getStoreUpdateStreetName();
+                String store_city_name = view.getStoreUpdateCityName();
+                String store_country_name = view.getStoreUpdateCountry();
+                String store_zipcode = view.getStoreUpdateZipCode();
+
+                if (store_name.isEmpty() || store_contact_num.isEmpty() ||
+                    store_email_add.isEmpty() || store_lot_num.isEmpty() ||
+                    store_street_name.isEmpty() || store_city_name.isEmpty() ||
+                    store_country_name.isEmpty()) 
+                {
+                    view.showMessage("Please fill in all required fields.");
+                    return;
+                }
+
+                try {
+                    int lot_num = Integer.parseInt(store_lot_num);
+                    if (lot_num < 0) {
+                        view.showMessage("Lot number cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Lot number must be a valid number.");
+                    return;
+                }
+                long phone_num = 0;
+                try {
+                    phone_num = Long.parseLong(store_contact_num);
+                    if (phone_num < 0) {
+                        view.showMessage("Phone number cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Phone number must be a valid number.");
+                    return;
+                }
+                try {
+                    int zipcode = Integer.parseInt(store_zipcode);
+                    if (zipcode < 0) {
+                        view.showMessage("Zipcode cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Zipcode must be a valid number.");
+                    return;
+                }
+
+                try {
+                    // Add new location
+                    if (!model.locationExists(Integer.parseInt(store_lot_num),
+                            store_street_name, store_city_name,
+                            store_country_name, Integer.parseInt(store_zipcode)))
+                    {
+                        model.addLocationId(Integer.parseInt(store_lot_num),
+                                store_street_name, store_city_name,
+                                store_country_name, Integer.parseInt(store_zipcode));
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+
+                int store_locationId = 0;
+                try {
+                    store_locationId = model.getLocationId(Integer.parseInt(store_lot_num),
+                            store_street_name,
+                            store_city_name,
+                            store_country_name,
+                            Integer.parseInt(store_zipcode));
+
+                    System.out.println("Retrieved Location ID: " + store_locationId);
+                } catch(SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+
+                try {
+                    if (!model.contactExists(phone_num, store_email_add)) {
+                        model.addContactId(phone_num, store_email_add);
+                        System.out.println("added");
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+
+                int store_contactId = 0;
+                try {
+                    store_contactId = model.getContactId(phone_num, store_email_add);
+                    System.out.println("Retrieved Contact ID: " + store_contactId);
+                } catch(SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+
+                try {
+                    // Update store
+                    boolean success = model.updateStore(
+                            Integer.parseInt(view.getStoreUpdateId()), store_name, store_contactId, store_locationId
+                        );
+                    if (success) {
+                        view.showSuccess("Store updated successfully!");
+                        view.clearFields();
+                        view.refreshStoreRecordsPnl();
+                        view.refreshAffinityPnl();
+                    } else {
+                        view.showError("Failed to update the customer.");
+                    }
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+
+        
 
         this.view.setLogisticsUpdateSelectBtn(new ActionListener() {
             @Override
