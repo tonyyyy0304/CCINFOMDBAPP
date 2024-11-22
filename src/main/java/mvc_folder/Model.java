@@ -18,7 +18,7 @@ public class Model
 {
     private static final String dbUrl = "jdbc:mysql://localhost:3306/ecommerce_db";
     private static final String userName = "root";
-    private static final String password = "123456";
+    private static final String password = "password";
 
 
     public Model() {
@@ -640,6 +640,46 @@ public class Model
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, logisticsCompanyId);
             return stmt.executeUpdate() > 0; // Returns true if the deletion was successful
+        }
+    }
+
+    public boolean updateLogisticsCompany(int logisticsCompanyId, String name, int location, String scope) throws SQLException {
+        String sql = "UPDATE logistics_companies SET logistics_company_name = ?, location_id = ?, shipment_scope = ? WHERE logistics_company_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, name);
+            stmt.setInt(2, location);
+            stmt.setString(3, scope);
+            stmt.setInt(4, logisticsCompanyId);
+            return stmt.executeUpdate() > 0; // Returns true if the update was successful
+        }
+    }
+
+    public String[] getLogisticsCompanyData(int logisticsCompanyId) throws SQLException {
+        String sql = "SELECT lc.logistics_company_name, lc.shipment_scope, " +
+                     "l.lot_number, l.street_name, l.city_name, l.zip_code, l.country_name, " +
+                     "lc.shipment_scope " +
+                     "FROM logistics_companies lc " +
+                     "JOIN locations l ON lc.location_id = l.location_id " +
+                     "WHERE lc.logistics_company_id = ? AND lc.is_deleted != 1";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, logisticsCompanyId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new String[]{
+                        rs.getString("logistics_company_name"),
+                        rs.getString("lot_number"),
+                        rs.getString("street_name"),
+                        rs.getString("city_name"),
+                        rs.getString("zip_code"),
+                        rs.getString("country_name"),
+                        rs.getString("shipment_scope")
+                    };
+                } else {
+                    return null; // Logistics company not found
+                }
+            }
         }
     }
 

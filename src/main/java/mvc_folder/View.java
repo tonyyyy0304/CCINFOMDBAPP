@@ -2207,8 +2207,8 @@ public class View extends JFrame {
         logisticsUpdateCountry.setText(text);
     }
 
-    public void setLogisticsUpdateShipmentScope(String text) {
-        logisticsUpdateShipmentScope.setSelectedItem(text);
+    public void setLogisticsUpdateShipmentScope(int index) {
+        logisticsUpdateShipmentScope.setSelectedIndex(index);
     }
 
     
@@ -2773,6 +2773,7 @@ public class View extends JFrame {
         logisticsZipCode.setText("");
         logisticsCountry.setText("");
         shipmentScope.setSelectedIndex(0);
+        logisticsUpdateEditable(false);
 
         logisticsUpdateId.setText("");
         logisticsUpdateName.setText("");
