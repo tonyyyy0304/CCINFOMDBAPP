@@ -80,6 +80,12 @@ public class View extends JFrame {
     private JComboBox<String> logisticsCriteriaComboBox;
     private JTextField logisticsSearchField;
 
+    private JTextField logisticsUpdateId, logisticsUpdateName,
+            logisticsUpdateLotNum, logisticsUpdateStreetName, logisticsUpdateCityName,
+            logisticsUpdateZipCode, logisticsUpdateCountry;
+    private JComboBox<String> logisticsUpdateShipmentScope;
+    private JButton logisticsUpdateSelectBtn, logisticsUpdateBtn;
+
     // Buttons
     private JButton productAddBtn, productRemoveBtn,
             customerAddBtn, customerRemoveBtn,
@@ -156,6 +162,8 @@ public class View extends JFrame {
         storeUpdateBtn = new JButton("Update Store");
         logisticsAddBtn = new JButton("Add Logistics Company");
         logisticsRemoveBtn = new JButton("Remove Logistics Company");
+        logisticsUpdateSelectBtn = new JButton("Select Logistics Company");
+        logisticsUpdateBtn = new JButton("Update Logistics Company");
         placeOrderBtn = new JButton("Place Order");
         adjustStockBtn = new JButton("Adjust Stock");
         paymentBtn = new JButton("Pay for Order");
@@ -169,6 +177,7 @@ public class View extends JFrame {
         affinitySearchBtn = new JButton("Search");
         affinityShowAllBtn = new JButton("Show All");
 
+        logisticsUpdateShipmentScope = new JComboBox<String>(new String[] {"Domestic", "International"});
         productSalesCategory = new JComboBox<String>(new String[] {"Clothing", "Electronics", "Beauty & Personal Care", "Food & Beverages", "Toys", "Appliances", "Home & Living"});
 
         JTabbedPane mainTabbedPane = new JTabbedPane();
@@ -211,6 +220,7 @@ public class View extends JFrame {
         logisticsTabbedPane.addTab("Logistics Company Records", logisticsRecordPnl());
         logisticsTabbedPane.addTab("Add Logistics Company", logisticsAddPnl());
         logisticsTabbedPane.addTab("Remove Logistics Company", logisticsRemovePnl());
+        logisticsTabbedPane.addTab("Update Logistics Company", logisticsUpdatePnl());
         logisticsPanel.add(logisticsTabbedPane, BorderLayout.CENTER);
 
         recordsManagementTabbedPane.addTab("Products", productsPanel);
@@ -1140,7 +1150,6 @@ public class View extends JFrame {
         logisticsCityName = new JTextField(COLUMN_WIDTH);
         logisticsZipCode = new JTextField(COLUMN_WIDTH);
         logisticsCountry = new JTextField(COLUMN_WIDTH);
-        // TODO: logistics add panel add a combo box(domestic, international) insert to database
         shipmentScope = new JComboBox<String>();
         shipmentScope.addItem("Domestic");
         shipmentScope.addItem("International");
@@ -1226,6 +1235,96 @@ public class View extends JFrame {
         panel.add(logisticsRemoveBtn, gbc);
 
         return panel;
+    }
+
+    private JPanel logisticsUpdatePnl() {
+        JPanel parentPanel = new JPanel(new GridLayout(1, 2));
+        JPanel leftPanel = new JPanel(new GridBagLayout());
+        JPanel rightPanel = new JPanel(new GridBagLayout());
+
+        logisticsUpdateId = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateName = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateLotNum = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateStreetName = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateCityName = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateZipCode = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateCountry = new JTextField(COLUMN_WIDTH);
+        logisticsUpdateShipmentScope = new JComboBox<String>();
+        logisticsUpdateShipmentScope.addItem("Domestic");
+        logisticsUpdateShipmentScope.addItem("International");
+        logisticsUpdateShipmentScope.setSelectedItem(null);
+
+        logisticsUpdateSelectBtn = new JButton("Select Company");
+        logisticsUpdateSelectBtn.setActionCommand("Select Company");
+        logisticsUpdateBtn = new JButton("Update Company");
+        logisticsUpdateBtn.setActionCommand("Update Company");
+
+        GridBagConstraints gbc = setGBC();
+
+        // Left Panel
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        leftPanel.add(new JLabel("Logistics Company ID:"), gbc);
+        gbc.gridx++;
+        leftPanel.add(logisticsUpdateId, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        leftPanel.add(logisticsUpdateSelectBtn, gbc);
+
+        // Right Panel
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        rightPanel.add(new JLabel("Logistics Company Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateName, gbc);
+
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Lot Number:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateLotNum, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Street Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateStreetName, gbc);
+
+        gbc.gridx++;
+        rightPanel.add(new JLabel("City Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateCityName, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Zip Code:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateZipCode, gbc);
+
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Country:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateCountry, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Shipment Scope:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(logisticsUpdateShipmentScope, gbc);
+
+        gbc.gridwidth = 4;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(logisticsUpdateBtn, gbc);
+
+        logisticsUpdateEditable(false);
+
+        parentPanel.add(leftPanel);
+        parentPanel.add(rightPanel);
+
+        return parentPanel;
     }
     
     private JPanel logisticsRecordPnl() {
@@ -2452,6 +2551,20 @@ public class View extends JFrame {
         storeUpdateZipCode.setEditable(editable);
         storeUpdateCountry.setEditable(editable);
         storeUpdateBtn.setEnabled(editable);
+    }
+
+    public void logisticsUpdateEditable(boolean editable) {
+        logisticsUpdateId.setEditable(!editable);
+        logisticsUpdateSelectBtn.setEnabled(!editable);
+
+        logisticsUpdateName.setEditable(editable);
+        logisticsUpdateLotNum.setEditable(editable);
+        logisticsUpdateStreetName.setEditable(editable);
+        logisticsUpdateCityName.setEditable(editable);
+        logisticsUpdateZipCode.setEditable(editable);
+        logisticsUpdateCountry.setEditable(editable);
+        logisticsUpdateShipmentScope.setEnabled(editable);
+        logisticsUpdateBtn.setEnabled(editable);
     }
 
 
