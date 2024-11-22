@@ -36,6 +36,11 @@ public class View extends JFrame {
     private JButton productSearchBtn, productShowAllBtn;
     private JComboBox<String> productSearchCriteriaComboBox;
 
+    private JTextField productUpdateId, productUpdateName, 
+            productUpdatePrice, productUpdateDescription;
+    private JCheckBox productUpdateR18;
+    private JButton productUpdateSelectBtn, productUpdateBtn;
+
     // Customers Table
     private JTextField customerId, customerFirstName, customerLastName,
             customerPhoneNumber, customerEmailAddress,
@@ -50,7 +55,7 @@ public class View extends JFrame {
             customerUpdatePhoneNumber, customerUpdateEmailAddress,
             customerUpdateLotNum, customerUpdateStreetName, customerUpdateCityName,
             customerUpdateZipCode, customerUpdateCountry;
-    private JButton customerSelectBtn, customerUpdateBtn;
+    private JButton customerUpdateSelectBtn, customerUpdateBtn;
 
     // Stores Table
     private JTextField storeId, storeName,
@@ -135,9 +140,11 @@ public class View extends JFrame {
         mainPanel = new JPanel(new BorderLayout());
         productAddBtn = new JButton("Add Product");
         productRemoveBtn = new JButton("Remove Product");
+        productUpdateSelectBtn = new JButton("Select Product");
+        productUpdateBtn = new JButton("Update Product");
         customerAddBtn = new JButton("Add Customer");
         customerRemoveBtn = new JButton("Remove Customer");
-        customerSelectBtn = new JButton("Select Customer");
+        customerUpdateSelectBtn = new JButton("Select Customer");
         customerUpdateBtn = new JButton("Update Customer");
         customerSearchBtn = new JButton("Search");
         storeAddBtn = new JButton("Add Store");
@@ -171,6 +178,7 @@ public class View extends JFrame {
         productsTabbedPane.addTab("Product Records", productRecordsPnl());
         productsTabbedPane.addTab("Add Product", productAddPnl());
         productsTabbedPane.addTab("Remove Product", productRemovePnl());
+        productsTabbedPane.addTab("Update Product", productUpdatePnl());
         productsPanel.add(productsTabbedPane, BorderLayout.CENTER);
 
         // Customers Panel
@@ -356,6 +364,76 @@ public class View extends JFrame {
         panel.add(productRemoveBtn, gbc);
 
         return panel;
+    }
+
+    private JPanel productUpdatePnl() {
+        JPanel parentPanel = new JPanel(new GridLayout(1, 2));
+        JPanel leftPanel = new JPanel(new GridBagLayout());
+        JPanel rightPanel = new JPanel(new GridBagLayout());
+
+        productUpdateId = new JTextField(COLUMN_WIDTH);
+        productUpdateName = new JTextField(COLUMN_WIDTH);
+        productUpdatePrice = new JTextField(COLUMN_WIDTH);
+        productUpdateDescription = new JTextField(COLUMN_WIDTH);
+
+        productUpdateR18 = new JCheckBox("R18");
+
+        productUpdateSelectBtn = new JButton("Select Product");
+        productUpdateSelectBtn.setActionCommand("Select Product");
+        productUpdateBtn = new JButton("Update Product");
+        productUpdateBtn.setActionCommand("Update Product");
+
+        GridBagConstraints gbc = setGBC();
+
+        // Left Panel
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        leftPanel.add(new JLabel("Product ID:"), gbc);
+        gbc.gridx++;
+        leftPanel.add(productUpdateId, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        leftPanel.add(productUpdateSelectBtn, gbc);
+
+        // Right Panel
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        rightPanel.add(new JLabel("Product Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(productUpdateName, gbc);
+
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Price:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(productUpdatePrice, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Description:"), gbc);
+        gbc.gridwidth = 2;
+        gbc.gridx++;
+        rightPanel.add(productUpdateDescription, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("R18:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(productUpdateR18, gbc);
+
+        gbc.gridwidth = 4;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(productUpdateBtn, gbc);
+
+        productUpdateEditable(false);
+
+        parentPanel.add(leftPanel);
+        parentPanel.add(rightPanel);
+
+        return parentPanel;
     }
 
     private JPanel productRecordsPnl() {
@@ -568,8 +646,8 @@ public class View extends JFrame {
         customerUpdateZipCode = new JTextField(COLUMN_WIDTH);
         customerUpdateCountry = new JTextField(COLUMN_WIDTH);
 
-        customerSelectBtn = new JButton("Select Customer");
-        customerSelectBtn.setActionCommand("Select Customer");
+        customerUpdateSelectBtn = new JButton("Select Customer");
+        customerUpdateSelectBtn.setActionCommand("Select Customer");
         customerUpdateBtn = new JButton("Update Customer");
         customerUpdateBtn.setActionCommand("Update Customer");
 
@@ -585,7 +663,7 @@ public class View extends JFrame {
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 2;
-        leftPanel.add(customerSelectBtn, gbc);
+        leftPanel.add(customerUpdateSelectBtn, gbc);
 
 
         // Right Panel
@@ -1652,6 +1730,14 @@ public class View extends JFrame {
         productAddBtn.addActionListener(listener);
     }
 
+    public void setProductUpdateSelectBtn(ActionListener listener) {
+        productUpdateSelectBtn.addActionListener(listener);
+    }
+
+    public void setProductUpdateBtn(ActionListener listener) {
+        productUpdateBtn.addActionListener(listener);
+    }
+
     public void setCustomerAddBtn(ActionListener listener) {
         customerAddBtn.addActionListener(listener);
     }
@@ -1660,8 +1746,8 @@ public class View extends JFrame {
         customerRemoveBtn.addActionListener(listener);
     }
 
-    public void setCustomerSelectBtn(ActionListener listener) {
-        customerSelectBtn.addActionListener(listener);
+    public void setCustomerUpdateSelectBtn(ActionListener listener) {
+        customerUpdateSelectBtn.addActionListener(listener);
     }
 
     public void setCustomerUpdateBtn(ActionListener listener) {
@@ -1773,6 +1859,26 @@ public class View extends JFrame {
     }
 
 
+    public void setProductUpdateId(String text) {
+        productUpdateId.setText(text);
+    }
+
+    public void setProductUpdateName(String text) {
+        productUpdateName.setText(text);
+    }
+
+    public void setProductUpdatePrice(String text) {
+        productUpdatePrice.setText(text);
+    }
+
+    public void setProductUpdateDescription(String text) {
+        productUpdateDescription.setText(text);
+    }
+
+    public void setProductUpdateR18(boolean selected) {
+        productUpdateR18.setSelected(selected);
+    }
+
     public void setCustomerUpdateFirstName(String text) {
         customerUpdateFirstName.setText(text);
     }
@@ -1842,6 +1948,26 @@ public class View extends JFrame {
 
     public boolean isProductR18() {
         return productR18.isSelected();
+    }
+
+    public String getProductUpdateId() {
+        return productUpdateId.getText();
+    }
+
+    public String getProductUpdateName() {
+        return productUpdateName.getText();
+    }
+
+    public String getProductUpdatePrice() {
+        return productUpdatePrice.getText();
+    }
+
+    public String getProductUpdateDescription() {
+        return productUpdateDescription.getText();
+    }
+
+    public boolean getProductUpdateR18() {
+        return productUpdateR18.isSelected();
     }
 
     public String getStoreId() {
@@ -2133,9 +2259,20 @@ public class View extends JFrame {
     }
 
 
+    public void productUpdateEditable(boolean editable) {
+        productUpdateId.setEditable(!editable);
+        productUpdateSelectBtn.setEnabled(!editable);
+
+        productUpdateName.setEditable(editable);
+        productUpdatePrice.setEditable(editable);
+        productUpdateDescription.setEditable(editable);
+        productUpdateR18.setEnabled(editable);
+        productUpdateBtn.setEnabled(editable);
+    }
+
     public void customerUpdateEditable(boolean editable) {
         customerUpdateId.setEditable(!editable);
-        customerSelectBtn.setEnabled(!editable);
+        customerUpdateSelectBtn.setEnabled(!editable);
 
         customerUpdateFirstName.setEditable(editable);
         customerUpdateLastName.setEditable(editable);
@@ -2159,6 +2296,13 @@ public class View extends JFrame {
         productPrice.setText("");
         productCategories.setSelectedIndex(0);
         productR18.setSelected(false);
+
+        productUpdateId.setText("");
+        productUpdateName.setText("");
+        productUpdatePrice.setText("");
+        productUpdateDescription.setText("");
+        productUpdateR18.setSelected(false);
+        productUpdateEditable(false);
 
         customerId.setText("");
         customerFirstName.setText("");

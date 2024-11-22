@@ -53,7 +53,6 @@ public class Controller
             }
         });
 
-
         this.view.setProductAddBtn(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e){
@@ -149,6 +148,47 @@ public class Controller
                 }
             }
         });
+
+        this.view.setProductUpdateSelectBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Check if the product ID is empty
+                if (view.getProductUpdateId().isEmpty()) {
+                    view.showError("Please enter a Product ID.");
+                    return;
+                }
+
+                try {
+                    int productId = Integer.parseInt(view.getProductUpdateId());
+                    if (!model.productExists(productId)) {
+                        view.showError("Product with ID " + productId + " does not exist.");
+                    }
+
+                    view.productUpdateEditable(true); // Enable the fields
+
+                    // Retrieve the product data
+                    String[] productData = model.getProductData(productId);
+                    if (productData == null) {
+                        view.showError("Failed to retrieve product data.");
+                        return;
+                    }
+
+                    // Set the product data in the view
+                    view.setProductUpdateName(productData[0]);
+                    view.setProductUpdatePrice(productData[1]);
+                    view.setProductUpdateDescription(productData[2]);
+                    view.setProductUpdateR18(productData[3].equalsIgnoreCase("T"));
+                } catch (NumberFormatException ex) {
+                    view.showError("Product ID must be a valid number.");
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+        // TODO: Implement the update product button
 
         this.view.setStoreShowAllBtn(new ActionListener(){
             @Override
@@ -511,7 +551,7 @@ public class Controller
             }
         });
 
-        this.view.setCustomerSelectBtn(new ActionListener() {
+        this.view.setCustomerUpdateSelectBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Check if the customer ID is empty
@@ -524,6 +564,7 @@ public class Controller
                     int customerId = Integer.parseInt(view.getCustomerUpdateId());
                     if (!model.customerExists(customerId)) {
                         view.showError("Customer with ID " + customerId + " does not exist.");
+                        return;
                     }
 
                     view.customerUpdateEditable(true); // Enable the fields

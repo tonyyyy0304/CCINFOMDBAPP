@@ -57,6 +57,27 @@ public class Model
         }
     }
 
+    public String[] getProductData(int productId) throws SQLException
+    {
+        String sql = "SELECT product_name, price, description, r18 FROM products WHERE product_id = ? AND is_deleted != 1";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, productId);
+            try (ResultSet rs = stmt.executeQuery()) {
+               if (rs.next()) {
+                  return new String[]{
+                     rs.getString("product_name"),
+                     String.valueOf(rs.getDouble("price")),
+                     rs.getString("description"),
+                     rs.getString("r18")
+                  };
+               } else {
+                  return null; // Product not found
+               }
+            }
+        }
+    }
+
     public boolean productExists(int productId) throws SQLException
     {
         String sql = "SELECT product_id FROM products WHERE product_id = ? AND is_deleted != 1 ";
