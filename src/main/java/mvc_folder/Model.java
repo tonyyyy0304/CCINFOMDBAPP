@@ -466,6 +466,43 @@ public class Model
         }
     }
 
+    public String[] getCustomerData(int customerID) {
+        String sql = "SELECT c.first_name, c.last_name, " +
+                     "ci.phone_number, ci.email_address, " +
+                     "l.lot_number, l.street_name, l.city_name, l.zip_code, l.country_name " +
+                     "FROM customers c " +
+                     "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
+                     "JOIN locations l ON c.location_id = l.location_id " +
+                     "WHERE c.customer_id = ?";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, customerID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new String[]{
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("phone_number"),
+                        rs.getString("email_address"),
+                        rs.getString("lot_number"),
+                        rs.getString("street_name"),
+                        rs.getString("city_name"),
+                        rs.getString("zip_code"),
+                        rs.getString("country_name")
+                    };
+                } else {
+                    return null; // Customer not found
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return null;
+        }
+    }
+
     public boolean customerExists(int customerId) throws SQLException {
         String sql = "SELECT customer_id FROM customers WHERE customer_id = ? AND is_deleted != 1 ";
         try (Connection conn = getConnection();
@@ -474,6 +511,25 @@ public class Model
             try (ResultSet rs = stmt.executeQuery()) {
                 return rs.next();
             }
+        }
+    }
+
+    public boolean updateCustomer(int customerId, String firstName, String lastName, int contactId, int locationId) {
+        String sql = "UPDATE customers SET first_name = ?, last_name = ?, contact_id = ?, location_id = ? WHERE customer_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, firstName);
+            stmt.setString(2, lastName);
+            stmt.setInt(3, contactId);
+            stmt.setInt(4, locationId);
+            stmt.setInt(5, customerId);
+
+            return stmt.executeUpdate() > 0; // Returns true if the update was successful
+        } catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState: " + e.getSQLState());
+            System.out.println("VendorError: " + e.getErrorCode());
+            return false; // Return false if there was an error
         }
     }
 

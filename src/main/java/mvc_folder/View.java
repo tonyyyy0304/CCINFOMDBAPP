@@ -46,6 +46,12 @@ public class View extends JFrame {
     private JComboBox<String> customerCriteriaComboBox;
     private JTextField customerSearchField;
 
+    private JTextField customerUpdateId, customerUpdateFirstName, customerUpdateLastName,
+            customerUpdatePhoneNumber, customerUpdateEmailAddress,
+            customerUpdateLotNum, customerUpdateStreetName, customerUpdateCityName,
+            customerUpdateZipCode, customerUpdateCountry;
+    private JButton customerSelectBtn, customerUpdateBtn;
+
     // Stores Table
     private JTextField storeId, storeName,
             storePhoneNumber, storeEmailAddress,
@@ -131,6 +137,8 @@ public class View extends JFrame {
         productRemoveBtn = new JButton("Remove Product");
         customerAddBtn = new JButton("Add Customer");
         customerRemoveBtn = new JButton("Remove Customer");
+        customerSelectBtn = new JButton("Select Customer");
+        customerUpdateBtn = new JButton("Update Customer");
         customerSearchBtn = new JButton("Search");
         storeAddBtn = new JButton("Add Store");
         storeRemoveBtn = new JButton("Remove Store");
@@ -172,6 +180,7 @@ public class View extends JFrame {
         customersTabbedPane.addTab("Stores Customers Bought From", storesCustomersBoughtFromPnl());
         customersTabbedPane.addTab("Add Customer", customerAddPnl());
         customersTabbedPane.addTab("Remove Customer", customerRemovePnl());
+        customersTabbedPane.addTab("Update Customer", customerUpdatePnl());
         customersPanel.add(customersTabbedPane, BorderLayout.CENTER);
 
         // Stores Panel
@@ -541,6 +550,108 @@ public class View extends JFrame {
         panel.add(customerRemoveBtn, gbc);
 
         return panel;
+    }
+
+    private JPanel customerUpdatePnl() {
+        JPanel parentPanel = new JPanel(new GridLayout(1, 2));
+        JPanel leftPanel = new JPanel(new GridBagLayout());
+        JPanel rightPanel = new JPanel(new GridBagLayout());
+
+        customerUpdateId = new JTextField(COLUMN_WIDTH);
+        customerUpdateFirstName = new JTextField(COLUMN_WIDTH);
+        customerUpdateLastName = new JTextField(COLUMN_WIDTH);
+        customerUpdatePhoneNumber = new JTextField(COLUMN_WIDTH);
+        customerUpdateEmailAddress = new JTextField(COLUMN_WIDTH);
+        customerUpdateLotNum = new JTextField(COLUMN_WIDTH);
+        customerUpdateStreetName = new JTextField(COLUMN_WIDTH);
+        customerUpdateCityName = new JTextField(COLUMN_WIDTH);
+        customerUpdateZipCode = new JTextField(COLUMN_WIDTH);
+        customerUpdateCountry = new JTextField(COLUMN_WIDTH);
+
+        customerSelectBtn = new JButton("Select Customer");
+        customerSelectBtn.setActionCommand("Select Customer");
+        customerUpdateBtn = new JButton("Update Customer");
+        customerUpdateBtn.setActionCommand("Update Customer");
+
+        GridBagConstraints gbc = setGBC();
+
+        // Left Panel
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        leftPanel.add(new JLabel("Customer ID:"), gbc);
+        gbc.gridx++;
+        leftPanel.add(customerUpdateId, gbc);
+        
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        leftPanel.add(customerSelectBtn, gbc);
+
+
+        // Right Panel
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        rightPanel.add(new JLabel("First Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(customerUpdateFirstName, gbc);
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Last Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(customerUpdateLastName, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Phone Number:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(customerUpdatePhoneNumber, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Email Address:"), gbc);
+        gbc.gridwidth = 2;
+        gbc.gridx++;
+        rightPanel.add(customerUpdateEmailAddress, gbc);
+
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Lot Number:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(customerUpdateLotNum, gbc);
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Street Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(customerUpdateStreetName, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("City Name:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(customerUpdateCityName, gbc);
+        gbc.gridx++;
+        rightPanel.add(new JLabel("Zip Code:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(customerUpdateZipCode, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(new JLabel("Country:"), gbc);
+        gbc.gridx++;
+        rightPanel.add(customerUpdateCountry, gbc);
+
+        gbc.gridwidth = 4;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        rightPanel.add(customerUpdateBtn, gbc);
+
+        customerUpdateEditable(false);
+
+
+        parentPanel.add(leftPanel);
+        parentPanel.add(rightPanel);
+
+        return parentPanel;
     }
 
     private JPanel customerRecordsPnl() {
@@ -1549,6 +1660,14 @@ public class View extends JFrame {
         customerRemoveBtn.addActionListener(listener);
     }
 
+    public void setCustomerSelectBtn(ActionListener listener) {
+        customerSelectBtn.addActionListener(listener);
+    }
+
+    public void setCustomerUpdateBtn(ActionListener listener) {
+        customerUpdateBtn.addActionListener(listener);
+    }
+
     public void setStoreAddBtn(ActionListener listener) {
         storeAddBtn.addActionListener(listener);
     }
@@ -1652,6 +1771,44 @@ public class View extends JFrame {
     public void setAffinityShowAllBtn(ActionListener listener) {
         affinityShowAllBtn.addActionListener(listener);
     }
+
+
+    public void setCustomerUpdateFirstName(String text) {
+        customerUpdateFirstName.setText(text);
+    }
+
+    public void setCustomerUpdateLastName(String text) {
+        customerUpdateLastName.setText(text);
+    }
+
+    public void setCustomerUpdatePhoneNumber(String text) {
+        customerUpdatePhoneNumber.setText(text);
+    }
+
+    public void setCustomerUpdateEmailAddress(String text) {
+        customerUpdateEmailAddress.setText(text);
+    }
+
+    public void setCustomerUpdateLotNum(String text) {
+        customerUpdateLotNum.setText(text);
+    }
+
+    public void setCustomerUpdateStreetName(String text) {
+        customerUpdateStreetName.setText(text);
+    }
+
+    public void setCustomerUpdateCityName(String text) {
+        customerUpdateCityName.setText(text);
+    }
+
+    public void setCustomerUpdateZipCode(String text) {
+        customerUpdateZipCode.setText(text);
+    }
+
+    public void setCustomerUpdateCountry(String text) {
+        customerUpdateCountry.setText(text);
+    }
+    
 
     //getters
 
@@ -1765,6 +1922,46 @@ public class View extends JFrame {
 
     public Date getCustomerBirthdate() {
         return (Date) customerBirthdate.getModel().getValue();
+    }
+
+    public String getCustomerUpdateId() {
+        return customerUpdateId.getText();
+    }
+
+    public String getCustomerUpdateFirstName() {
+        return customerUpdateFirstName.getText();
+    }
+
+    public String getCustomerUpdateLastName() {
+        return customerUpdateLastName.getText();
+    }
+
+    public String getCustomerUpdatePhoneNumber() {
+        return customerUpdatePhoneNumber.getText();
+    }
+
+    public String getCustomerUpdateEmailAddress() {
+        return customerUpdateEmailAddress.getText();
+    }
+
+    public String getCustomerUpdateLotNum() {
+        return customerUpdateLotNum.getText();
+    }
+
+    public String getCustomerUpdateStreetName() {
+        return customerUpdateStreetName.getText();
+    }
+
+    public String getCustomerUpdateCityName() {
+        return customerUpdateCityName.getText();
+    }
+
+    public String getCustomerUpdateZipCode() {
+        return customerUpdateZipCode.getText();
+    }
+
+    public String getCustomerUpdateCountry() {
+        return customerUpdateCountry.getText();
     }
 
     public String getOrderCustomerId() {
@@ -1936,6 +2133,21 @@ public class View extends JFrame {
     }
 
 
+    public void customerUpdateEditable(boolean editable) {
+        customerUpdateId.setEditable(!editable);
+        customerSelectBtn.setEnabled(!editable);
+
+        customerUpdateFirstName.setEditable(editable);
+        customerUpdateLastName.setEditable(editable);
+        customerUpdatePhoneNumber.setEditable(editable);
+        customerUpdateEmailAddress.setEditable(editable);
+        customerUpdateLotNum.setEditable(editable);
+        customerUpdateStreetName.setEditable(editable);
+        customerUpdateCityName.setEditable(editable);
+        customerUpdateZipCode.setEditable(editable);
+        customerUpdateCountry.setEditable(editable);
+        customerUpdateBtn.setEnabled(editable);
+    }
 
 
     public void clearFields() {
@@ -1959,6 +2171,18 @@ public class View extends JFrame {
         customerZipCode.setText("");
         customerCountry.setText("");
         customerBirthdate.getModel().setValue(null);
+
+        customerUpdateId.setText("");
+        customerUpdateFirstName.setText("");
+        customerUpdateLastName.setText("");
+        customerUpdatePhoneNumber.setText("");
+        customerUpdateEmailAddress.setText("");
+        customerUpdateLotNum.setText("");
+        customerUpdateStreetName.setText("");
+        customerUpdateCityName.setText("");
+        customerUpdateZipCode.setText("");
+        customerUpdateCountry.setText("");
+        customerUpdateEditable(false);
 
         storeId.setText("");
         storeName.setText("");

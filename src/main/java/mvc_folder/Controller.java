@@ -511,6 +511,179 @@ public class Controller
             }
         });
 
+        this.view.setCustomerSelectBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Check if the customer ID is empty
+                if (view.getCustomerUpdateId().isEmpty()) {
+                    view.showError("Please enter a Customer ID.");
+                    return;
+                }
+
+                try {
+                    int customerId = Integer.parseInt(view.getCustomerUpdateId());
+                    if (!model.customerExists(customerId)) {
+                        view.showError("Customer with ID " + customerId + " does not exist.");
+                    }
+
+                    view.customerUpdateEditable(true); // Enable the fields
+
+                    // Retrieve the customer data
+                    String[] customerData = model.getCustomerData(customerId);
+                    if (customerData == null) {
+                        view.showError("Failed to retrieve customer data.");
+                        return;
+                    }
+
+                    // Set the customer data in the view
+                    view.setCustomerUpdateFirstName(customerData[0]);
+                    view.setCustomerUpdateLastName(customerData[1]);
+                    view.setCustomerUpdatePhoneNumber(customerData[2]);
+                    view.setCustomerUpdateEmailAddress(customerData[3]);
+                    view.setCustomerUpdateLotNum(customerData[4]);
+                    view.setCustomerUpdateStreetName(customerData[5]);
+                    view.setCustomerUpdateCityName(customerData[6]);
+                    view.setCustomerUpdateZipCode(customerData[7]);
+                    view.setCustomerUpdateCountry(customerData[8]);
+                    
+                } catch (NumberFormatException ex) {
+                    view.showError("Customer ID must be a valid number.");
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
+        this.view.setCustomerUpdateBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String customer_first_name = view.getCustomerUpdateFirstName();
+                String customer_last_name = view.getCustomerUpdateLastName();
+                String customer_contact_num = view.getCustomerUpdatePhoneNumber();
+                String customer_email_add = view.getCustomerUpdateEmailAddress();
+                String customer_lot_num = view.getCustomerUpdateLotNum();
+                String customer_street_name = view.getCustomerUpdateStreetName();
+                String customer_city_name = view.getCustomerUpdateCityName();
+                String customer_zipcode = view.getCustomerUpdateZipCode();
+                String customer_country_name = view.getCustomerUpdateCountry();
+
+                if (customer_first_name.isEmpty() || customer_last_name.isEmpty() ||
+                    customer_contact_num.isEmpty() || customer_email_add.isEmpty() ||
+                    customer_lot_num.isEmpty() || customer_street_name.isEmpty() ||
+                    customer_city_name.isEmpty() || customer_zipcode.isEmpty() ||
+                    customer_country_name.isEmpty()) 
+                {
+                    view.showMessage("Please fill in all required fields.");
+                    return;
+                }
+
+                try {
+                    int lot_num = Integer.parseInt(customer_lot_num);
+                    if (lot_num < 0) {
+                        view.showMessage("Lot number cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Lot number must be a valid number.");
+                    return;
+                }
+                long phone_num = 0;
+                try {
+                    phone_num = Long.parseLong(customer_contact_num);
+                    if (phone_num < 0) {
+                        view.showMessage("Phone number cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Phone number must be a valid number.");
+                    return;
+                }
+                try {
+                    int zipcode = Integer.parseInt(customer_zipcode);
+                    if (zipcode < 0) {
+                        view.showMessage("Zipcode cannot be negative.");
+                        return;
+                    }
+                } catch (NumberFormatException ex) {
+                    view.showError("Zipcode must be a valid number.");
+                    return;
+                }
+
+                try {
+                    // Add new location
+                    if (!model.locationExists(Integer.parseInt(customer_lot_num),
+                            customer_street_name, customer_city_name,
+                            customer_country_name, Integer.parseInt(customer_zipcode)))
+                    {
+                        model.addLocationId(Integer.parseInt(customer_lot_num),
+                                customer_street_name, customer_city_name,
+                                customer_country_name, Integer.parseInt(customer_zipcode));
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+
+                int customer_locationId = 0;
+                try {
+                    customer_locationId = model.getLocationId(Integer.parseInt(customer_lot_num),
+                            customer_street_name,
+                            customer_city_name,
+                            customer_country_name,
+                            Integer.parseInt(customer_zipcode));
+
+                    System.out.println("Retrieved Location ID: " + customer_locationId);
+                } catch(SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+
+                try {
+                    if (!model.contactExists(phone_num, customer_email_add)) {
+                        model.addContactId(phone_num, customer_email_add);
+                        System.out.println("added");
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+
+                int customer_contactId = 0;
+                try {
+                    customer_contactId = model.getContactId(phone_num, customer_email_add);
+                    System.out.println("Retrieved Contact ID: " + customer_contactId);
+                } catch(SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+
+                try {
+                    // Update customer
+                    boolean success = model.updateCustomer(
+                            Integer.parseInt(view.getCustomerUpdateId()), customer_first_name, 
+                            customer_last_name, customer_contactId, customer_locationId
+                        );
+                    if (success) {
+                        view.showSuccess("Customer updated successfully!");
+                        view.clearFields();
+                        view.refreshCustomerRecords();
+                        view.refreshCustomerStatsPnl();
+                        view.refreshAffinityPnl();
+                    } else {
+                        view.showError("Failed to update the customer.");
+                    }
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+            }
+        });
+
         this.view.setStoreRemoveBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
