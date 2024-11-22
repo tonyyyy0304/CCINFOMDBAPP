@@ -198,17 +198,17 @@ INSERT INTO shipping (order_id, logistics_company_id, expected_arrival_date) VAL
     (9, 4, '2022-10-01'), -- shipping_ID 9
     (10, 5, '2022-11-05'); -- shipping_ID 10
 
-INSERT INTO payments (order_id, amount_paid, payment_status) VALUES
-    (1, 3050.00, 'Completed'), -- payment_ID 1
-    (2, 3075.00, 'Completed'), -- payment_ID 2
-    (3, 2100.00, 'Completed'), -- payment_ID 3
-    (4, 6150.00, 'Completed'), -- payment_ID 4
-    (5, 1450.00, 'Completed'), -- payment_ID 5
-    (6, 1550.00, 'Completed'), -- payment_ID 6
-    (7, 6075.00, 'Completed'), -- payment_ID 7
-    (8, 1600.00, 'Completed'), -- payment_ID 8
-    (9, 8150.00, 'Completed'), -- payment_ID 9
-    (10, 1450.00, 'Completed'); -- payment_ID 10
+INSERT INTO payments (order_id, amount_paid, payment_status, payment_date) VALUES
+    (1, 3050.00, 'Completed', '2021-01-18'), -- payment_ID 1
+    (2, 3075.00, 'Completed', '2021-02-21'), -- payment_ID 2
+    (3, 2100.00, 'Completed', '2021-03-25'), -- payment_ID 3
+    (4, 6150.00, 'Completed', '2021-05-01'), -- payment_ID 4
+    (5, 1450.00, 'Completed', '2021-05-06'), -- payment_ID 5
+    (6, 1550.00, 'Completed', '2022-06-13'), -- payment_ID 6
+    (7, 6075.00, 'Completed', '2022-07-17'), -- payment_ID 7
+    (8, 1600.00, 'Completed', '2022-08-22'), -- payment_ID 8
+    (9, 8150.00, 'Completed', '2022-09-27'), -- payment_ID 9
+    (10, 1450.00, 'Completed', '2022-10-31'); -- payment_ID 10
 
 INSERT INTO stock_adjustment_history (product_id, store_id, customer_id, adjustment_type, adjustment_amount) VALUES
     (1, 1, 1, 'Decrease', 2), -- stock_adjustment_ID 1
