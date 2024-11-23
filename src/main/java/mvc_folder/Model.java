@@ -1283,6 +1283,41 @@ public class Model
         }
     }
 
+    public static Object[][] getProductSales(int startYear, int endYear, String psCategory) throws SQLException {
+        String sql = "SELECT YEAR(o.order_date) as year, p.category, SUM(pay.amount_paid) as total_sales " +
+                "FROM orders o " +
+                "JOIN products p ON o.product_id = p.product_id " +
+                "JOIN payments pay ON pay.order_id = o.order_id " +
+                "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
+                "AND pay.payment_status = 'Completed' " +
+                "AND p.is_deleted != 1 " +
+                "AND p.category = ? " +  // Add condition for category
+                "GROUP BY year, p.category " +
+                "ORDER BY year, p.category ";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) { // No need for StringBuilder here
+            stmt.setInt(1, startYear);     // Set start year
+            stmt.setInt(2, endYear);       // Set end year
+            stmt.setString(3, psCategory); // Set category parameter
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                while (rs.next()) {
+                    DecimalFormat priceFormat = new DecimalFormat("Php #,###.##");
+                    String formattedPrice = priceFormat.format(rs.getDouble("total_sales"));
+                    int year = rs.getInt("year");
+                    String category = rs.getString("category");
+
+                    records.add(new Object[]{year, category, formattedPrice});
+                }
+
+                return records.toArray(new Object[0][]);
+            }
+        }
+    }
+
+
     public static Object[][] getPaymentReports(int startYear, int endYear) throws SQLException {
         String sql = "SELECT YEAR(payment_date) as year, payment_status, COUNT(payment_status) as count " +
                      "FROM payments " +

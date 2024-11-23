@@ -1264,11 +1264,12 @@ public class Controller
             public void actionPerformed(ActionEvent e) {
                 String start_yearS = view.getProductSalesStartYear();
                 String end_yearS = view.getProductSalesEndYear();
+                String category = view.getProductSalesReportCategory();
 
                 int start_year = 0;
                 int end_year = 0;
 
-                if (start_yearS.isEmpty() || end_yearS.isEmpty()) {
+                if (start_yearS.isEmpty() || end_yearS.isEmpty() || category.isEmpty()) {
                     view.showError("Please fill in all required fields.");
                     return;
                 }
@@ -1289,7 +1290,7 @@ public class Controller
                 }
 
                 try {
-                    view.refreshProductSalesPnl(Model.getProductSales(start_year, end_year));
+                    view.refreshProductSalesPnl(Model.getProductSales(start_year, end_year, category));
                 } catch (SQLException ex) {
                     view.showError("Database error: " + ex.getMessage());
                 } catch (Exception ex) {

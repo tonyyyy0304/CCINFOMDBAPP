@@ -135,6 +135,7 @@ public class View extends JFrame {
     
     // Product Sales
     private JComboBox<String> productSalesCategory;
+    private JComboBox<String> productSalesReportCategory;
     private JTextField productSalesReportStartYearTF;
     private JTextField productSalesReportEndYearTF;
     private JButton productSalesReportSearchBtn;
@@ -2028,6 +2029,7 @@ public class View extends JFrame {
         productSalesPanel = new JPanel(new GridBagLayout());
         productSalesReportStartYearTF = new JTextField(COLUMN_WIDTH);
         productSalesReportEndYearTF = new JTextField(COLUMN_WIDTH);
+        productSalesReportCategory = new JComboBox<String>(new String[] {"Clothing", "Electronics", "Beauty & Personal Care", "Food & Beverages", "Toys", "Appliances", "Home & Living"});;
 
         productSalesReportStartYearTF.setText("2000");
         productSalesReportEndYearTF.setText("2030");
@@ -2041,7 +2043,11 @@ public class View extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
-        productSalesPanel.add(new JLabel("Product Sales for"), gbc);
+
+        JPanel categorySearchPanel = new JPanel();
+        categorySearchPanel.add(new JLabel("Category"));
+        categorySearchPanel.add(productSalesReportCategory);
+        productSalesPanel.add(categorySearchPanel, gbc);
 
         gbc.gridx = 0;
         gbc.gridwidth = 1;
@@ -2961,6 +2967,10 @@ public class View extends JFrame {
 
     public String getProductSalesEndYear() {
         return productSalesReportEndYearTF.getText();
+    }
+
+    public String getProductSalesReportCategory() {
+        return productSalesReportCategory.getSelectedItem().toString();
     }
 
     public String getPaymentReportStartYear() {
