@@ -2054,7 +2054,7 @@ public class View extends JFrame {
     }
 
     public void refreshProductSalesPnl(Object[][] data) {
-        String[] columnNames = {"Year", "Category", "Total Sales"};
+        String[] columnNames = {"Year", "Category", "Total Sales w/ Shipping"};
 
         JTable table = new JTable(data, columnNames);
         JScrollPane scrollPane = new JScrollPane(table);

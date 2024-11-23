@@ -1114,14 +1114,18 @@ public class Model
     }
 
     public static Object[][] getCustomerStats(int startYear, int endYear) throws SQLException {
+        //join payments table to get the total amount paid by each customer
         String sql = "SELECT YEAR(o.order_date) as year, " +
                      "CONCAT(c.first_name, ' ', c.last_name) as customer_name, " +
                      "COUNT(o.order_id) as total_orders, " +
-                     "SUM(o.quantity * p.price) as total_sales " +
+                     "SUM(pay.amount_paid) as total_sales " +
                      "FROM customers c " +
                      "JOIN orders o ON o.customer_id = c.customer_id " +
                      "JOIN products p ON o.product_id = p.product_id " +
+                     "JOIN payments pay ON pay.order_id = o.order_id " +
                      "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
+                     "AND c.is_deleted != 1 " +
+                     "AND pay.payment_status = 'Completed'" +
                      "GROUP BY year, customer_name " +
                      "ORDER BY year, customer_name";
 
@@ -1133,12 +1137,13 @@ public class Model
             try (ResultSet rs = stmt.executeQuery()) {
                 List<Object[]> records = new ArrayList<>();
                 while (rs.next()) {
+                    DecimalFormat priceFormat = new DecimalFormat("Php #,###.##");
                     int year = rs.getInt("year");
                     String customerName = rs.getString("customer_name");
                     int totalOrders = rs.getInt("total_orders");
-                    double totalSales = rs.getDouble("total_sales");
+                    String formattedPrice = priceFormat.format(rs.getDouble("total_sales"));
 
-                    records.add(new Object[]{year, customerName, totalOrders, totalSales});
+                    records.add(new Object[]{year, customerName, totalOrders, formattedPrice});
                 }
                 return records.toArray(new Object[0][]);
             }
@@ -1146,13 +1151,13 @@ public class Model
     }
 
     public static Object[][] getProductSales(int startYear, int endYear) throws SQLException {
-        StringBuilder sql = new StringBuilder();
-        sql.append("SELECT YEAR(o.order_date) AS year, p.category, SUM(o.quantity * p.price) AS total_sales ")
-           .append("FROM products p ")
-           .append("LEFT JOIN orders o ON p.product_id = o.product_id ")
-           .append("WHERE YEAR(o.order_date) BETWEEN ? AND ? ")
-           .append("GROUP BY YEAR(o.order_date), p.category ")
-           .append("ORDER BY YEAR(o.order_date), p.category");
+        String sql = "SELECT YEAR(o.order_date) as year, p.category, SUM(pay.amount_paid) as total_sales " +
+                     "FROM orders o " +
+                     "JOIN products p ON o.product_id = p.product_id " +
+                     "JOIN payments pay ON pay.order_id = o.order_id " +
+                     "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
+                     "GROUP BY year, p.category " +
+                     "ORDER BY year, p.category";
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
@@ -1162,11 +1167,12 @@ public class Model
             try (ResultSet rs = stmt.executeQuery()) {
                 List<Object[]> records = new ArrayList<>();
                 while (rs.next()) {
+                    DecimalFormat priceFormat = new DecimalFormat("Php #,###.##");
+                    String formattedPrice = priceFormat.format(rs.getDouble("total_sales"));
                     int year = rs.getInt("year");
                     String category = rs.getString("category");
-                    double totalSales = rs.getDouble("total_sales");
 
-                    records.add(new Object[]{year, category, totalSales});
+                    records.add(new Object[]{year, category, formattedPrice});
                 }
 
                 return records.toArray(new Object[0][]);
