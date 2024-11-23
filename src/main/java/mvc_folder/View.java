@@ -849,9 +849,12 @@ public class View extends JFrame {
         //search 
         logisticsRelatedRecordSearchField = new JTextField(20);
         logisticsRelatedRecordSearchBtn = new JButton("Search");
+        logisticsRelatedRecordSearchBtn.setPreferredSize(new Dimension(150, 25));
         logisticsRelatedRecordCriteriaComboBox = new JComboBox<>(new String[]{"Company Name", "Company ID"});
 
         GridBagConstraints gbc = setGBC();
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.LINE_START;
 
         gbc.gridwidth = 1;
         gbc.gridx = 0;
@@ -864,6 +867,7 @@ public class View extends JFrame {
         gbc.gridx++;
         logisticsRelatedRecordsPanel.add(logisticsRelatedRecordCriteriaComboBox, gbc);
 
+        gbc.gridwidth = 2;
         gbc.gridx = 0;
         gbc.gridy++;
         logisticsRelatedRecordsPanel.add(logisticsRelatedRecordSearchBtn, gbc);
