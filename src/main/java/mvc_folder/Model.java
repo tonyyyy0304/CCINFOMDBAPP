@@ -1309,6 +1309,21 @@ public class Model
         }
     }
 
+    public boolean isNameNoMatch(String productname) throws SQLException{
+        String subquery = "SELECT category FROM products WHERE product_name LIKE ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(subquery)) {
+            stmt.setString(1, "%" + productname + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (!rs.next()) {
+                    System.out.println("Error: No product name matches the given input.");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean isNameSpecified(String productName) throws SQLException {
         String subquery = "SELECT category FROM products WHERE product_name LIKE ?";
         try (Connection conn = getConnection();
@@ -1371,7 +1386,7 @@ public class Model
                         "JOIN store s ON p.store_id = s.store_id " +
                         "WHERE p.category = (SELECT category FROM products WHERE product_id = ?) " +
                         "AND p.is_deleted != 1 AND s.is_deleted != 1 " +
-                        "GROUP BY s.store_id, p.category" +
+                        "GROUP BY s.store_id, p.category " +
                         "ORDER BY num_products DESC ";
         try (Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {

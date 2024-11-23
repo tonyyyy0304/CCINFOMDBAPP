@@ -1122,6 +1122,10 @@ public class Controller
                 }
                 try{
                     if(criteria.equals("Product Name")){
+                        if(model.isNameNoMatch(query)){
+                            view.showError("Prodct Name does not match any product.");
+                            return;
+                        }
                         if(!model.isNameSpecified(query)){
                             view.showError("Prodct Name is not specific.");
                             return;
@@ -1141,6 +1145,17 @@ public class Controller
                         view.showError("Product ID must be a valid number.");
                         return;
                     }
+                }
+
+                try {
+                    if (!model.productExists(Integer.parseInt(query))) {
+                        view.showError("Product with ID " + query + " does not exist.");
+                        return; 
+                    }
+                } catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
                 }
 
                 try {
