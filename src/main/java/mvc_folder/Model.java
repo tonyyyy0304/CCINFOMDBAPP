@@ -925,6 +925,58 @@ public class Model
         }
     }
 
+    public static Object[][] getStoresCustomersBoughtFrom(String customerName) throws SQLException {
+        String sql =
+                "SELECT CONCAT(c.first_name, ' ', c.last_name) AS customer_name, " +
+                        "GROUP_CONCAT(DISTINCT s.store_name SEPARATOR ', ') AS stores_bought_from " +
+                        "FROM customers c " +
+                        "JOIN orders o ON o.customer_id = c.customer_id " +
+                        "JOIN products p ON o.product_id = p.product_id " +
+                        "JOIN store s ON p.store_id = s.store_id " +
+                        "WHERE CONCAT(c.first_name, ' ', c.last_name) LIKE ? AND c.is_deleted != 1 " +
+                        "GROUP BY c.customer_id";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, "%" + customerName + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                while (rs.next()) {
+                    records.add(new Object[]{
+                        rs.getString("customer_name"),
+                        rs.getString("stores_bought_from")
+                    });
+                }
+                return records.toArray(new Object[0][]);
+            }
+        }
+    }
+
+    public static Object[][] getStoresCustomersBoughtFrom(int customerID) throws SQLException {
+        String sql =
+                "SELECT CONCAT(c.first_name, ' ', c.last_name) AS customer_name, " +
+                        "GROUP_CONCAT(DISTINCT s.store_name SEPARATOR ', ') AS stores_bought_from " +
+                        "FROM customers c " +
+                        "JOIN orders o ON o.customer_id = c.customer_id " +
+                        "JOIN products p ON o.product_id = p.product_id " +
+                        "JOIN store s ON p.store_id = s.store_id " +
+                        "WHERE c.customer_id = ? AND c.is_deleted != 1 " +
+                        "GROUP BY c.customer_id";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, customerID);
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                while (rs.next()) {
+                    records.add(new Object[]{
+                        rs.getString("customer_name"),
+                        rs.getString("stores_bought_from")
+                    });
+                }
+                return records.toArray(new Object[0][]);
+            }
+        }
+    }
+
     public static Object[][] getProductRecords() throws SQLException {
         String sql =
                 "SELECT p.product_id, p.product_name, p.price, s.store_name, p.stock_count, p.description, p.category, p.r18 " +
