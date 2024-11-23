@@ -1172,7 +1172,6 @@ public class Controller
             }
         });
 
-        //TODO: check if product does not exists/deleted
         this.view.setProductUpdateSelectBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1186,6 +1185,8 @@ public class Controller
                     int productId = Integer.parseInt(view.getProductUpdateId());
                     if (!model.productExists(productId)) {
                         view.showError("Product with ID " + productId + " does not exist.");
+                        view.clearFields();
+                        return;
                     }
 
                     view.productUpdateEditable(true); // Enable the fields
@@ -1225,6 +1226,7 @@ public class Controller
                     int storeId = Integer.parseInt(view.getStoreUpdateId());
                     if (!model.storeExists(storeId)) {
                         view.showError("Store with ID " + storeId + " does not exist.");
+                        view.clearFields();
                         return;
                     }
 
@@ -1397,6 +1399,7 @@ public class Controller
                     int logisticsCompanyId = Integer.parseInt(view.getLogisticsUpdateId());
                     if (!model.logisticsCompanyExists(logisticsCompanyId)) {
                         view.showError("Logistics Company with ID " + logisticsCompanyId + " does not exist.");
+                        view.clearFields();
                         return;
                     }
 
@@ -1536,6 +1539,7 @@ public class Controller
                     int customerId = Integer.parseInt(view.getCustomerUpdateId());
                     if (!model.customerExists(customerId)) {
                         view.showError("Customer with ID " + customerId + " does not exist.");
+                        view.clearFields();
                         return;
                     }
 
