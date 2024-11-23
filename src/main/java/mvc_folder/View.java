@@ -45,8 +45,13 @@ public class View extends JFrame {
             customerZipCode, customerCountry;
     private JDatePickerImpl customerBirthdate;
     private JButton customerSearchBtn, customerShowAllBtn;
+
     private JComboBox<String> customerCriteriaComboBox;
     private JTextField customerSearchField;
+
+    private JComboBox<String> customerStoresCriteriaComboBox;
+    private JTextField customerStoresSearchField;
+    private JButton customerStoresSearchBtn, customerStoresShowAllBtn;
 
     private JTextField customerUpdateId, customerUpdateFirstName, customerUpdateLastName,
             customerUpdatePhoneNumber, customerUpdateEmailAddress,
@@ -165,6 +170,9 @@ public class View extends JFrame {
         customerUpdateSelectBtn = new JButton("Select Customer");
         customerUpdateBtn = new JButton("Update Customer");
         customerSearchBtn = new JButton("Search");
+        customerShowAllBtn = new JButton("Show All");
+        customerStoresSearchBtn = new JButton("Search");
+        customerStoresShowAllBtn = new JButton("Show All");
         storeAddBtn = new JButton("Add Store");
         storeRemoveBtn = new JButton("Remove Store");
         storeUpdateSelectBtn = new JButton("Select Store");
@@ -929,19 +937,41 @@ public class View extends JFrame {
 
     private JPanel storesCustomersBoughtFromPnl() {
         storesCustomersBoughtFromPnl = new JPanel(new GridBagLayout());
+        customerStoresSearchBtn = new JButton("Search");
+        customerStoresSearchBtn.setPreferredSize(new Dimension(150, 25));
+        customerStoresShowAllBtn = new JButton("Show All");
+        customerStoresShowAllBtn.setPreferredSize(new Dimension(150, 25));
+        customerStoresSearchField = new JTextField(20);
+        customerStoresCriteriaComboBox = new JComboBox<>(new String[]{"Customer Name", "Customer ID"});
+
+        GridBagConstraints gbc = setGBC();
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.LINE_START;
+
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        storesCustomersBoughtFromPnl.add(new JLabel("Search:"), gbc);
+        gbc.gridx++;
+        storesCustomersBoughtFromPnl.add(customerStoresSearchField, gbc);
+        gbc.gridx++;
+        storesCustomersBoughtFromPnl.add(customerStoresCriteriaComboBox, gbc);
+
+        gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        storesCustomersBoughtFromPnl.add(customerStoresSearchBtn, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        storesCustomersBoughtFromPnl.add(customerStoresShowAllBtn, gbc);
+
         refreshStoresCustomerBoughtFrom();
         return storesCustomersBoughtFromPnl;
     }
 
-    public void refreshStoresCustomerBoughtFrom() {
+    public void refreshStoresCustomerBoughtFrom(Object[][] data) {
         String[] columnNames = {"Customer Name", "Store Name"};
-        Object[][] data = {};
-
-        try {
-            data = Model.getStoresCustomersBoughtFrom();
-        } catch (SQLException e) {
-            showError("Failed to retrieve stores customer bought from: " + e.getMessage());
-        }
 
         JTable table = new JTable(data, columnNames);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -949,18 +979,30 @@ public class View extends JFrame {
 
         adjustColumnWidths(table);
 
-        storesCustomersBoughtFromPnl.removeAll();
+        if (storesCustomersBoughtFromPnl.getComponentCount() > 5) {
+            storesCustomersBoughtFromPnl.remove(5);
+        }
+
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.gridy = 3;
+        gbc.gridwidth = 4;
+        gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
         storesCustomersBoughtFromPnl.add(scrollPane, gbc);
         storesCustomersBoughtFromPnl.revalidate();
         storesCustomersBoughtFromPnl.repaint();
+    }
+
+    public void refreshStoresCustomerBoughtFrom() {
+        Object[][] data = {};
+        try {
+            data = Model.getStoresCustomersBoughtFrom();
+        } catch (SQLException e) {
+            showError("Failed to retrieve stores customer bought from: " + e.getMessage());
+        }
+        refreshStoresCustomerBoughtFrom(data);
     }
 
     private JPanel storeAddPnl() {
@@ -2157,6 +2199,14 @@ public class View extends JFrame {
         customerUpdateBtn.addActionListener(listener);
     }
 
+    public void setCustomerStoresSearchBtn(ActionListener listener) {
+        customerStoresSearchBtn.addActionListener(listener);
+    }
+
+    public void setCustomerStoresShowAllBtn(ActionListener listener) {
+        customerStoresShowAllBtn.addActionListener(listener);
+    }
+
     public void setStoreAddBtn(ActionListener listener) {
         storeAddBtn.addActionListener(listener);
     }
@@ -2590,6 +2640,14 @@ public class View extends JFrame {
         return customerUpdateCountry.getText();
     }
 
+    public String getCustomerStoresSearchField() {
+        return customerStoresSearchField.getText();
+    }
+
+    public String getCustomerStoresCriteriaComboBox() {
+        return customerStoresCriteriaComboBox.getSelectedItem().toString();
+    }
+
     public String getStoreUpdateId() {
         return storeUpdateId.getText();
     }
@@ -2940,6 +2998,7 @@ public class View extends JFrame {
         customerUpdateEditable(false);
 
         customerSearchField.setText("");
+        customerStoresSearchField.setText("");
 
         storeId.setText("");
         storeName.setText("");

@@ -423,6 +423,54 @@ public class Controller
             }
         });
 
+        this.view.setCustomerStoresSearchBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String query = view.getCustomerStoresSearchField();
+                String criteria = view.getCustomerStoresCriteriaComboBox();
+
+                if (query.isEmpty()) {
+                    view.showMessage("Please enter a search query.");
+                    return;
+                }
+
+                if (criteria.equals("Customer ID")) {
+                    try {
+                        Integer.parseInt(query);
+                    } catch (NumberFormatException ex) {
+                        view.showError("Customer ID must be a valid number.");
+                        return;
+                    }
+                }
+
+                try {
+                    Object[][] data = new Object[0][];
+                    if (criteria.equals("Customer ID")) {
+                        int id = Integer.parseInt(query);
+                        data = Model.getStoresCustomersBoughtFrom(id);
+                    } else if (criteria.equals("Customer Name")) {
+                        data = Model.getStoresCustomersBoughtFrom(query);
+                    }
+                    if (data != null) {
+                        view.refreshStoresCustomerBoughtFrom(data);
+                    } else {
+                        view.showError("No data found for the given query.");
+                    }
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                    ex.printStackTrace(); // Log the stack trace for debugging purposes
+                }
+            }
+        });
+
+        this.view.setCustomerStoresShowAllBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                view.refreshStoresCustomerBoughtFrom();
+                view.clearFields();
+            }
+        });
+
         this.view.setCustomerAddBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
