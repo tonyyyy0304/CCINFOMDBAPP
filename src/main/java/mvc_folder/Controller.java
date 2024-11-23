@@ -154,6 +154,10 @@ public class Controller
             public void actionPerformed(ActionEvent e){
                 try {
                     int productId = Integer.parseInt(view.getProductId());
+                    if (!model.productExists(productId)) {
+                        view.showError("Product with ID " + productId + " does not exist.");
+                        return;
+                    }
                     boolean success = model.removeProduct(productId);
                     if (success) {
                         view.showSuccess("Product removed successfully!");
