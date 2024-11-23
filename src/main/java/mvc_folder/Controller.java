@@ -390,27 +390,54 @@ public class Controller
             }
         });
 
-        this.view.setCustomerSearchBtn(new ActionListener() {
+        this.view.setCustomerStatsSearchBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String query = view.getCustomerSearchField();
-                String criteria = view.getCustomerCriteriaComboBox();
+                String start_yearS = view.getCustomerStatsStartYear();
+                String end_yearS = view.getCustomerStatsEndYear();
+                String customerNameOrId = view.getCustomerStatsUser();
+                String criteria = view.getCustomerStatsSearchCriteria();
 
-                if (query.isEmpty()) {
-                    view.showMessage("Please enter a search query.");
+                int start_year = 0;
+                int end_year = 0;
+
+                if (start_yearS.isEmpty() || end_yearS.isEmpty() ) {//|| customerNameOrId.isEmpty()
+                    view.showError("Please fill in all required fields.");
+                    view.clearFields();
                     return;
                 }
+
                 try {
-                    // Call the model to search for customers
-                    if (criteria.equals("Customer ID")) {
-                        view.refreshCustomerRecords(model.searchCustomerRecordsById(query));
-                    } else if (criteria.equals("Customer Name")) {
-                        view.refreshCustomerRecords(model.searchCustomerRecordsByName(query));
-                    }
-                } catch (SQLException ex) {
-                    view.showError("Database error: " + ex.getMessage());
+                    start_year = Integer.parseInt(start_yearS);
+                    end_year = Integer.parseInt(end_yearS);
                 } catch (Exception ex) {
-                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                    view.showError("Year must be a valid number.");
+                    view.clearFields();
+                    return;
+                }
+
+                if (start_year > end_year) {
+                    view.showError("Start year cannot be greater than end year.");
+                    view.clearFields();
+                    return;
+                }
+
+                if(criteria == "Customer Name"){
+                    try {
+                        view.refreshCustomerStatsPnl(Model.getCustomerStatsUsingName(customerNameOrId, start_year, end_year));
+                    } catch (SQLException ex) {
+                        view.showError("Database error: " + ex.getMessage());
+                    } catch (Exception ex) {
+                        view.showError("An unexpected error occurred: " + ex.getMessage());
+                    }
+                }else{
+                    try {
+                        view.refreshCustomerStatsPnl(Model.getCustomerUsingID(customerNameOrId, start_year, end_year));
+                    } catch (SQLException ex) {
+                        view.showError("Database error: " + ex.getMessage());
+                    } catch (Exception ex) {
+                        view.showError("An unexpected error occurred: " + ex.getMessage());
+                    }
                 }
             }
         });

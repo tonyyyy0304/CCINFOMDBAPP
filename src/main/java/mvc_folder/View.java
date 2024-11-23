@@ -129,8 +129,9 @@ public class View extends JFrame {
     private JButton shipOrderBtn;
 
     // Customer Statistics
-    private JTextField customerStatsStartYearTF, customerStatsEndYearTF;
+    private JTextField customerStatsStartYearTF, customerStatsEndYearTF, customerStatsUserSearch;
     private JButton customerStatsSearchBtn, customerStatsShowAllBtn;
+    private JComboBox<String> customerStatsSearchCriteria;
     
     // Product Sales
     private JComboBox<String> productSalesCategory;
@@ -1929,46 +1930,74 @@ public class View extends JFrame {
 
     private JPanel customerStatsPnl() {
         customerStatsPanel = new JPanel(new GridBagLayout());
+        customerStatsUserSearch = new JTextField(COLUMN_WIDTH);
+        customerStatsSearchCriteria = new JComboBox<String>();
         customerStatsStartYearTF = new JTextField(COLUMN_WIDTH);
         customerStatsEndYearTF = new JTextField(COLUMN_WIDTH);
 
         customerStatsStartYearTF.setText("2000");
         customerStatsEndYearTF.setText("2030");
+        customerStatsSearchCriteria.addItem("Customer Name");
+        customerStatsSearchCriteria.addItem("Customer ID");
 
         customerStatsSearchBtn.setPreferredSize(new Dimension(150, 25));
         customerStatsShowAllBtn.setPreferredSize(new Dimension(150, 25));
 
+        JPanel userSearchPanel = new JPanel();
+        userSearchPanel.add(new JLabel("Search: "));
+        userSearchPanel.add(customerStatsUserSearch);
+        userSearchPanel.add(customerStatsSearchCriteria);
+
+        JPanel topPanel = new JPanel();
+        topPanel.add(new JLabel("Customer Stats for"), BorderLayout.NORTH);
+        topPanel.add(userSearchPanel, BorderLayout.CENTER);
+
         GridBagConstraints gbc = setGBC();
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.LINE_START;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 2;
-        customerStatsPanel.add(new JLabel("Customer Stats for"), gbc);
 
-        gbc.gridwidth = 1;
+        // Row User Search
+        gbc.gridy = 0;
         gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        customerStatsPanel.add(userSearchPanel, gbc);
+        gbc.gridwidth = 1;
+
+        // Row Start Year
         gbc.gridy++;
+        gbc.gridx = 0;
         customerStatsPanel.add(new JLabel("Start Year:"), gbc);
-        gbc.gridx++;
+        gbc.gridx = 1;
         customerStatsPanel.add(customerStatsStartYearTF, gbc);
 
-        gbc.gridx = 0;
+        // Row End Year
         gbc.gridy++;
-        customerStatsPanel.add(new JLabel("End Year:"), gbc);
-        gbc.gridx++;
+        gbc.gridx = 0;
+        customerStatsPanel.add(new JLabel("End Year1:"), gbc);
+        gbc.gridx = 1;
         customerStatsPanel.add(customerStatsEndYearTF, gbc);
 
+        /*
+        gbc.gridy++;
+        gbc.gridx = 0;
         gbc.gridwidth = 2;
-        gbc.gridx = 0;
+        customerStatsPanel.add(new JPanel(), gbc);
+         */
+
+        //Row Search Button
         gbc.gridy++;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
         customerStatsPanel.add(customerStatsSearchBtn, gbc);
-        
-        gbc.gridx = 0;
+
+        // Row Show All Button
         gbc.gridy++;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
         customerStatsPanel.add(customerStatsShowAllBtn, gbc);
 
         refreshCustomerStatsPnl();
+
         return customerStatsPanel;
     }
 
@@ -2929,6 +2958,14 @@ public class View extends JFrame {
 
     public String getCustomerStatsEndYear() {
         return customerStatsEndYearTF.getText();
+    }
+
+    public String getCustomerStatsUser() {
+        return customerStatsUserSearch.getText();
+    }
+
+    public String getCustomerStatsSearchCriteria(){
+        return customerStatsSearchCriteria.getSelectedItem().toString();
     }
 
     public String getProductSalesStartYear() {

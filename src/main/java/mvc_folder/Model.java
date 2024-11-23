@@ -18,7 +18,7 @@ public class Model
 {
     private static final String dbUrl = "jdbc:mysql://localhost:3306/ecommerce_db";
     private static final String userName = "root";
-    private static final String password = "password";
+    private static final String password = "Q2e4t6u8o0!@#$%";
 
 
     public Model() {
@@ -1147,6 +1147,92 @@ public class Model
                 }
                 return records.toArray(new Object[0][]);
             }
+        }
+    }
+
+    public static Object[][] getCustomerStatsUsingName(String customerName, int startYear, int endYear) throws SQLException {
+        // Prepare the SQL query to fetch customer statistics
+        String sql = "SELECT YEAR(o.order_date) AS year, " +
+                "CONCAT(c.first_name, ' ', c.last_name) AS customer_name, " +
+                "COUNT(o.order_id) AS total_orders, " +
+                "SUM(o.quantity * p.price) AS total_sales " +
+                "FROM customers c " +
+                "JOIN orders o ON o.customer_id = c.customer_id " +
+                "JOIN products p ON o.product_id = p.product_id " +
+                "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
+                "AND CONCAT(c.first_name, ' ', c.last_name) = ? " + // Filter by customer name
+                "GROUP BY year, customer_name " +
+                "ORDER BY year, customer_name";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            // Set the parameters for the prepared statement
+            stmt.setInt(1, startYear);  // Start year
+            stmt.setInt(2, endYear);    // End year
+            stmt.setString(3, customerName);  // Customer name
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                // Iterate through the result set and collect records
+                while (rs.next()) {
+                    int year = rs.getInt("year");
+                    String resultCustomerName = rs.getString("customer_name");
+                    int totalOrders = rs.getInt("total_orders");
+                    double totalSales = rs.getDouble("total_sales");
+
+                    // Add the record to the list
+                    records.add(new Object[]{year, resultCustomerName, totalOrders, totalSales});
+                }
+                // Convert the list to an array and return
+                return records.toArray(new Object[0][]);
+            }
+        } catch (SQLException e) {
+            // Handle SQL exceptions (logging, rethrowing, etc.)
+            throw new SQLException("Error fetching customer statistics: " + e.getMessage(), e);
+        }
+
+
+    }
+
+    public static Object[][] getCustomerUsingID(String customerID, int startYear, int endYear) throws SQLException {
+        // Prepare the SQL query to fetch customer statistics based on customer ID
+        String sql = "SELECT YEAR(o.order_date) AS year, " +
+                "CONCAT(c.first_name, ' ', c.last_name) AS customer_name, " +
+                "COUNT(o.order_id) AS total_orders, " +
+                "SUM(o.quantity * p.price) AS total_sales " +
+                "FROM customers c " +
+                "JOIN orders o ON o.customer_id = c.customer_id " +
+                "JOIN products p ON o.product_id = p.product_id " +
+                "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
+                "AND c.customer_id = ? " + // Filter by customer ID
+                "GROUP BY year, customer_name " +
+                "ORDER BY year, customer_name";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            // Set the parameters for the prepared statement
+            stmt.setInt(1, startYear);  // Start year
+            stmt.setInt(2, endYear);    // End year
+            stmt.setString(3, customerID);  // Customer ID
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+                // Iterate through the result set and collect records
+                while (rs.next()) {
+                    int year = rs.getInt("year");
+                    String resultCustomerName = rs.getString("customer_name");
+                    int totalOrders = rs.getInt("total_orders");
+                    double totalSales = rs.getDouble("total_sales");
+
+                    // Add the record to the list
+                    records.add(new Object[]{year, resultCustomerName, totalOrders, totalSales});
+                }
+                // Convert the list to an array and return
+                return records.toArray(new Object[0][]);
+            }
+        } catch (SQLException e) {
+            // Handle SQL exceptions (logging, rethrowing, etc.)
+            throw new SQLException("Error fetching customer statistics: " + e.getMessage(), e);
         }
     }
 
