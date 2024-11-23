@@ -214,7 +214,7 @@ public class View extends JFrame {
         JPanel productsPanel = new JPanel(new BorderLayout());
         JTabbedPane productsTabbedPane = new JTabbedPane();
         productsTabbedPane.addTab("Product Records", productRecordsPnl());
-        productsTabbedPane.addTab("Stores Selling Category Same as Product",  productRelatedRecordsPnl()); // TODO: Implement panel
+        productsTabbedPane.addTab("Stores Selling Same Category as Product",  productRelatedRecordsPnl()); // TODO: Implement panel
         productsTabbedPane.addTab("Add Product", productAddPnl());
         productsTabbedPane.addTab("Remove Product", productRemovePnl());
         productsTabbedPane.addTab("Update Product", productUpdatePnl());

@@ -406,7 +406,7 @@ public class Model
     }
 
     public boolean updateStore(int store_id, String store_name, int contact_id, int location_id) {
-        String sql = "UPDATE store SET store_name = ?, contact_id = ?, location_id = ? WHERE store_id = ?";
+        String sql = "UPDATE store SET store_name = ?, contact_id = ?, location_id = ? WHERE store_id = ? AND is_deleted != 1";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, store_name);
@@ -429,7 +429,7 @@ public class Model
                      "FROM store s " +
                      "JOIN contact_information ci ON s.contact_id = ci.contact_id " +
                      "JOIN locations l ON s.location_id = l.location_id " +
-                     "WHERE s.store_id = ?";
+                     "WHERE s.store_id = ? AND s.is_deleted != 1";
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -547,7 +547,7 @@ public class Model
     }
 
     public boolean removeCustomer(int customerId) throws SQLException {
-        String sql = "UPDATE customers SET is_deleted = 1 WHERE customer_id = ?";
+        String sql = "UPDATE customers SET is_deleted = 1 WHERE customer_id = ? AND is_deleted != 1";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, customerId);
@@ -562,7 +562,7 @@ public class Model
                      "FROM customers c " +
                      "JOIN contact_information ci ON c.contact_id = ci.contact_id " +
                      "JOIN locations l ON c.location_id = l.location_id " +
-                     "WHERE c.customer_id = ?";
+                     "WHERE c.customer_id = ? AND c.is_deleted != 1";
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -635,7 +635,7 @@ public class Model
     }
 
     public boolean removeLogisticsCompany(int logisticsCompanyId) throws SQLException {
-        String sql = "UPDATE logistics_companies SET is_deleted = 1 WHERE logistics_company_id = ?";
+        String sql = "UPDATE logistics_companies SET is_deleted = 1 WHERE logistics_company_id = ? AND is_deleted != 1";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, logisticsCompanyId);
@@ -644,7 +644,7 @@ public class Model
     }
 
     public boolean updateLogisticsCompany(int logisticsCompanyId, String name, int location, String scope) throws SQLException {
-        String sql = "UPDATE logistics_companies SET logistics_company_name = ?, location_id = ?, shipment_scope = ? WHERE logistics_company_id = ?";
+        String sql = "UPDATE logistics_companies SET logistics_company_name = ?, location_id = ?, shipment_scope = ? WHERE logistics_company_id = ? AND is_deleted != 1";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, name);
@@ -729,7 +729,7 @@ public class Model
         String sql = "SELECT s.store_name, COUNT(p.product_id) AS num_products " +
                         "FROM products p " +
                         "JOIN store s ON p.store_id = s.store_id " +
-                        "WHERE p.category = ? " +
+                        "WHERE p.category = ? AND s.is_deleted != 1 " +
                         "GROUP BY s.store_id";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -764,7 +764,8 @@ public class Model
                         "FROM orders o " +
                         "JOIN shipping s ON o.order_id = s.order_id " +
                         "JOIN logistics_companies lc ON s.logistics_company_id = lc.logistics_company_id " +
-                        "WHERE lc.logistics_company_name LIKE ? " +
+                        "WHERE lc.logistics_company_name LIKE ?" +
+                        "AND lc.is_deleted != 1 " +
                         "ORDER BY o.order_id";
 
         try (Connection conn = getConnection();
@@ -804,6 +805,7 @@ public class Model
                         "JOIN shipping s ON o.order_id = s.order_id " +
                         "JOIN logistics_companies lc ON s.logistics_company_id = lc.logistics_company_id " +
                         "WHERE s.logistics_company_id = ? " +
+                        "AND lc.is_deleted != 1 " +
                         "ORDER BY o.order_id";
 
         try (Connection conn = getConnection();
@@ -982,7 +984,8 @@ public class Model
                 "SELECT p.product_id, p.product_name, p.price, s.store_name, p.stock_count, p.description, p.category, p.r18 " +
                         "FROM products p " +
                         "JOIN store s ON p.store_id = s.store_id" + 
-                        " WHERE p.is_deleted != 1 ";
+                        " WHERE p.is_deleted != 1 " +
+                        " ORDER BY p.product_id";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) 
@@ -1042,7 +1045,7 @@ public class Model
             "lc.shipment_scope " +
             "FROM logistics_companies lc " +
             "JOIN locations l ON lc.location_id = l.location_id " +
-            "WHERE lc.logistics_company_name LIKE ?";
+            "WHERE lc.logistics_company_name LIKE ? AND lc.is_deleted != 1";
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -1068,7 +1071,7 @@ public class Model
             "lc.shipment_scope " +
             "FROM logistics_companies lc " +
             "JOIN locations l ON lc.location_id = l.location_id " +
-            "WHERE lc.logistics_company_id = ?";
+            "WHERE lc.logistics_company_id = ? AND lc.is_deleted != 1";
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -1124,10 +1127,10 @@ public class Model
                      "JOIN products p ON o.product_id = p.product_id " +
                      "JOIN payments pay ON pay.order_id = o.order_id " +
                      "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
-                     "AND c.is_deleted != 1 " +
-                     "AND pay.payment_status = 'Completed'" +
+                     "AND c.is_deleted != 1 AND p.is_deleted != 1 " +
+                     "AND pay.payment_status = 'Completed' " +
                      "GROUP BY year, customer_name " +
-                     "ORDER BY year, customer_name";
+                     "ORDER BY year, customer_name ";
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -1155,12 +1158,14 @@ public class Model
         String sql = "SELECT YEAR(o.order_date) AS year, " +
                 "CONCAT(c.first_name, ' ', c.last_name) AS customer_name, " +
                 "COUNT(o.order_id) AS total_orders, " +
-                "SUM(o.quantity * p.price) AS total_sales " +
+                "SUM(pay.amount_paid) AS total_sales " +
                 "FROM customers c " +
                 "JOIN orders o ON o.customer_id = c.customer_id " +
                 "JOIN products p ON o.product_id = p.product_id " +
+                "JOIN payments pay ON pay.order_id = o.order_id " +
                 "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
                 "AND CONCAT(c.first_name, ' ', c.last_name) LIKE ? " + // Filter by customer name
+                "AND c.is_deleted != 1 AND p.is_deleted != 1 " +
                 "GROUP BY year, customer_name " +
                 "ORDER BY year, customer_name";
 
@@ -1175,19 +1180,20 @@ public class Model
                 List<Object[]> records = new ArrayList<>();
                 // Iterate through the result set and collect records
                 while (rs.next()) {
+                    DecimalFormat priceFormat = new DecimalFormat("Php #,###.##");
+                    String formattedPrice = priceFormat.format(rs.getDouble("total_sales"));
                     int year = rs.getInt("year");
                     String resultCustomerName = rs.getString("customer_name");
                     int totalOrders = rs.getInt("total_orders");
-                    double totalSales = rs.getDouble("total_sales");
+                    
 
                     // Add the record to the list
-                    records.add(new Object[]{year, resultCustomerName, totalOrders, totalSales});
+                    records.add(new Object[]{year, resultCustomerName, totalOrders, formattedPrice});
                 }
                 // Convert the list to an array and return
                 return records.toArray(new Object[0][]);
             }
         } catch (SQLException e) {
-            // Handle SQL exceptions (logging, rethrowing, etc.)
             throw new SQLException("Error fetching customer statistics: " + e.getMessage(), e);
         }
 
@@ -1195,7 +1201,6 @@ public class Model
     }
 
     public static Object[][] getCustomerUsingID(String customerID, int startYear, int endYear) throws SQLException {
-        // Prepare the SQL query to fetch customer statistics based on customer ID
         String sql = "SELECT YEAR(o.order_date) AS year, " +
                 "CONCAT(c.first_name, ' ', c.last_name) AS customer_name, " +
                 "COUNT(o.order_id) AS total_orders, " +
@@ -1205,33 +1210,30 @@ public class Model
                 "JOIN products p ON o.product_id = p.product_id " +
                 "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
                 "AND c.customer_id = ? " + // Filter by customer ID
+                "AND c.is_deleted != 1 AND p.is_deleted != 1 " +
                 "GROUP BY year, customer_name " +
                 "ORDER BY year, customer_name";
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            // Set the parameters for the prepared statement
+            
             stmt.setInt(1, startYear);  // Start year
             stmt.setInt(2, endYear);    // End year
             stmt.setString(3, customerID);  // Customer ID
 
             try (ResultSet rs = stmt.executeQuery()) {
                 List<Object[]> records = new ArrayList<>();
-                // Iterate through the result set and collect records
                 while (rs.next()) {
                     int year = rs.getInt("year");
                     String resultCustomerName = rs.getString("customer_name");
                     int totalOrders = rs.getInt("total_orders");
                     double totalSales = rs.getDouble("total_sales");
 
-                    // Add the record to the list
                     records.add(new Object[]{year, resultCustomerName, totalOrders, totalSales});
                 }
-                // Convert the list to an array and return
                 return records.toArray(new Object[0][]);
             }
         } catch (SQLException e) {
-            // Handle SQL exceptions (logging, rethrowing, etc.)
             throw new SQLException("Error fetching customer statistics: " + e.getMessage(), e);
         }
     }
@@ -1242,6 +1244,8 @@ public class Model
                      "JOIN products p ON o.product_id = p.product_id " +
                      "JOIN payments pay ON pay.order_id = o.order_id " +
                      "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
+                    "AND pay.payment_status = 'Completed' " +
+                    "AND p.is_deleted != 1 " +
                      "GROUP BY year, p.category " +
                      "ORDER BY year, p.category";
 
@@ -1321,6 +1325,7 @@ public class Model
                         "FROM products p " +
                         "JOIN store s ON p.store_id = s.store_id " +
                         "WHERE p.category = (SELECT category FROM products WHERE product_name LIKE ?) " +
+                        "AND p.is_deleted != 1 AND s.is_deleted != 1" +
                         "GROUP BY s.store_id, p.category";
         try (Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -1351,6 +1356,7 @@ public class Model
                         "FROM products p " +
                         "JOIN store s ON p.store_id = s.store_id " +
                         "WHERE p.category = (SELECT category FROM products WHERE product_id = ?) " +
+                        "AND p.is_deleted != 1 AND s.is_deleted != 1" +
                         "GROUP BY s.store_id, p.category";
         try (Connection conn = getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -1388,6 +1394,7 @@ public class Model
                      "JOIN payments pay ON o.order_id = pay.order_id " +
                      "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
                      "AND pay.payment_status = 'Completed' " +
+                     "AND c.is_deleted != 1 AND p.is_deleted != 1 AND s.is_deleted != 1 " +
                      "GROUP BY year, customer_name, s.store_name " +
                      "ORDER BY year, customer_name, s.store_name";
 
@@ -1424,7 +1431,7 @@ public class Model
             return false;
         }
 
-        String sql = "UPDATE products SET stock_count = ? WHERE product_id = ?";
+        String sql = "UPDATE products SET stock_count = ? WHERE product_id = ? AND is_deleted != 1";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, newStockCount);
@@ -1441,7 +1448,7 @@ public class Model
     }
 
     public int getCurrentStock(int productId) throws SQLException {
-        String sql = "SELECT stock_count FROM products WHERE product_id = ?";
+        String sql = "SELECT stock_count FROM products WHERE product_id = ? AND is_deleted != 1";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, productId);
@@ -1465,7 +1472,7 @@ public class Model
         }
 
        
-        String checkR18Sql = "SELECT r18 FROM products WHERE product_id = ?";
+        String checkR18Sql = "SELECT r18 FROM products WHERE product_id = ? AND is_deleted != 1";
         try (Connection conn = getConnection();
              PreparedStatement checkR18Stmt = conn.prepareStatement(checkR18Sql)) {
             checkR18Stmt.setInt(1, productId);
@@ -1565,7 +1572,7 @@ public class Model
     }
 
     private int getStoreIdByProductId(int productId) throws SQLException {
-        String sql = "SELECT store_id FROM products WHERE product_id = ?";
+        String sql = "SELECT store_id FROM products WHERE product_id = ? AND is_deleted != 1";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, productId);
@@ -1580,7 +1587,7 @@ public class Model
     }
 
     public boolean isOrderPending(int orderId) throws SQLException {
-        String sql = "SELECT payment_status FROM payments WHERE order_id = ?";
+        String sql = "SELECT payment_status FROM payments WHERE order_id = ? ";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, orderId);
@@ -1615,7 +1622,8 @@ public class Model
             "JOIN store s ON p.store_id = s.store_id " + 
             "JOIN locations ol ON o.delivery_location_id = ol.location_id " +
             "JOIN locations sl ON s.location_id = sl.location_id " +
-            "WHERE o.order_id = ?";
+            "WHERE o.order_id = ?" +
+            "AND p.is_deleted != 1 AND s.is_deleted != 1";
      
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -1690,7 +1698,7 @@ public class Model
   
 
     public boolean orderExists(int orderId) throws SQLException {
-        String sql = "SELECT order_id FROM orders WHERE order_id = ?";
+        String sql = "SELECT order_id FROM orders WHERE order_id = ? AND is_deleted != 1";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, orderId);
@@ -1702,7 +1710,7 @@ public class Model
 
     public boolean matchLogiscticsScopeToOrderShipping(int orderId, int logisticsCompanyId){
         //check if logistics company covers international shipping
-        String checkScopeSql = "SELECT shipment_scope FROM logistics_companies WHERE logistics_company_id = ?";
+        String checkScopeSql = "SELECT shipment_scope FROM logistics_companies WHERE logistics_company_id = ? AND is_deleted != 1";
         boolean isLogisticsInternational = false;
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(checkScopeSql)) {
