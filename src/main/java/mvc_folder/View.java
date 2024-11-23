@@ -64,6 +64,11 @@ public class View extends JFrame {
     private JComboBox<String> storeCriteriaComboBox;
     private JTextField storeSearchField;
 
+    private JPanel storeProductListPanel;
+    private JButton storeProductListSearchBtn, storeProductListShowAllBtn;
+    private JComboBox<String> storeProductListCriteriaComboBox;
+    private JTextField storeProductListSearchField;
+
     private JTextField storeUpdateId, storeUpdateName,
             storeUpdatePhoneNumber, storeUpdateEmailAddress,
             storeUpdateLotNum, storeUpdateStreetName, storeUpdateCityName,
@@ -164,6 +169,8 @@ public class View extends JFrame {
         storeRemoveBtn = new JButton("Remove Store");
         storeUpdateSelectBtn = new JButton("Select Store");
         storeUpdateBtn = new JButton("Update Store");
+        storeProductListSearchBtn = new JButton("Search");
+        storeProductListShowAllBtn = new JButton("Show All");
         logisticsAddBtn = new JButton("Add Logistics Company");
         logisticsRemoveBtn = new JButton("Remove Logistics Company");
         logisticsUpdateSelectBtn = new JButton("Select Logistics Company");
@@ -214,7 +221,7 @@ public class View extends JFrame {
         JPanel storesPanel = new JPanel(new BorderLayout());
         JTabbedPane storesTabbedPane = new JTabbedPane();
         storesTabbedPane.addTab("Store Records", storeRecordsPnl());
-        // storesTabbedPane.addTab("Product List of Stores", productRecordsPnl()); // TODO: Implement panel
+        storesTabbedPane.addTab("Product List of a Store", storeProductListPnl()); // TODO: Implement panel
         storesTabbedPane.addTab("Add Store", storeAddPnl());
         storesTabbedPane.addTab("Remove Store", storeRemovePnl());
         storesTabbedPane.addTab("Update Store", storeUpdatePnl());
@@ -1250,6 +1257,78 @@ public class View extends JFrame {
         storeRecordsPanel.repaint();
     }
 
+    private JPanel storeProductListPnl() {
+        storeProductListPanel = new JPanel(new GridBagLayout());
+
+        storeProductListSearchBtn = new JButton("Search");
+        storeProductListSearchBtn.setPreferredSize(new Dimension(150, 25));
+        storeProductListShowAllBtn = new JButton("Show All");
+        storeProductListShowAllBtn.setPreferredSize(new Dimension(150, 25));
+        storeProductListCriteriaComboBox = new JComboBox<>(new String[]{"Store Name", "Store ID"});
+        storeProductListSearchField = new JTextField(20);
+
+        GridBagConstraints gbc = setGBC();
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.LINE_START;
+
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        storeProductListPanel.add(new JLabel("Search:"), gbc);
+
+        gbc.gridx++;
+        storeProductListPanel.add(storeProductListSearchField, gbc);
+
+        gbc.gridx++;
+        storeProductListPanel.add(storeProductListCriteriaComboBox, gbc);
+
+        gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        storeProductListPanel.add(storeProductListSearchBtn, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy++;
+        storeProductListPanel.add(storeProductListShowAllBtn, gbc);
+
+        refreshStoreProductListPnl();
+        return storeProductListPanel;
+    }
+
+    public void refreshStoreProductListPnl(Object[][] data) {
+        String[] columnNames = {"Product ID", "Product Name", "Price", "Store Name", "Stock Count", "Description", "Category", "R18"};
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+
+        if(storeProductListPanel.getComponentCount() > 5) {
+            storeProductListPanel.remove(5); 
+        }
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 4;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        storeProductListPanel.add(scrollPane, gbc);
+        storeProductListPanel.revalidate();
+        storeProductListPanel.repaint();
+    }
+
+    public void refreshStoreProductListPnl() {
+        Object[][] data = {};
+        try {
+            data = Model.getProductRecords();
+        } catch (SQLException e) {
+            showError("Failed to retrieve store product list: " + e.getMessage());
+        }
+        refreshStoreProductListPnl(data);
+    }
+
     private JPanel logisticsAddPnl() {
         JPanel panel = new JPanel(new GridBagLayout());
 
@@ -1475,7 +1554,6 @@ public class View extends JFrame {
     public void refreshLogisticsRecordPnl(Object[][] data) {
         String[] columnNames = {"Logistics Company ID", "Company Name", "Address", "Shipment Scope"};
         
-
         JTable table = new JTable(data, columnNames);
         JScrollPane scrollPane = new JScrollPane(table);
         table.setFillsViewportHeight(true);
@@ -1485,7 +1563,6 @@ public class View extends JFrame {
         if(logisticsRecordsPanel.getComponentCount() > 5) {
             logisticsRecordsPanel.remove(5); 
         }
-
 
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
@@ -1500,34 +1577,13 @@ public class View extends JFrame {
     }
 
     public void refreshLogisticsRecordPnl() {
-        String[] columnNames = {"Logistics Company ID", "Company Name", "Address", "Shipment Scope"};
         Object[][] data = {};
-
         try {
             data = Model.getLogisticsRecords();
         } catch (SQLException e) {
             showError("Failed to retrieve logistics records: " + e.getMessage());
         }
-
-        JTable table = new JTable(data, columnNames);
-        JScrollPane scrollPane = new JScrollPane(table);
-        table.setFillsViewportHeight(true);
-
-        adjustColumnWidths(table);
-
-        if(logisticsRecordsPanel.getComponentCount() > 5) {
-            logisticsRecordsPanel.remove(5); 
-        }
-        GridBagConstraints gbc = setGBC();
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        gbc.gridwidth = 5;
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        logisticsRecordsPanel.add(scrollPane, gbc);
-        logisticsRecordsPanel.revalidate();
-        logisticsRecordsPanel.repaint();
+        refreshLogisticsRecordPnl(data);
     }
 
     private JPanel placeOrderPnl() {
@@ -2109,6 +2165,22 @@ public class View extends JFrame {
         storeRemoveBtn.addActionListener(listener);
     }
 
+    public void setStoreSearchBtn(ActionListener listener) {
+        storeSearchBtn.addActionListener(listener);
+    }
+
+    public void setStoreShowAllBtn(ActionListener listener) {
+        storeShowAllBtn.addActionListener(listener);
+    }
+
+    public void setStoreProductListSearchBtn(ActionListener listener) {
+        storeProductListSearchBtn.addActionListener(listener);
+    }
+
+    public void setStoreProductListShowAllBtn(ActionListener listener) {
+        storeProductListShowAllBtn.addActionListener(listener);
+    }
+
     public void setStoreUpdateSelectBtn(ActionListener listener) {
         storeUpdateSelectBtn.addActionListener(listener);
     }
@@ -2175,14 +2247,6 @@ public class View extends JFrame {
 
     public void setLogisticsShowAllBtn(ActionListener listener) {
         logisticsShowAllBtn.addActionListener(listener);
-    }
-
-    public void setStoreSearchBtn(ActionListener listener) {
-        storeSearchBtn.addActionListener(listener);
-    }
-
-    public void setStoreShowAllBtn(ActionListener listener) {
-        storeShowAllBtn.addActionListener(listener);
     }
 
     public void setProductSalesCategory(ActionListener listener) {
@@ -2754,6 +2818,14 @@ public class View extends JFrame {
         return storeCriteriaComboBox.getSelectedItem().toString();
     }
 
+    public String getStoreProductListSearchField() {
+        return storeProductListSearchField.getText();
+    }
+
+    public String getStoreProductListCriteriaComboBox() {
+        return storeProductListCriteriaComboBox.getSelectedItem().toString();
+    }
+
     public String getLogisticsSearchField() {
         return logisticsSearchField.getText();
     }
@@ -2867,6 +2939,8 @@ public class View extends JFrame {
         customerUpdateCountry.setText("");
         customerUpdateEditable(false);
 
+        customerSearchField.setText("");
+
         storeId.setText("");
         storeName.setText("");
         storePhoneNumber.setText("");
@@ -2887,6 +2961,8 @@ public class View extends JFrame {
         storeUpdateZipCode.setText("");
         storeUpdateCountry.setText("");
         storeUpdateEditable(false);
+
+        storeProductListSearchField.setText("");
 
         orderCustomerId.setText("");
         orderProductId.setText("");

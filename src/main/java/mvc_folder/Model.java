@@ -830,10 +830,10 @@ public class Model
         }
     }
 
-    public static Object[][] getListOfProductsStoreSells(String storeName){
-        String sql = "SELECT p.product_id, p.product_name, p.price, p.stock_count, p.description, p.category, p.r18 " +
+    public static Object[][] getListOfProductsStoreSells(String storeName) throws SQLException {
+        String sql = "SELECT p.product_id, p.product_name, p.price, s.store_name, p.stock_count, p.description, p.category, p.r18 " +
                         "FROM products p " +
-                        "JOIN store s ON p.store_id = s.store_id " +
+                        "JOIN store s ON p.store_id = s.store_id " + 
                         "WHERE s.store_name LIKE ? AND p.is_deleted != 1 " +
                         "ORDER BY p.product_id";
         try (Connection conn = getConnection();
@@ -848,6 +848,7 @@ public class Model
                             rs.getInt("product_id"),
                             rs.getString("product_name"),
                             formattedPrice,
+                            rs.getString("store_name"),
                             rs.getInt("stock_count"),
                             rs.getString("description"),
                             rs.getString("category"),
@@ -864,9 +865,10 @@ public class Model
             }
         }
 
-    public static Object[][] getListOfProductsStoreSells(int storeId){
-        String sql = "SELECT p.product_id, p.product_name, p.price, p.stock_count, p.description, p.category, p.r18 " +
+    public static Object[][] getListOfProductsStoreSells(int storeId) throws SQLException {
+        String sql = "SELECT p.product_id, p.product_name, p.price, s.store_name, p.stock_count, p.description, p.category, p.r18 " +
                         "FROM products p " +
+                        "JOIN store s ON p.store_id = s.store_id " + 
                         "WHERE p.store_id = ? AND p.is_deleted != 1 " +
                         "ORDER BY p.product_id";
         try (Connection conn = getConnection();
@@ -881,6 +883,7 @@ public class Model
                         rs.getInt("product_id"),
                         rs.getString("product_name"),
                         formattedPrice,
+                        rs.getString("store_name"),
                         rs.getInt("stock_count"),
                         rs.getString("description"),
                         rs.getString("category"),

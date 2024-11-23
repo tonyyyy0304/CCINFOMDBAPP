@@ -27,6 +27,7 @@ public class Controller
             @Override
             public void actionPerformed(ActionEvent e) {             
                 view.refreshProductRecords();
+                view.clearFields();
             }
         });
 
@@ -175,6 +176,7 @@ public class Controller
             @Override
             public void actionPerformed(ActionEvent e){
                 view.refreshStoreRecordsPnl();
+                view.clearFields();
             }
         });
 
@@ -340,6 +342,54 @@ public class Controller
             }
         });
 
+        this.view.setStoreProductListShowAllBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                view.refreshStoreProductListPnl();
+                view.clearFields();
+            }
+        });
+
+        this.view.setStoreProductListSearchBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String query = view.getStoreProductListSearchField();
+                String criteria = view.getStoreProductListCriteriaComboBox();
+
+                if (query.isEmpty()) {
+                    view.showMessage("Please enter a search query.");
+                    return;
+                }
+
+                if (criteria.equals("Store ID")) {
+                    try {
+                        Integer.parseInt(query);
+                    } catch (NumberFormatException ex) {
+                        view.showError("Store ID must be a valid number.");
+                        return;
+                    }
+                }
+
+                try {
+                    Object[][] data = new Object[0][];
+                    if (criteria.equals("Store ID")) {
+                        int id = Integer.parseInt(query);
+                        data = Model.getListOfProductsStoreSells(id);
+                    } else if (criteria.equals("Store Name")) {
+                        data = Model.getListOfProductsStoreSells(query);
+                    }
+                    if (data != null) {
+                        view.refreshStoreProductListPnl(data);
+                    } else {
+                        view.showError("No data found for the given query.");
+                    }
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                    ex.printStackTrace(); // Log the stack trace for debugging purposes
+                }
+            }
+        });
+
         this.view.setCustomerSearchBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -369,6 +419,7 @@ public class Controller
             @Override
             public void actionPerformed(ActionEvent e) {
                 view.refreshCustomerRecords();
+                view.clearFields();
             }
         });
 
@@ -782,6 +833,7 @@ public class Controller
             @Override
             public void actionPerformed(ActionEvent e) {
                 view.refreshLogisticsRecordPnl();
+                view.clearFields();
             }
         });
 
@@ -1028,6 +1080,7 @@ public class Controller
             @Override
             public void actionPerformed(ActionEvent e) {
                 view.refreshCustomerStatsPnl();
+                view.clearFields();
             }
         });
 
@@ -1074,6 +1127,7 @@ public class Controller
             @Override
             public void actionPerformed(ActionEvent e) {
                 view.refreshProductSalesPnl();
+                view.clearFields();
             }
         });
         
@@ -1122,6 +1176,7 @@ public class Controller
             @Override
             public void actionPerformed(ActionEvent e) {
                 view.refreshPaymentReportsPnl();
+                view.clearFields();
             }
         });
 
@@ -1169,6 +1224,7 @@ public class Controller
             @Override
             public void actionPerformed(ActionEvent e) {
                 view.refreshAffinityPnl();
+                view.clearFields();
             }
         });
 
