@@ -643,19 +643,19 @@ public class Controller
                     int currentStock = model.getCurrentStock(productID);
 
                     // Check if the amount to remove is valid
-                    if (amount > currentStock && action.equals("Remove")) {
+                    if (amount > currentStock && action.equals("Decrease")) {
                         view.showError("Cannot remove more stock than available. Current stock: " + currentStock);
                         return; // Exit early if attempting to remove too much stock
                     }
                     
-                    if (action.equals("Remove")) {
-                        amount -= currentStock; // Change the amount to negative if removing stock
+                    if (action.equals("Decrease")) {
+                        currentStock -= amount; // Change the amount to negative if removing stock
                     }
                     else{
-                        amount += currentStock; // Change the amount to positive if adding stock
+                        currentStock += amount; // Change the amount to positive if adding stock
                     }
                     // Adjust the stock in the model
-                    boolean success = model.adjustStock(productID, amount);
+                    boolean success = model.adjustStock(productID, currentStock);
                     if (success) {
                         view.showSuccess("Amount changed successfully!");
                         view.clearFields();

@@ -1186,6 +1186,11 @@ public class Model
 
 
     public boolean adjustStock(int productId, int newStockCount) {
+        if (newStockCount < 0 || newStockCount > Integer.MAX_VALUE) {
+            System.out.println("Error: newStockCount is out of valid range.");
+            return false;
+        }
+
         String sql = "UPDATE products SET stock_count = ? WHERE product_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
