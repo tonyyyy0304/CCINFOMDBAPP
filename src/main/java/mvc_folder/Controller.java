@@ -7,6 +7,7 @@ import java.sql.Date;
 // import java.sql.DriverManager;
 // import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Objects;
 // import java.sql.ResultSet;
 
 public class Controller
@@ -1376,11 +1377,13 @@ public class Controller
             public void actionPerformed(ActionEvent e) {
                 String start_yearS = view.getAffinityStartYear();
                 String end_yearS = view.getAffinityEndYear();
+                String input = view.getAffinityInput();
+                String criteria = view.getAffinityCriteria();
 
                 int start_year = 0;
                 int end_year = 0;
 
-                if (start_yearS.isEmpty() || end_yearS.isEmpty()) {
+                if (start_yearS.isEmpty() || end_yearS.isEmpty() || input.isEmpty()) {
                     view.showError("Please fill in all required fields.");
                     view.clearFields();
                     return;
@@ -1401,12 +1404,22 @@ public class Controller
                     return;
                 }
 
-                try {
-                    view.refreshAffinityPnl(Model.getAffinity(start_year, end_year));
-                } catch (SQLException ex) {
-                    view.showError("Database error: " + ex.getMessage());
-                } catch (Exception ex) {
-                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                if(Objects.equals(criteria, "Customer Name")){
+                    try {
+                        view.refreshAffinityPnl(Model.getAffinityWithCustomerName(start_year, end_year, input));
+                    } catch (SQLException ex) {
+                        view.showError("Database error: " + ex.getMessage());
+                    } catch (Exception ex) {
+                        view.showError("An unexpected error occurred: " + ex.getMessage());
+                    }
+                }else{
+                    try {
+                        view.refreshAffinityPnl(Model.getAffinityWithStoreName(start_year, end_year, input));
+                    } catch (SQLException ex) {
+                        view.showError("Database error: " + ex.getMessage());
+                    } catch (Exception ex) {
+                        view.showError("An unexpected error occurred: " + ex.getMessage());
+                    }
                 }
             }
         });
