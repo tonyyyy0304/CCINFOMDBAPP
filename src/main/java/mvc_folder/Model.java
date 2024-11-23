@@ -1284,19 +1284,23 @@ public class Model
     }
 
     public static Object[][] getAffinity(int startYear, int endYear) throws SQLException {
-        // TODO: fix sql query
+        //base total amount spent on payments table
+        //JOIN THE PAYMENTS table with the ORDERS table
+        //get only the successful payments/orders
         String sql = "SELECT YEAR(o.order_date) as year, " +
-                     "CONCAT(c.first_name, ' ', c.last_name) as customer_name, s.store_name, " +
+                     "CONCAT(c.first_name, ' ', c.last_name) as customer_name, " +
+                     "s.store_name, " +
                      "COUNT(o.order_id) as num_orders_made_at_store, " +
-                     "SUM(pm.amount_paid) as total_amount_spent " +
+                     "SUM(pay.amount_paid) as total_amount_spent " +
                      "FROM customers c " +
                      "JOIN orders o ON o.customer_id = c.customer_id " +
-                     "JOIN products p ON p.product_id = o.product_id " +
-                     "JOIN store s ON s.store_id = p.store_id " +
-                     "JOIN payments pm on pm.order_id = pm.order_id " +
-                     "WHERE YEAR(o.order_date) BETWEEN ? AND ? AND c.is_deleted != 1 " +
-                     "GROUP BY year, customer_name, store_name " +
-                     "ORDER BY year, customer_name";
+                     "JOIN products p ON o.product_id = p.product_id " +
+                     "JOIN store s ON p.store_id = s.store_id " +
+                     "JOIN payments pay ON o.order_id = pay.order_id " +
+                     "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
+                     "AND pay.payment_status = 'Completed' " +
+                     "GROUP BY year, customer_name, s.store_name " +
+                     "ORDER BY year, customer_name, s.store_name";
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -1305,14 +1309,20 @@ public class Model
 
             try (ResultSet rs = stmt.executeQuery()) {
                 List<Object[]> records = new ArrayList<>();
+                
                 while (rs.next()) {
+                    //format amount spent
+                    DecimalFormat priceFormat = new DecimalFormat("Php #,###.##");
+                    String formattedPrice = priceFormat.format(rs.getDouble("total_amount_spent"));
+
                     int year = rs.getInt("year");
                     String customerName = rs.getString("customer_name");
                     String storeName = rs.getString("store_name");
                     int numOrders = rs.getInt("num_orders_made_at_store");
-                    double totalAmountSpent = rs.getDouble("total_amount_spent");
-
-                    records.add(new Object[]{year, customerName, storeName, numOrders, totalAmountSpent});
+                    
+                    records.add(new Object[]{
+                        year, customerName, storeName, numOrders, formattedPrice
+                    });
                 }
                 return records.toArray(new Object[0][]);
             }
