@@ -1943,15 +1943,6 @@ public class View extends JFrame {
         customerStatsSearchBtn.setPreferredSize(new Dimension(150, 25));
         customerStatsShowAllBtn.setPreferredSize(new Dimension(150, 25));
 
-        JPanel userSearchPanel = new JPanel();
-        userSearchPanel.add(new JLabel("Search: "));
-        userSearchPanel.add(customerStatsUserSearch);
-        userSearchPanel.add(customerStatsSearchCriteria);
-
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.add(new JLabel("Customer Stats for"), BorderLayout.NORTH);
-        headerPanel.add(userSearchPanel, BorderLayout.WEST);
-
         GridBagConstraints gbc = setGBC();
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.LINE_START;
@@ -1960,7 +1951,10 @@ public class View extends JFrame {
         gbc.gridy = 0;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
-        customerStatsPanel.add(headerPanel, gbc);
+        JPanel userSearchPanel = new JPanel();
+        userSearchPanel.add(customerStatsSearchCriteria);
+        userSearchPanel.add(customerStatsUserSearch);
+        customerStatsPanel.add(userSearchPanel, gbc);
         gbc.gridwidth = 1;
 
         // Row Start Year
