@@ -1969,7 +1969,7 @@ public class View extends JFrame {
         // Row End Year
         gbc.gridy++;
         gbc.gridx = 0;
-        customerStatsPanel.add(new JLabel("End Year1:"), gbc);
+        customerStatsPanel.add(new JLabel("End Year:"), gbc);
         gbc.gridx = 1;
         customerStatsPanel.add(customerStatsEndYearTF, gbc);
 
