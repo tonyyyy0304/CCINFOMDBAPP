@@ -42,6 +42,12 @@ public class Controller
                 try {
                     // Call the model to search for products
                     if(criteria.equals("Product ID")){
+                        try {
+                            Integer.parseInt(query);
+                        } catch (Exception ex) {
+                            view.showError("Product ID must be a valid number.");
+                            return;
+                        }
                         view.refreshProductRecords(model.searchProductRecordsById(query));
                     } else if(criteria.equals("Product Name")){
                         view.refreshProductRecords(model.searchProductRecordsByName(query));
@@ -62,12 +68,12 @@ public class Controller
                 String product_price = view.getProductPrice();
                 String product_desc = view.getDescription();
                 String product_store_id = view.getProductStoreId();
-                Integer product_stock_count = view.getStockCount();
+                String product_stock_count = view.getStockCount();
                 String product_category = view.getSelectedProductCategory();
                 boolean product_r18 = view.isProductR18();
 
                 if (product_price.isEmpty() || product_name.isEmpty() || product_store_id.isEmpty() ||
-                        product_stock_count <= 0 || product_category.isEmpty())
+                        product_stock_count.isEmpty() || product_category.isEmpty())
                 {
                     view.showMessage("Please fill in all required fields.");
                     return;
@@ -86,7 +92,21 @@ public class Controller
                     view.showError("Price must be a valid number.");
                     return;
                 }
-                //TODO: check stock count, is int, is positive, is not null, is not empty
+                
+                // Check if stock count is a valid number
+                int stockCount = 0;
+                try {
+                    stockCount = Integer.parseInt(product_stock_count);
+                    if (stockCount < 0)
+                    {
+                        view.showMessage("Stock count cannot be negative.");
+                        return;
+                    }
+                } catch (Exception ex) {
+                    view.showError("Stock count must be a valid number.");
+                    return;
+                }
+
                 try
                 {
                     int storeId = Integer.parseInt(product_store_id);
@@ -107,7 +127,7 @@ public class Controller
 
                     // Add new product
                     boolean success = model.addProduct(product_name, product_desc,
-                            storeId, product_stock_count,
+                            storeId, stockCount,
                             product_category, r18, price);
 
                     if (success)
