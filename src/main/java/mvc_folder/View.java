@@ -1948,19 +1948,19 @@ public class View extends JFrame {
         userSearchPanel.add(customerStatsUserSearch);
         userSearchPanel.add(customerStatsSearchCriteria);
 
-        JPanel topPanel = new JPanel();
-        topPanel.add(new JLabel("Customer Stats for"), BorderLayout.NORTH);
-        topPanel.add(userSearchPanel, BorderLayout.CENTER);
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.add(new JLabel("Customer Stats for"), BorderLayout.NORTH);
+        headerPanel.add(userSearchPanel, BorderLayout.WEST);
 
         GridBagConstraints gbc = setGBC();
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.LINE_START;
 
-        // Row User Search
+        // Row Header
         gbc.gridy = 0;
         gbc.gridx = 0;
         gbc.gridwidth = 2;
-        customerStatsPanel.add(userSearchPanel, gbc);
+        customerStatsPanel.add(headerPanel, gbc);
         gbc.gridwidth = 1;
 
         // Row Start Year
@@ -1976,13 +1976,6 @@ public class View extends JFrame {
         customerStatsPanel.add(new JLabel("End Year1:"), gbc);
         gbc.gridx = 1;
         customerStatsPanel.add(customerStatsEndYearTF, gbc);
-
-        /*
-        gbc.gridy++;
-        gbc.gridx = 0;
-        gbc.gridwidth = 2;
-        customerStatsPanel.add(new JPanel(), gbc);
-         */
 
         //Row Search Button
         gbc.gridy++;
