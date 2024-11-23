@@ -1511,9 +1511,10 @@ public class Model
 
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+            
             stmt.setInt(1, startYear);
             stmt.setInt(2, endYear);
-            stmt.setString(3, input);
+            stmt.setString(3, "%" + input + "%");
 
             try (ResultSet rs = stmt.executeQuery()) {
                 List<Object[]> records = new ArrayList<>();
@@ -1558,7 +1559,7 @@ public class Model
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, startYear);
             stmt.setInt(2, endYear);
-            stmt.setString(3, input);
+            stmt.setString(3, "%" + input + "%");
 
             try (ResultSet rs = stmt.executeQuery()) {
                 List<Object[]> records = new ArrayList<>();
