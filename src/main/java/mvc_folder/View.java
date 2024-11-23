@@ -975,7 +975,7 @@ public class View extends JFrame {
     }
 
     public void refreshStoresCustomerBoughtFrom(Object[][] data) {
-        String[] columnNames = {"Customer Name", "Store Name"};
+        String[] columnNames = {"Customer Name", "Stores Bought From"};
 
         JTable table = new JTable(data, columnNames);
         JScrollPane scrollPane = new JScrollPane(table);
