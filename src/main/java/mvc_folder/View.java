@@ -37,6 +37,10 @@ public class View extends JFrame {
             productUpdatePrice, productUpdateDescription;
     private JCheckBox productUpdateR18;
     private JButton productUpdateSelectBtn, productUpdateBtn;
+    private JPanel productRelatedRecordsPanel;
+    private JButton productRelatedRecordsSearchBtn, productRelatedRecordsShowAllBtn;
+    private JComboBox<String> productRelatedRecordsCriteriaComboBox;
+    private JTextField productRelatedRecordsSearchField;
 
     // Customers Table
     private JTextField customerId, customerFirstName, customerLastName,
@@ -209,7 +213,7 @@ public class View extends JFrame {
         JPanel productsPanel = new JPanel(new BorderLayout());
         JTabbedPane productsTabbedPane = new JTabbedPane();
         productsTabbedPane.addTab("Product Records", productRecordsPnl());
-        // productsTabbedPane.addTab("Stores Selling Specific Category", productRecordsPnl()); // TODO: Implement panel
+        productsTabbedPane.addTab("Stores Selling Category Same as Product",  productRelatedRecordsPnl()); // TODO: Implement panel
         productsTabbedPane.addTab("Add Product", productAddPnl());
         productsTabbedPane.addTab("Remove Product", productRemovePnl());
         productsTabbedPane.addTab("Update Product", productUpdatePnl());
@@ -937,6 +941,95 @@ public class View extends JFrame {
         logisticsRelatedRecordsPanel.add(scrollPane, gbc);
         logisticsRelatedRecordsPanel.revalidate();
         logisticsRelatedRecordsPanel.repaint();
+    }
+
+    private JPanel productRelatedRecordsPnl(){
+        productRelatedRecordsPanel = new JPanel(new GridBagLayout());
+
+        productRelatedRecordsSearchField = new JTextField(20);
+        productRelatedRecordsSearchBtn = new JButton("Search");
+        productRelatedRecordsSearchBtn.setPreferredSize(new Dimension(150, 25));
+        productRelatedRecordsCriteriaComboBox = new JComboBox<>(new String[]{"Product Name", "Product ID"});
+
+        GridBagConstraints gbc = setGBC();
+
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.LINE_START;
+
+        gbc.gridwidth = 1;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        productRelatedRecordsPanel.add(new JLabel("Search:"), gbc);
+
+        gbc.gridx++;
+        productRelatedRecordsPanel.add(productRelatedRecordsSearchField, gbc);
+
+        gbc.gridx++;
+        productRelatedRecordsPanel.add(productRelatedRecordsCriteriaComboBox, gbc);
+
+        gbc.gridwidth = 2;
+        gbc.gridx = 0;
+        gbc.gridy++;
+        productRelatedRecordsPanel.add(productRelatedRecordsSearchBtn, gbc);
+        
+        refreshProductRelatedRecords();
+        return productRelatedRecordsPanel;
+    }
+
+    public void refreshProductRelatedRecords(Object[][] data){
+        String[] columnNames = {"Store Name", "Store ID", "Product Category", "Number of Products"};
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+
+        if(productRelatedRecordsPanel.getComponentCount() > 4) {
+            productRelatedRecordsPanel.remove(4); 
+        }
+
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 5;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        
+        productRelatedRecordsPanel.add(scrollPane, gbc);
+
+        productRelatedRecordsPanel.revalidate();
+        productRelatedRecordsPanel.repaint();
+    }
+
+    public void refreshProductRelatedRecords(){
+    
+        String[] columnNames = {"Store Name", "Store ID", "Product Category", "Number of Products"};
+
+        Object[][] data = {};
+
+        JTable table = new JTable(data, columnNames);
+        JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+
+        adjustColumnWidths(table);
+
+        if(productRelatedRecordsPanel.getComponentCount() > 4) {
+            productRelatedRecordsPanel.remove(4); 
+        }
+
+        GridBagConstraints gbc = setGBC();
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 5;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        productRelatedRecordsPanel.add(scrollPane, gbc);
+
+        productRelatedRecordsPanel.revalidate();
+        productRelatedRecordsPanel.repaint();
     }
 
     private JPanel storesCustomersBoughtFromPnl() {
@@ -2468,7 +2561,13 @@ public class View extends JFrame {
         logisticsUpdateShipmentScope.setSelectedIndex(index);
     }
 
-    
+    public void setProductRelatedRecordsSearchBtn(ActionListener listener) {
+        productRelatedRecordsSearchBtn.addActionListener(listener);
+    }
+
+    public void setProductRelatedRecordsShowAllBtn(ActionListener listener) {
+        productRelatedRecordsShowAllBtn.addActionListener(listener);
+    }
 
     //getters
 
@@ -2903,6 +3002,15 @@ public class View extends JFrame {
     public String getLogisticsRelatedRecordCriteriaComboBox() {
         return logisticsRelatedRecordCriteriaComboBox.getSelectedItem().toString();
     }
+
+    public String getProductRelatedRecordsSearchField() {
+        return productRelatedRecordsSearchField.getText();
+    }
+
+    public String getProductRelatedRecordsCriteriaComboBox() {
+        return productRelatedRecordsCriteriaComboBox.getSelectedItem().toString();
+    }
+
     public void productUpdateEditable(boolean editable) {
         productUpdateId.setEditable(!editable);
         productUpdateSelectBtn.setEnabled(!editable);

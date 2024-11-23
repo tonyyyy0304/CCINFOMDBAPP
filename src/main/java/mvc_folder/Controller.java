@@ -1036,6 +1036,59 @@ public class Controller
             }
         });
 
+        this.view.setProductRelatedRecordsSearchBtn(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String query = view.getProductRelatedRecordsSearchField();
+                String criteria = view.getProductRelatedRecordsCriteriaComboBox();
+
+                if (query.isEmpty()) {
+                    view.showMessage("Please enter a search query.");
+                    return;
+                }
+                try{
+                    if(criteria.equals("Product Name")){
+                        if(!model.isNameSpecified(query)){
+                            view.showError("Prodct Name is not specific.");
+                            return;
+                        }
+                    }
+                }
+                catch (SQLException ex) {
+                    view.showError("Database error: " + ex.getMessage());
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                }
+
+                if (criteria.equals("Product ID")) {
+                    try {
+                        Integer.parseInt(query);
+                    } catch (NumberFormatException ex) {
+                        view.showError("Product ID must be a valid number.");
+                        return;
+                    }
+                }
+
+                try {
+                    Object[][] data = new Object[0][];
+                    if (criteria.equals("Product ID")) {
+                        int id = Integer.parseInt(query);
+                        data = model.getProductRelatedRecordsId(id);
+                    } else if (criteria.equals("Product Name")) {
+                        data = model.getProductRelatedRecordsName(query);
+                    }
+                    if (data != null) {
+                        view.refreshProductRelatedRecords(data);
+                    } else {
+                        view.showError("No data found for the given query.");
+                    }
+                } catch (Exception ex) {
+                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                    ex.printStackTrace(); // Log the stack trace for debugging purposes
+                }
+            }
+        });
+
         this.view.setLogisticsRelatedRecordSearchBtn(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

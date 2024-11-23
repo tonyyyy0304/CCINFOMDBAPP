@@ -1200,6 +1200,89 @@ public class Model
         }
     }
 
+    public boolean isNameSpecified(String productName) throws SQLException {
+        String subquery = "SELECT category FROM products WHERE product_name LIKE ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(subquery)) {
+            stmt.setString(1, "%" + productName + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                int rowCount = 0;
+                while (rs.next()) {
+                    rowCount++;
+                    if (rowCount >= 2) {
+                        System.out.println("Error: Product name must be specified.");
+                        return false;
+                    }
+                }
+                if (rowCount == 0) {
+                    System.out.println("Error: Product name must be specified.");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public static Object[][] getProductRelatedRecordsName(String productName) throws SQLException {
+       
+        String sql = "SELECT s.store_id, s.store_name, p.category, COUNT(p.product_id) AS num_products " +
+                        "FROM products p " +
+                        "JOIN store s ON p.store_id = s.store_id " +
+                        "WHERE p.category = (SELECT category FROM products WHERE product_name LIKE ?) " +
+                        "GROUP BY s.store_id, p.category";
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, "%" + productName + "%");
+                try (ResultSet rs = stmt.executeQuery()) {
+                    List<Object[]> records = new ArrayList<>();
+                    while (rs.next()) {
+                        records.add(new Object[]{
+                            rs.getString("store_name"),
+                            rs.getInt("store_id"),
+                            rs.getString("category"),
+                            rs.getInt("num_products")
+                        });
+                    }
+                    return records.toArray(new Object[0][]);
+                }
+            } catch (SQLException e) {
+                System.out.println("SQLException: " + e.getMessage());
+                System.out.println("SQLState: " + e.getSQLState());
+                System.out.println("VendorError: " + e.getErrorCode());
+                return null;
+            }
+    }
+
+    public static Object[][] getProductRelatedRecordsId(int productId) throws SQLException {
+        
+        String sql = "SELECT s.store_id, s.store_name, p.category, COUNT(p.product_id) AS num_products " +
+                        "FROM products p " +
+                        "JOIN store s ON p.store_id = s.store_id " +
+                        "WHERE p.category = (SELECT category FROM products WHERE product_id = ?) " +
+                        "GROUP BY s.store_id, p.category";
+        try (Connection conn = getConnection();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, productId);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    List<Object[]> records = new ArrayList<>();
+                    while (rs.next()) {
+                        records.add(new Object[]{
+                            rs.getString("store_name"),
+                            rs.getInt("store_id"),
+                            rs.getString("category"),
+                            rs.getInt("num_products")
+                        });
+                    }
+                    return records.toArray(new Object[0][]);
+                }
+            } catch (SQLException e) {
+                System.out.println("SQLException: " + e.getMessage());
+                System.out.println("SQLState: " + e.getSQLState());
+                System.out.println("VendorError: " + e.getErrorCode());
+                return null;
+            }
+    }
+
     public static Object[][] getAffinity(int startYear, int endYear) throws SQLException {
         // TODO: fix sql query
         String sql = "SELECT YEAR(o.order_date) as year, " +
