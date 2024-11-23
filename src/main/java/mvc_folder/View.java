@@ -2030,7 +2030,7 @@ public class View extends JFrame {
         productSalesPanel = new JPanel(new GridBagLayout());
         productSalesReportStartYearTF = new JTextField(COLUMN_WIDTH);
         productSalesReportEndYearTF = new JTextField(COLUMN_WIDTH);
-        productSalesReportCategory = new JComboBox<String>(new String[] {"Clothing", "Electronics", "Beauty & Personal Care", "Food & Beverages", "Toys", "Appliances", "Home & Living"});;
+        productSalesReportCategory = new JComboBox<String>(new String[] {"All", "Clothing", "Electronics", "Beauty & Personal Care", "Food & Beverages", "Toys", "Appliances", "Home & Living"});;
 
         productSalesReportStartYearTF.setText("2000");
         productSalesReportEndYearTF.setText("2030");

@@ -1305,13 +1305,24 @@ public class Controller
                     return;
                 }
 
-                try {
-                    view.refreshProductSalesPnl(Model.getProductSales(start_year, end_year, category));
-                } catch (SQLException ex) {
-                    view.showError("Database error: " + ex.getMessage());
-                } catch (Exception ex) {
-                    view.showError("An unexpected error occurred: " + ex.getMessage());
+                if(category.equals("All")){
+                    try {
+                        view.refreshProductSalesPnl(Model.getProductSales(start_year, end_year));
+                    } catch (SQLException ex) {
+                        view.showError("Database error: " + ex.getMessage());
+                    } catch (Exception ex) {
+                        view.showError("An unexpected error occurred: " + ex.getMessage());
+                    }
                 }
+                else{
+                    try {
+                        view.refreshProductSalesPnl(Model.getProductSales(start_year, end_year, category));
+                    } catch (SQLException ex) {
+                        view.showError("Database error: " + ex.getMessage());
+                    } catch (Exception ex) {
+                        view.showError("An unexpected error occurred: " + ex.getMessage());
+                    }
+               }
             }
         });
         
