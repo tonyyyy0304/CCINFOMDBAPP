@@ -18,7 +18,7 @@ public class Model
 {
     private static final String dbUrl = "jdbc:mysql://localhost:3306/ecommerce_db";
     private static final String userName = "root";
-    private static final String password = "password";
+    private static final String password = "Q2e4t6u8o0!@#$%";
 
 
     public Model() {
@@ -1505,7 +1505,7 @@ public class Model
                 "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
                 "AND pay.payment_status = 'Completed' " +
                 "AND c.is_deleted != 1 AND p.is_deleted != 1 AND s.is_deleted != 1 " +
-                "AND CONCAT(c.first_name, ' ', c.last_name) = ?" +
+                "AND CONCAT(c.first_name, ' ', c.last_name) LIKE ?" +
                 "GROUP BY year, customer_name, s.store_name " +
                 "ORDER BY year, customer_name, s.store_name";
 
@@ -1550,7 +1550,7 @@ public class Model
                 "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
                 "AND pay.payment_status = 'Completed' " +
                 "AND c.is_deleted != 1 AND p.is_deleted != 1 AND s.is_deleted != 1 " +
-                "AND s.store_name = ?" +
+                "AND s.store_name LIKE ?" +
                 "GROUP BY year, customer_name, s.store_name " +
                 "ORDER BY year, customer_name, s.store_name";
 
