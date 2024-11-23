@@ -469,6 +469,8 @@ public class View extends JFrame {
 
         productRecordsPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = setGBC();
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.LINE_START;
 
         gbc.gridwidth = 1;
         gbc.gridx = 0;
@@ -481,6 +483,7 @@ public class View extends JFrame {
         gbc.gridx++;
         productRecordsPanel.add(productSearchCriteriaComboBox, gbc);
 
+        gbc.gridwidth = 2;
         gbc.gridx = 0;
         gbc.gridy++;
         productRecordsPanel.add(productSearchBtn, gbc);
@@ -764,6 +767,8 @@ public class View extends JFrame {
         
         customerRecordsPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = setGBC();
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.LINE_START;
 
         gbc.gridwidth = 1;
         gbc.gridx = 0;
@@ -776,6 +781,7 @@ public class View extends JFrame {
         gbc.gridx++;
         customerRecordsPanel.add(customerCriteriaComboBox, gbc);
 
+        gbc.gridwidth = 2;
         gbc.gridx = 0;
         gbc.gridy++;
         customerRecordsPanel.add(customerSearchBtn, gbc);
@@ -1160,6 +1166,8 @@ public class View extends JFrame {
         storeSearchField = new JTextField(20);
 
         GridBagConstraints gbc = setGBC();
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.LINE_START;
 
         gbc.gridwidth = 1;
         gbc.gridx = 0;
@@ -1172,6 +1180,7 @@ public class View extends JFrame {
         gbc.gridx++;
         storeRecordsPanel.add(storeCriteriaComboBox, gbc);
 
+        gbc.gridwidth = 2;
         gbc.gridx = 0;
         gbc.gridy++;
         storeRecordsPanel.add(storeSearchBtn, gbc);
@@ -1435,6 +1444,8 @@ public class View extends JFrame {
         logisticsCriteriaComboBox = new JComboBox<>(new String[]{"Company Name", "Company ID"});
 
         GridBagConstraints gbc = setGBC();
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.LINE_START;
 
         gbc.gridwidth = 1;
         gbc.gridx = 0;
@@ -1447,6 +1458,7 @@ public class View extends JFrame {
         gbc.gridx++;
         logisticsRecordsPanel.add(logisticsCriteriaComboBox, gbc);
 
+        gbc.gridwidth = 2;
         gbc.gridx = 0;
         gbc.gridy++;
         logisticsRecordsPanel.add(logisticsSearchBtn, gbc);
@@ -1728,6 +1740,9 @@ public class View extends JFrame {
         customerStatsStartYearTF.setText("2000");
         customerStatsEndYearTF.setText("2030");
 
+        customerStatsSearchBtn.setPreferredSize(new Dimension(150, 25));
+        customerStatsShowAllBtn.setPreferredSize(new Dimension(150, 25));
+
         GridBagConstraints gbc = setGBC();
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.LINE_START;
@@ -1749,10 +1764,13 @@ public class View extends JFrame {
         gbc.gridx++;
         customerStatsPanel.add(customerStatsEndYearTF, gbc);
 
+        gbc.gridwidth = 2;
         gbc.gridx = 0;
         gbc.gridy++;
         customerStatsPanel.add(customerStatsSearchBtn, gbc);
-        gbc.gridx++;
+        
+        gbc.gridx = 0;
+        gbc.gridy++;
         customerStatsPanel.add(customerStatsShowAllBtn, gbc);
 
         refreshCustomerStatsPnl();
@@ -1774,7 +1792,7 @@ public class View extends JFrame {
 
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
@@ -1803,6 +1821,9 @@ public class View extends JFrame {
         productSalesReportStartYearTF.setText("2000");
         productSalesReportEndYearTF.setText("2030");
 
+        productSalesReportSearchBtn.setPreferredSize(new Dimension(150, 25));
+        productSalesReportShowAllBtn.setPreferredSize(new Dimension(150, 25));
+
         GridBagConstraints gbc = setGBC();
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.LINE_START;
@@ -1824,10 +1845,13 @@ public class View extends JFrame {
         gbc.gridx++;
         productSalesPanel.add(productSalesReportEndYearTF, gbc);
         
+        gbc.gridwidth = 2;
         gbc.gridx = 0;
         gbc.gridy++;
         productSalesPanel.add(productSalesReportSearchBtn, gbc);
-        gbc.gridx++;
+        
+        gbc.gridx = 0;
+        gbc.gridy++;
         productSalesPanel.add(productSalesReportShowAllBtn, gbc);
 
         refreshProductSalesPnl();
@@ -1851,7 +1875,7 @@ public class View extends JFrame {
         
         gbc.gridwidth = 2;
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
         gbc.weighty = 1.0;
@@ -1879,6 +1903,9 @@ public class View extends JFrame {
         paymentReportStartYearTF.setText("2000");
         paymentReportEndYearTF.setText("2030");
 
+        paymentReportSearchBtn.setPreferredSize(new Dimension(150, 25));
+        paymentReportShowAllBtn.setPreferredSize(new Dimension(150, 25));
+
         GridBagConstraints gbc = setGBC();
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.LINE_START;
@@ -1900,10 +1927,13 @@ public class View extends JFrame {
         gbc.gridx++;
         paymentReportsPanel.add(paymentReportEndYearTF, gbc);
 
+        gbc.gridwidth = 2;
         gbc.gridx = 0;
         gbc.gridy++;
         paymentReportsPanel.add(paymentReportSearchBtn, gbc);
-        gbc.gridx++;
+        
+        gbc.gridx = 0;
+        gbc.gridy++;
         paymentReportsPanel.add(paymentReportShowAllBtn, gbc);
 
         refreshPaymentReportsPnl();
@@ -1925,7 +1955,7 @@ public class View extends JFrame {
 
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
@@ -1954,6 +1984,9 @@ public class View extends JFrame {
         affinityStartYearTF.setText("2000");
         affinityEndYearTF.setText("2030");
 
+        affinitySearchBtn.setPreferredSize(new Dimension(150, 25));
+        affinityShowAllBtn.setPreferredSize(new Dimension(150, 25));
+
         GridBagConstraints gbc = setGBC();
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.LINE_START;
@@ -1975,10 +2008,13 @@ public class View extends JFrame {
         gbc.gridx++;
         affinityPanel.add(affinityEndYearTF, gbc);
 
+        gbc.gridwidth = 2;
         gbc.gridx = 0;
         gbc.gridy++;
         affinityPanel.add(affinitySearchBtn, gbc);
-        gbc.gridx++;
+        
+        gbc.gridx = 0;
+        gbc.gridy++;
         affinityPanel.add(affinityShowAllBtn, gbc);
 
         refreshAffinityPnl();
@@ -2000,7 +2036,7 @@ public class View extends JFrame {
 
         GridBagConstraints gbc = setGBC();
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.weightx = 1.0;
@@ -2334,8 +2370,8 @@ public class View extends JFrame {
         return productStoreId.getText();
     }
 
-    public Integer getStockCount() {
-        return Integer.parseInt(stockCount.getText());
+    public String getStockCount() {
+        return stockCount.getText();
     }
 
     public String getDescription() {
