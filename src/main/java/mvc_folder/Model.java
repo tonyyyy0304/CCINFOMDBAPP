@@ -1284,9 +1284,6 @@ public class Model
     }
 
     public static Object[][] getAffinity(int startYear, int endYear) throws SQLException {
-        //base total amount spent on payments table
-        //JOIN THE PAYMENTS table with the ORDERS table
-        //get only the successful payments/orders
         String sql = "SELECT YEAR(o.order_date) as year, " +
                      "CONCAT(c.first_name, ' ', c.last_name) as customer_name, " +
                      "s.store_name, " +
@@ -1311,7 +1308,6 @@ public class Model
                 List<Object[]> records = new ArrayList<>();
                 
                 while (rs.next()) {
-                    //format amount spent
                     DecimalFormat priceFormat = new DecimalFormat("Php #,###.##");
                     String formattedPrice = priceFormat.format(rs.getDouble("total_amount_spent"));
 
@@ -1372,12 +1368,11 @@ public class Model
         int lotNum, String streetName, String cityName, int zipCode, String countryName,
         String paymentMethod) throws SQLException
     {
-        // Check if the customer exists
         if (!customerExists(customerId)) {
-            return false; // Customer does not exist
+            return false; 
         }
 
-        // Check if the product is R18
+       
         String checkR18Sql = "SELECT r18 FROM products WHERE product_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement checkR18Stmt = conn.prepareStatement(checkR18Sql)) {
@@ -1387,7 +1382,7 @@ public class Model
             if (rs.next()) {
                 String isR18 = rs.getString("r18");
                 if (isR18.equalsIgnoreCase("T")) {
-                    // Check if the customer is 18 years old or older
+                    // Check if customer is underage
                     String checkAgeSql = "SELECT CASE " +
                         "WHEN TIMESTAMPDIFF(YEAR, (SELECT c.birthdate FROM customers c WHERE c.customer_id = ?), NOW()) < 18 THEN 'TRUE' " +
                         "ELSE 'FALSE' END AS result " +
