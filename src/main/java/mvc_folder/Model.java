@@ -18,7 +18,7 @@ public class Model
 {
     private static final String dbUrl = "jdbc:mysql://localhost:3306/ecommerce_db";
     private static final String userName = "root";
-    private static final String password = "Q2e4t6u8o0!@#$%";
+    private static final String password = "password";
 
 
     public Model() {
@@ -458,7 +458,7 @@ public class Model
         }
     }
 
-    public Object[][] searchCustomerRecordsById(String query){
+    public static Object[][] searchCustomerRecordsById(String query){
         String sql = "SELECT c.customer_id, c.first_name, c.last_name, ci.phone_number, ci.email_address, c.birthdate, " +
                         "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
                         "c.registration_date " +
@@ -494,7 +494,7 @@ public class Model
         }
     }
 
-    public Object[][] searchCustomerRecordsByName(String query) throws SQLException {
+    public static Object[][] searchCustomerRecordsByName(String query) throws SQLException {
         String sql = "SELECT c.customer_id, c.first_name, c.last_name, ci.phone_number, ci.email_address, c.birthdate, " +
                         "CONCAT('', l.lot_number, ' ', l.street_name, ' ', l.city_name, ' ', l.zip_code, ' ', l.country_name) AS address, " +
                     "c.registration_date " +
@@ -1160,7 +1160,7 @@ public class Model
                 "JOIN orders o ON o.customer_id = c.customer_id " +
                 "JOIN products p ON o.product_id = p.product_id " +
                 "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
-                "AND CONCAT(c.first_name, ' ', c.last_name) = ? " + // Filter by customer name
+                "AND CONCAT(c.first_name, ' ', c.last_name) LIKE ? " + // Filter by customer name
                 "GROUP BY year, customer_name " +
                 "ORDER BY year, customer_name";
 
@@ -1169,7 +1169,7 @@ public class Model
             // Set the parameters for the prepared statement
             stmt.setInt(1, startYear);  // Start year
             stmt.setInt(2, endYear);    // End year
-            stmt.setString(3, customerName);  // Customer name
+            stmt.setString(3, "%" + customerName + "%");  // Customer name
 
             try (ResultSet rs = stmt.executeQuery()) {
                 List<Object[]> records = new ArrayList<>();
