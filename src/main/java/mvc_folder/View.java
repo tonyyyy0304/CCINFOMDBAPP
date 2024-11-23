@@ -146,8 +146,9 @@ public class View extends JFrame {
     private JButton paymentReportSearchBtn, paymentReportShowAllBtn;
 
     // Affinity
-    private JTextField affinityStartYearTF, affinityEndYearTF;
+    private JTextField affinityStartYearTF, affinityEndYearTF, affinityInputTF;
     private JButton affinitySearchBtn, affinityShowAllBtn;
+    private JComboBox<String> affinityCriteria;
    
 
     public View() {
@@ -2195,8 +2196,10 @@ public class View extends JFrame {
 
     private JPanel affinityPnl() {
         affinityPanel = new JPanel(new GridBagLayout());
+        affinityInputTF = new JTextField(COLUMN_WIDTH);
         affinityStartYearTF = new JTextField(COLUMN_WIDTH);
         affinityEndYearTF = new JTextField(COLUMN_WIDTH);
+        affinityCriteria = new JComboBox<String>(new String[] {"Customer Name", "Store Name"});
 
         affinityStartYearTF.setText("2000");
         affinityEndYearTF.setText("2030");
@@ -2210,7 +2213,11 @@ public class View extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
-        affinityPanel.add(new JLabel("Affinity for"), gbc);
+
+        JPanel criteriaSearchPanel = new JPanel();
+        criteriaSearchPanel.add(affinityCriteria);
+        criteriaSearchPanel.add(affinityInputTF);
+        affinityPanel.add(criteriaSearchPanel, gbc);
 
         gbc.gridx = 0;
         gbc.gridwidth = 1;
@@ -2987,6 +2994,14 @@ public class View extends JFrame {
 
     public String getAffinityEndYear() {
         return affinityEndYearTF.getText();
+    }
+
+    public String getAffinityInput(){
+        return affinityInputTF.getText();
+    }
+
+    public String getAffinityCriteria(){
+        return affinityCriteria.getSelectedItem().toString();
     }
 
     public String getProductSearchField() {

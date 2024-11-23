@@ -1491,6 +1491,96 @@ public class Model
         }
     }
 
+    public static Object[][] getAffinityWithCustomerName(int startYear, int endYear, String input) throws SQLException {
+        String sql = "SELECT YEAR(o.order_date) as year, " +
+                "CONCAT(c.first_name, ' ', c.last_name) as customer_name, " +
+                "s.store_name, " +
+                "COUNT(o.order_id) as num_orders_made_at_store, " +
+                "SUM(pay.amount_paid) as total_amount_spent " +
+                "FROM customers c " +
+                "JOIN orders o ON o.customer_id = c.customer_id " +
+                "JOIN products p ON o.product_id = p.product_id " +
+                "JOIN store s ON p.store_id = s.store_id " +
+                "JOIN payments pay ON o.order_id = pay.order_id " +
+                "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
+                "AND pay.payment_status = 'Completed' " +
+                "AND c.is_deleted != 1 AND p.is_deleted != 1 AND s.is_deleted != 1 " +
+                "AND CONCAT(c.first_name, ' ', c.last_name) = ?" +
+                "GROUP BY year, customer_name, s.store_name " +
+                "ORDER BY year, customer_name, s.store_name";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, startYear);
+            stmt.setInt(2, endYear);
+            stmt.setString(3, input);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+
+                while (rs.next()) {
+                    DecimalFormat priceFormat = new DecimalFormat("Php #,###.##");
+                    String formattedPrice = priceFormat.format(rs.getDouble("total_amount_spent"));
+
+                    int year = rs.getInt("year");
+                    String customerName = rs.getString("customer_name");
+                    String storeName = rs.getString("store_name");
+                    int numOrders = rs.getInt("num_orders_made_at_store");
+
+                    records.add(new Object[]{
+                            year, customerName, storeName, numOrders, formattedPrice
+                    });
+                }
+                return records.toArray(new Object[0][]);
+            }
+        }
+    }
+
+    public static Object[][] getAffinityWithStoreName(int startYear, int endYear, String input) throws SQLException {
+        String sql = "SELECT YEAR(o.order_date) as year, " +
+                "CONCAT(c.first_name, ' ', c.last_name) as customer_name, " +
+                "s.store_name, " +
+                "COUNT(o.order_id) as num_orders_made_at_store, " +
+                "SUM(pay.amount_paid) as total_amount_spent " +
+                "FROM customers c " +
+                "JOIN orders o ON o.customer_id = c.customer_id " +
+                "JOIN products p ON o.product_id = p.product_id " +
+                "JOIN store s ON p.store_id = s.store_id " +
+                "JOIN payments pay ON o.order_id = pay.order_id " +
+                "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
+                "AND pay.payment_status = 'Completed' " +
+                "AND c.is_deleted != 1 AND p.is_deleted != 1 AND s.is_deleted != 1 " +
+                "AND s.store_name = ?" +
+                "GROUP BY year, customer_name, s.store_name " +
+                "ORDER BY year, customer_name, s.store_name";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, startYear);
+            stmt.setInt(2, endYear);
+            stmt.setString(3, input);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Object[]> records = new ArrayList<>();
+
+                while (rs.next()) {
+                    DecimalFormat priceFormat = new DecimalFormat("Php #,###.##");
+                    String formattedPrice = priceFormat.format(rs.getDouble("total_amount_spent"));
+
+                    int year = rs.getInt("year");
+                    String customerName = rs.getString("customer_name");
+                    String storeName = rs.getString("store_name");
+                    int numOrders = rs.getInt("num_orders_made_at_store");
+
+                    records.add(new Object[]{
+                            year, customerName, storeName, numOrders, formattedPrice
+                    });
+                }
+                return records.toArray(new Object[0][]);
+            }
+        }
+    }
+
 
     public boolean adjustStock(int productId, int newStockCount) {
         if (newStockCount < 0 || newStockCount > Integer.MAX_VALUE) {
