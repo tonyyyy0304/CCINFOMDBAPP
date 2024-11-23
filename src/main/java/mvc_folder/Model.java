@@ -1217,10 +1217,11 @@ public class Model
         String sql = "SELECT YEAR(o.order_date) AS year, " +
                 "CONCAT(c.first_name, ' ', c.last_name) AS customer_name, " +
                 "COUNT(o.order_id) AS total_orders, " +
-                "SUM(o.quantity * p.price) AS total_sales " +
+                "SUM(pay.amount_paid) AS total_sales " +
                 "FROM customers c " +
                 "JOIN orders o ON o.customer_id = c.customer_id " +
                 "JOIN products p ON o.product_id = p.product_id " +
+                "JOIN payments pay ON pay.order_id = o.order_id " +
                 "WHERE YEAR(o.order_date) BETWEEN ? AND ? " +
                 "AND c.customer_id = ? " + // Filter by customer ID
                 "AND c.is_deleted != 1 AND p.is_deleted != 1 " +
@@ -1237,12 +1238,13 @@ public class Model
             try (ResultSet rs = stmt.executeQuery()) {
                 List<Object[]> records = new ArrayList<>();
                 while (rs.next()) {
+                    DecimalFormat priceFormat = new DecimalFormat("Php #,###.##");
+                    String formattedPrice = priceFormat.format(rs.getDouble("total_sales"));
                     int year = rs.getInt("year");
                     String resultCustomerName = rs.getString("customer_name");
                     int totalOrders = rs.getInt("total_orders");
-                    double totalSales = rs.getDouble("total_sales");
-
-                    records.add(new Object[]{year, resultCustomerName, totalOrders, totalSales});
+        
+                    records.add(new Object[]{year, resultCustomerName, totalOrders, formattedPrice});
                 }
                 return records.toArray(new Object[0][]);
             }
